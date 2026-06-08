@@ -1,0 +1,45 @@
+﻿<div class="kpi-grid" id="kpiGrid">
+    <!-- KPI cards rendered dynamically -->
+  </div>
+
+  <!-- ===== DONOR CATEGORIES SECTION ===== -->
+  <div class="kpi-section-title fade-up" style="animation-delay: 0.23s;">
+    <span>🩸 ประเภทผู้บริจาคโลหิต (Donor Categories)</span>
+  </div>
+  <div class="kpi-grid" id="donorCatGrid" style="margin-bottom: 32px;">
+    <!-- Donor Category cards rendered dynamically -->
+  </div>
+
+  <!-- ===== CHARTS ROW 1 ===== -->
+  <div class="charts-grid">
+    <!-- Chart 1: Monthly Donation Trends -->
+    <div class="chart-card fade-up" style="animation-delay: 0.25s;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>ปริมาณโลหิตบริจาคจำแนกตามสถานที่</h3>
+          <p>เปรียบเทียบในสถานที่ vs หน่วยเคลื่อนที่ (ยูนิท)</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chartDonationMonthly" height="220"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 4: Location Share -->
+    <div class="chart-card fade-up" style="animation-delay: 0.3s;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>สัดส่วนสถานที่บริจาคโลหิต</h3>
+          <p>In-site vs Mobile Unit</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chartLocationShare" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHARTS ROW 2 ===== -->
+  <div class="charts-grid">
+    <!-- Chart 3: Reaction Trends -->
+    <div cl

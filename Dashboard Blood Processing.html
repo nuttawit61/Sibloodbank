@@ -1,0 +1,4340 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>ระบบประมวลผลสถิติและรายงานห้องปฏิบัติการธนาคารเลือด</title>
+  <meta name="description" content="แดชบอร์ดสรุปสถิติงาน Bl.processing, เลือดหมดอายุ, ขอเลือด, FFP หมดอายุ และ Antigentyping ปี 2564 - ปัจจุบัน" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-alt: #f1f5f9;
+      --surface: #ffffff;
+      --surface-hover: #f8fafc;
+      --surface-2: #f1f5f9;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+
+      /* Colors for different categories */
+      --crimson: #dc2626;
+      --crimson-lt: #fee2e2;
+      --crimson-md: #fca5a5;
+
+      --blue: #2563eb;
+      --blue-lt: #dbeafe;
+      --blue-md: #bfdbfe;
+
+      --purple: #7c3aed;
+      --purple-lt: #f3e8ff;
+      --purple-md: #e9d5ff;
+
+      --teal: #0d9488;
+      --teal-lt: #ccfbf1;
+      --teal-md: #99f6e4;
+
+      --amber: #d97706;
+      --amber-lt: #fef3c7;
+      --amber-md: #fde68a;
+
+      --orange:    #f97316; 
+      --orange-lt: #ffedd5;
+      --orange-md: #fed7aa;
+
+      /* Premium Rose/Pink Theme for Immunohematology */
+      --rose:    #db2777; 
+      --rose-lt: #fce7f3;
+      --rose-md: #fbcfe8;
+
+      --slate: #475569;
+      --slate-lt: #f1f5f9;
+      --slate-md: #cbd5e1;
+
+      --text-1: #0f172a;
+      --text-2: #334155;
+      --text-3: #64748b;
+      --text-4: #cbd5e1;
+
+      --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+      --shadow-md: 0 4px 12px rgba(15,23,42,0.08), 0 2px 4px rgba(15,23,42,0.04);
+      --shadow-lg: 0 10px 25px -5px rgba(15,23,42,0.1), 0 8px 10px -6px rgba(15,23,42,0.1);
+      
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 20px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--crimson) 0%, #ef4444 50%, var(--purple) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.2);
+      color: white;
+      font-weight: 800;
+    }
+
+    .logo-info h1 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-1);
+      line-height: 1.2;
+    }
+
+    .logo-info p {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-top: 1px;
+    }
+
+    /* ===== TAB NAV BAR (below header) ===== */
+    .tab-nav-bar {
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+    }
+    .tab-nav-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-nav-inner::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 13px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-3);
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      margin-bottom: -2px;
+      position: relative;
+    }
+    .tab-btn:hover {
+      color: var(--text-1);
+      background: var(--bg-alt);
+    }
+    .tab-btn.active {
+      color: var(--tab-active-color, var(--crimson));
+      border-bottom-color: var(--tab-active-color, var(--crimson));
+      font-weight: 800;
+      background: transparent;
+    }
+
+    /* ===== FILTER DROPDOWN ROW ===== */
+    .filter-dropdown-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .fdb-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .fdb-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--bg-alt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2364748b' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 7px 32px 7px 12px;
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-1);
+      cursor: pointer;
+      min-width: 160px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--theme-active-color, var(--crimson));
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+    }
+    .filter-select option:disabled { color: var(--text-4); }
+
+    .fdb-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .fdb-status {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .fdb-status-label { font-size: 10.5px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+    .fdb-status-value { font-size: 13px; font-weight: 700; color: var(--text-1); }
+
+    .btn-clear-filter {
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      color: var(--text-2);
+      padding: 7px 16px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      margin-left: auto;
+    }
+    .btn-clear-filter:hover { background: var(--border); color: var(--text-1); }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    
+      overflow: visible;
+}
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: var(--text-2);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-alt);
+      color: var(--text-1);
+    }
+
+    .nav-link.active {
+      background: var(--crimson-lt);
+      color: var(--crimson);
+      border-color: var(--crimson-md);
+    }
+
+    .nav-link.active.theme-blue {
+      background: var(--blue-lt);
+      color: var(--blue);
+      border-color: var(--blue-md);
+    }
+
+    .nav-link.active.theme-purple {
+      background: var(--purple-lt);
+      color: var(--purple);
+      border-color: var(--purple-md);
+    }
+
+    .nav-link.active.theme-teal {
+      background: var(--teal-lt);
+      color: var(--teal);
+      border-color: var(--teal-md);
+    }
+
+    .nav-link.active.theme-all {
+      background: var(--slate-lt);
+      color: var(--text-1);
+      border-color: var(--border-strong);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border: 1.5px solid var(--teal-md);
+      background: var(--teal-lt);
+      color: var(--teal);
+      white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* ===== ACTION BUTTONS (header) ===== */
+    .btn-icon-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1.5px solid;
+      white-space: nowrap;
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      line-height: 1;
+    }
+
+    .btn-refresh {
+      background: var(--surface);
+      border-color: var(--border-strong);
+      color: var(--text-2);
+    }
+    .btn-refresh:hover {
+      background: var(--bg-alt);
+      border-color: var(--slate);
+      color: var(--text-1);
+    }
+    .btn-refresh:active {
+      transform: rotate(180deg);
+    }
+    .btn-refresh .btn-icon { display: inline-block; transition: transform 0.5s ease; }
+    .btn-refresh:hover .btn-icon { transform: rotate(180deg); }
+
+    .btn-export-pdf {
+      background: var(--blue-lt);
+      border-color: var(--blue-md);
+      color: var(--blue);
+    }
+    .btn-export-pdf:hover {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+
+    /* ===== EXTERNAL DASHBOARD LINKS ===== */
+    .nav-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border-strong);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+    .nav-link-ext {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      color: var(--text-2);
+      background: var(--surface);
+      border-color: var(--border);
+    }
+    .nav-link-ext:hover {
+      background: var(--bg-alt);
+      border-color: var(--border-strong);
+      color: var(--text-1);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-link-ext.blood { color: var(--crimson); border-color: var(--crimson-md); background: var(--crimson-lt); }
+    .nav-link-ext.blood:hover { background: var(--crimson); color: #fff; border-color: var(--crimson); }
+    .nav-link-ext.hema { color: var(--amber); border-color: var(--amber-md); background: var(--amber-lt); }
+    .nav-link-ext.hema:hover { background: var(--amber); color: #fff; border-color: var(--amber); }
+    .nav-link-ext.comp { color: var(--blue); border-color: var(--blue-md); background: var(--blue-lt); }
+    .nav-link-ext.comp:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .nav-link-ext.proc { color: #fff; border-color: var(--teal); background: var(--teal); opacity: 0.9; }
+    .nav-link-ext.infec { color: var(--orange); border-color: var(--orange-md); background: var(--orange-lt); }
+    .nav-link-ext.infec:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+    .nav-link-ext.immuno { color: var(--rose); border-color: var(--rose-md); background: var(--rose-lt); }
+    .nav-link-ext.immuno:hover { background: var(--rose); color: #fff; border-color: var(--rose); }
+
+    /* ===================================================
+       PRINT / PDF  —  A4 Portrait, Multi-page clean layout
+    =================================================== */
+
+    /* Screen: hide print-only elements */
+    .print-report-header { display: none; }
+
+    /* ── Page size for printing ── */
+    @page { size: A4 landscape; margin: 8mm 10mm 10mm 10mm; }
+
+    @media print {
+      /* ── Force color printing ── */
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      /* ── Base ── */
+      html, body { background: #ffffff !important; color: #000 !important; font-size: 10px !important; }
+
+      /* ── Hide interactive UI ── */
+      .btn-export, .btn-refresh, .btn-action, .btn-action-secondary,
+      #btnMusic, #btnRefresh, #btn-export-pdf,
+      .nav-menu, .nav-item-dropdown, .header-meta, .header-divider,
+      .month-bar, #monthDetailPanel, .mdp, .footer, .live-dot { display: none !important; }
+
+      /* ── Header compact ── */
+      .header { position: relative !important; box-shadow: none !important;
+        border-bottom: 2px solid #333 !important; height: auto !important; padding: 6px 0 8px !important; }
+      .header-inner { max-width: 100% !important; height: auto !important; padding: 0 10mm !important; }
+      .logo-info h1 { font-size: 13px !important; }
+      .logo-info p  { font-size: 9px !important; }
+
+      /* ── Main ── */
+      .main { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
+
+      /* ── KPI ── */
+      .kpi-section-title { font-size: 10px !important; margin-bottom: 6px !important; break-after: avoid !important; }
+      .kpi-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; margin-bottom: 8px !important; break-inside: avoid !important; }
+      #donorCatGrid { grid-template-columns: repeat(5, 1fr) !important; }
+      #kpiGrid2    { grid-template-columns: repeat(4, 1fr) !important; }
+      .kpi-card { break-inside: avoid !important; box-shadow: none !important; border: 1px solid #d1d5db !important; padding: 7px 9px !important; }
+      .kpi-value { font-size: 18px !important; }
+      .kpi-label, .kpi-sub, .kpi-split-label { font-size: 8px !important; }
+      .kpi-split-value { font-size: 10px !important; }
+      .kpi-badge { font-size: 8px !important; }
+      .kpi-icon-wrap { width: 26px !important; height: 26px !important; font-size: 14px !important; margin-bottom: 6px !important; }
+
+      /* ── Charts 2-col ── */
+      .charts-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-bottom: 8px !important; break-inside: avoid !important; }
+      .chart-card { box-shadow: none !important; border: 1px solid #d1d5db !important; padding: 10px !important; break-inside: avoid !important; }
+      .chart-title h3 { font-size: 10px !important; }
+      .chart-title p  { font-size: 8.5px !important; }
+      .chart-wrap { height: 160px !important; max-height: 160px !important; overflow: hidden !important; }
+
+      /* ── Table new page ── */
+      .table-section { break-before: page !important; box-shadow: none !important; border: 1px solid #d1d5db !important; }
+      .table-header { padding: 10px 14px !important; }
+      .table-title h3 { font-size: 11px !important; }
+      table { font-size: 8px !important; }
+      thead th { padding: 5px 7px !important; font-size: 8px !important; }
+      tbody td { padding: 3px 7px !important; }
+      .sticky-col-1, .sticky-col-2 { position: relative !important; left: auto !important; }
+
+      /* ── Analysis new page ── */
+      .analysis-section { break-before: page !important; box-shadow: none !important; border: 1px solid #d1d5db !important; }
+      .analysis-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; }
+      .analysis-card { padding: 12px !important; }
+      .analysis-card h4 { font-size: 10px !important; }
+      .analysis-card li { font-size: 8.5px !important; }
+      .recommendations-box { padding: 12px !important; }
+      .recommendations-box h5 { font-size: 10px !important; }
+      .recommendations-box li { font-size: 8.5px !important; }
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ===== YEAR FILTER BAR ===== */
+    .filter-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .filter-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .filter-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-1);
+    }
+
+    .filter-subtitle {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .year-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-year {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text-2);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-year:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-alt);
+      color: var(--text-1);
+    }
+
+    .btn-year.active {
+      background: var(--text-1);
+      color: var(--surface);
+      border-color: var(--text-1);
+      box-shadow: 0 4px 10px rgba(15,23,42,0.15);
+    }
+
+    .btn-compare {
+      background: var(--blue-lt);
+      color: var(--blue);
+      border: 1.5px dashed var(--blue-md);
+    }
+
+    .btn-compare:hover {
+      background: var(--blue);
+      color: var(--surface);
+      border-color: var(--blue);
+    }
+
+    .btn-compare.active {
+      background: var(--blue);
+      color: var(--surface);
+      border-color: var(--blue);
+      border-style: solid;
+    }
+
+    .btn-month {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text-2);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-month:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-alt);
+      color: var(--text-1);
+    }
+
+    .btn-month.active {
+      background: var(--teal);
+      color: var(--surface);
+      border-color: var(--teal);
+      box-shadow: 0 2px 6px rgba(13,148,136,0.25);
+    }
+
+    .month-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-1);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-note {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+      margin-left: auto;
+    }
+
+    /* ===== KPI GRID ===== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-strong);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--theme-color, var(--slate));
+    }
+
+    .kpi-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .kpi-card-header .kpi-badge {
+      margin-top: 0;
+    }
+
+    .kpi-icon-wrap {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--theme-bg, var(--slate-lt));
+      color: var(--theme-color, var(--slate));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .kpi-label {
+      font-size: 11.5px;
+      color: var(--text-3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text-1);
+      margin: 4px 0;
+      line-height: 1.1;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .kpi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10.5px;
+      font-weight: 700;
+      margin-top: 6px;
+      border: 1px solid;
+    }
+
+    .kpi-badge.up { background: var(--crimson-lt); color: var(--crimson); border-color: var(--crimson-md); }
+    .kpi-badge.down { background: var(--teal-lt); color: var(--teal); border-color: var(--teal-md); }
+    .kpi-badge.same { background: var(--bg-alt); color: var(--text-3); border-color: var(--border); }
+
+    /* KPI Card Breakdown Styles */
+    .kpi-breakdown-divider {
+      border: 0;
+      border-top: 1px dashed var(--border-strong);
+      margin: 12px 0 10px 0;
+      width: 100%;
+    }
+
+    .kpi-breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .kpi-breakdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .kpi-breakdown-text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
+    }
+
+    .kpi-breakdown-label {
+      color: var(--text-3);
+      font-weight: 600;
+    }
+
+    .kpi-breakdown-value {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+    }
+
+    .kpi-breakdown-bar-bg {
+      width: 100%;
+      height: 4px;
+      background: var(--bg-alt);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .kpi-breakdown-bar-fill {
+      height: 100%;
+      background: var(--theme-color, var(--slate));
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .kpi-breakdown-empty {
+      font-size: 11px;
+      color: var(--text-3);
+      text-align: center;
+      padding: 10px 0;
+      font-style: italic;
+      margin-top: auto;
+    }
+
+    /* ===== CHARTS CONTAINER ===== */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.25s;
+    }
+
+    .chart-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .chart-title h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-1);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .chart-title p {
+      font-size: 11.5px;
+      color: var(--text-3);
+      margin-top: 2px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== TABLE SECTION ===== */
+    .table-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .table-title h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-1);
+    }
+
+    .table-title p {
+      font-size: 11.5px;
+      color: var(--text-3);
+      margin-top: 2px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 700;
+      color: var(--text-2);
+      background: var(--bg-alt);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: inherit;
+      z-index: 5;
+      font-weight: 700;
+      border-right: 1.5px solid var(--border);
+    }
+
+    tr:hover td {
+      background: var(--surface-hover);
+    }
+
+    td:first-child {
+      background: var(--surface);
+      color: var(--text-1);
+    }
+
+    tr:hover td:first-child {
+      background: var(--surface-hover);
+    }
+
+    /* Styling for total rows and columns */
+    .row-total td {
+      font-weight: 700;
+      background: var(--bg-alt) !important;
+      border-top: 2px solid var(--border-strong);
+    }
+
+    .col-total {
+      font-weight: 700;
+      background: #f8fafc !important;
+      border-left: 1.5px solid var(--border-strong);
+    }
+
+    /* Highlight cell values dynamically */
+    .highlight-cell {
+      background: var(--amber-lt) !important;
+      color: var(--amber);
+      font-weight: 700;
+      border-radius: 4px;
+    }
+
+    /* ===== ERROR / EMPTY STATE ===== */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      background: var(--surface);
+      border: 1.5px dashed var(--border-strong);
+      border-radius: var(--radius);
+      width: 100%;
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      color: var(--text-4);
+      margin-bottom: 16px;
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+
+    .empty-desc {
+      font-size: 13px;
+      color: var(--text-3);
+      max-width: 400px;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      color: var(--text-3);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      margin-top: 48px;
+    }
+
+    /* ===== FILTER CARD (styled like month-bar in Blood Collection) ===== */
+    .filter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .filter-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-card-label {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .filter-card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-1);
+    }
+
+    .filter-card-subtitle {
+      font-size: 12px;
+      color: var(--text-3);
+      font-weight: 600;
+    }
+
+    .filter-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action-clear {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action-clear:hover {
+      background: var(--border);
+      color: var(--text-1);
+    }
+
+    .filter-tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .month-tabs-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 8px;
+    }
+
+    @media (max-width: 1200px) {
+      .filter-tabs-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .month-tabs-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .filter-tabs-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .month-tabs-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .filter-tab-item {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .filter-tab-item:hover:not(.disabled) {
+      border-color: var(--theme-active-border, var(--crimson-md));
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+
+    .filter-tab-item.active {
+      background: var(--theme-active-bg, var(--crimson-lt));
+      border-color: var(--theme-active-color, var(--crimson));
+      color: var(--theme-active-color, var(--crimson));
+      font-weight: 700;
+    }
+
+    .filter-tab-item.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      background: var(--bg-alt);
+      pointer-events: none;
+    }
+
+    .filter-tab-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .filter-tab-desc {
+      font-size: 10.5px;
+      font-weight: 500;
+      opacity: 0.7;
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    .filter-tab-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--theme-active-color, var(--crimson));
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+    }
+
+    .filter-tab-item.active .filter-tab-dot {
+      display: block;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    .fade-up {
+      animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  
+    /* Dropdown Submenu styling */
+    .nav-item-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .nav-dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      z-index: 200;
+      min-width: 285px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .nav-dropdown-content a {
+      display: block;
+      padding: 10px 16px;
+      color: var(--text-2);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    .nav-dropdown-content a:hover {
+      background: var(--bg-alt);
+      color: var(--text-1);
+    }
+        .nav-dropdown-content.show {
+      display: block !important;
+    }
+    
+    @media (max-width: 580px) {
+      #chart-2-wrap[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        height: auto !important;
+      }
+      #chart-2-custom-legend {
+        width: 100% !important;
+        padding-right: 0 !important;
+      }
+    }
+    
+    /* ===== ANALYSIS SECTION ===== */
+    .analysis-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .analysis-header {
+      margin-bottom: 20px;
+    }
+    .analysis-title h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .analysis-title p {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 4px;
+    }
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .analysis-card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .analysis-card h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-1);
+      margin-bottom: 12px;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .analysis-card ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .analysis-card li {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+      position: relative;
+      padding-left: 16px;
+    }
+    .analysis-card li::before {
+      content: "•";
+      color: var(--crimson);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 14px;
+    }
+    .recommendations-box {
+      background: var(--crimson-lt);
+      border: 1px solid var(--crimson-md);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .recommendations-box h5 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--crimson);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .recommendations-box ol {
+      padding-left: 18px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .recommendations-box li {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+    </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+      <img src="F_01_png_v-logo_si_th.png" alt="Siriraj Logo" style="height: 54px; width: auto; object-fit: contain; margin-right: 2px;">
+      <div class="header-divider" style="height: 32px; margin: 0 10px;"></div>
+        <div class="logo-info">
+          <h1>Blood Processing</h1>
+          <p>ภาควิชาเวชศาสตร์การธนาคารเลือด คณะแพทยศาสตร์ศิริราชพยาบาล</p>
+        </div>
+      </div>
+      
+          <nav class="nav-menu">
+      <div class="nav-item-dropdown">
+        <a href="#" class="nav-link-ext proc active" onclick="toggleNavDropdown(event)">
+          &#127979; Lab: Blood Processing &#9662;
+        </a>
+                <div class="nav-dropdown-content">
+            <a href="Dashboard Blood Collection.html">Blood Collection</a>
+            <a href="Dashboard Hemapheresis.html">Hemapheresis</a>
+            <a href="Dashboard Blood Processing.html" style="font-weight:700; background:var(--bg-alt); color:var(--text-1);">Blood Processing</a>
+            <a href="Dashboard Infection.html">Infectious Serology</a>
+            <a href="Dashboard Blood Component.html">Blood Component Preparation</a>
+            <a href="Dashboard Immunohematology.html">Immunohematology</a>
+            <a href="Dashboard Blood Prep Disp.html">&#3612;&#3621;&#3636;&#3605; &amp; &#3592;&#3656;&#3634;&#3618;&#3648;&#3621;&#3639;&#3629;&#3604;</a>
+            <a href="Dashboard Standard Laboratory.html">Standard Laboratory</a>
+            <a href="Dashboard HLA Laboratory.html">HLA Laboratory</a>
+            <a href="Dashboard DNA Laboratory.html">DNA Laboratory</a>
+          </div>
+      </div>
+    </nav>
+
+      <div class="header-meta">
+        <div class="pill">
+          <div class="live-dot"></div>
+          พร้อมอัพเดทข้อมูลล่าสุดเรียบร้อย
+        </div>
+        <a href="index.html" class="btn-icon-action btn-refresh" style="text-decoration:none;">🏠 หน้าแรก</a>
+        <button class="btn-icon-action btn-refresh" id="btn-refresh" onclick="refreshData()" title="โหลดข้อมูลใหม่">
+          <span class="btn-icon">🔄</span> Refresh
+        </button>
+        <button class="btn-icon-action btn-export-pdf" id="btn-export-pdf" onclick="exportPDF()" title="ส่งออกเป็น PDF">
+          📄 Export PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== TAB NAV BAR ===== -->
+  <div class="tab-nav-bar" id="tab-nav-bar">
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" id="tabbtn-BlProcessing"   onclick="switchTab('BlProcessing',   this)">🩸 Bl.processing</button>
+      <button class="tab-btn"        id="tabbtn-ExpiredBlood"   onclick="switchTab('ExpiredBlood',   this)">💧 เลือดหมดอายุ</button>
+      <button class="tab-btn"        id="tabbtn-RequestedBlood" onclick="switchTab('RequestedBlood', this)">📦 ขอเลือด</button>
+      <button class="tab-btn"        id="tabbtn-FFPExpired"     onclick="switchTab('FFPExpired',     this)">❄️ FFP หมดอายุ</button>
+      <button class="tab-btn"        id="tabbtn-Antigentyping"  onclick="switchTab('Antigentyping',  this)">🔬 Antigentyping</button>
+    </div>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main">
+
+    <!-- ===== PRINT REPORT HEADER (hidden on screen, shown on print) ===== -->
+    <div class="print-report-header" id="print-report-header">
+      <div class="prh-left">
+        <div class="prh-logo">🔬</div>
+        <div>
+          <div class="prh-title">Blood Processing — รายงานสถิติสรุปประจำปี</div>
+          <div class="prh-sub">ภาควิชาเวชศาสตร์การธนาคารเลือด คณะแพทยศาสตร์ศิริราชพยาบาล | Blood Laboratory Statistics Dashboard</div>
+        </div>
+      </div>
+      <div class="prh-right">
+        <div class="prh-badge" id="prh-tab-badge">สุขภาพ</div>
+        <div class="prh-date" id="prh-date">วันที่ออกรายงาน: —</div>
+      </div>
+    </div>
+
+    <!-- ===== FILTER DROPDOWN BAR ===== -->
+    <div class="filter-dropdown-bar fade-up" style="animation-delay:0.05s;">
+      <!-- Year dropdown -->
+      <div class="fdb-group">
+        <span class="fdb-label">ปีงบประมาณ / ปีปฏิทิน</span>
+        <select class="filter-select" id="year-select" onchange="selectYear(this.value)">
+          <!-- populated by JS -->
+        </select>
+      </div>
+      <!-- Month dropdown -->
+      <div class="fdb-group">
+        <span class="fdb-label">เดือน</span>
+        <select class="filter-select" id="month-select" onchange="onMonthSelectChange(this.value)">
+          <!-- populated by JS -->
+        </select>
+      </div>
+      <div class="fdb-divider"></div>
+      <!-- Active filter badge -->
+      <div class="fdb-status">
+        <span class="fdb-status-label">การ์ดแสดงข้อมูลปัจจุบัน</span>
+        <span class="fdb-status-value" id="active-filter-label">ระบบกำลังโหลด...</span>
+      </div>
+      <button class="btn-clear-filter" onclick="clearMonthFilter()">↺ แสดงทั้งปี</button>
+    </div>
+
+    <!-- ===== KPI Summary Grid ===== -->
+    <div class="section-title" style="margin-top: 24px; margin-bottom: 16px;">
+      <span>📈 ดัชนีชี้วัดหลัก (Key Performance Indicators)</span>
+    </div>
+    <div class="kpi-grid" id="kpi-summary-grid">
+      <!-- Generated via JS -->
+    </div>
+
+    <!-- ===== Dashboard Charts Grid ===== -->
+    <div class="charts-grid" id="charts-container">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3 id="chart-1-title">กราฟแสดงแนวโน้มสถิติรายเดือน</h3>
+            <p id="chart-1-sub">แยกตามประเภทข้อมูลและกลุ่มประชากร</p>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-1"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">
+            <h3 id="chart-2-title">กราฟแสดงสัดส่วนภาพรวม</h3>
+            <p id="chart-2-sub">สัดส่วนร้อยละของข้อมูลที่จำแนกรายหัวข้อ</p>
+          </div>
+        </div>
+        <div class="chart-wrap" id="chart-2-wrap" style="position: relative;">
+          <div style="flex: 1.1; height: 100%; min-height: 180px; position: relative;">
+            <canvas id="chart-2"></canvas>
+          </div>
+          <div id="chart-2-custom-legend" style="display: none; flex-direction: column; gap: 10px; padding: 4px 8px; flex: 0.9;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Third Chart for Antibody (only shown for Bl.processing) ===== -->
+    <div class="chart-card" id="antibody-chart-card" style="display: none; margin-bottom: 24px;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>กราฟสรุปชนิดและจำนวนสารภูมิคุ้มกัน (Antibody Identification)</h3>
+          <p>แสดงการจำแนกชนิดของแอนติบอดีที่ตรวจพบในผู้บริจาคโลหิต เรียงลำดับจากมากไปหาน้อยประจำปี</p>
+        </div>
+      </div>
+      <div class="chart-wrap" style="min-height: 360px;">
+        <canvas id="chart-antibody"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== Error Placeholder (for N/A data) ===== -->
+    <div id="data-empty-placeholder" style="display: none;">
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">ไม่พบข้อมูลสำหรับปีปฏิทินที่เลือก</div>
+        <div class="empty-desc" id="empty-state-desc">ห้องปฏิบัติการไม่ได้เริ่มจัดทำข้อมูล/แบบฟอร์มสถิตินี้ในปีงบประมาณดังกล่าว หรือระบบยังไม่ได้รับแฟ้มข้อมูลบันทึก</div>
+      </div>
+    </div>
+
+    <!-- ===== Dynamic Data Table Section ===== -->
+    <div class="table-section" id="table-data-section">
+      <div class="table-header">
+        <div class="table-title">
+          <h3 id="table-display-title">ตารางแจกแจงสถิติรายเดือน</h3>
+          <p id="table-display-desc">ข้อมูลแสดงปริมาณแยกรายเดือน พร้อมผลสรุปรวมท้ายปี (สถิติหน่วยนับ: ราย/ถุง)</p>
+        </div>
+      </div>
+      <div class="table-wrap" id="table-wrapper">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- ===== EXECUTIVE SUMMARY & RECOMMENDATIONS ===== -->
+    <div class="analysis-section fade-up" style="animation-delay: 0.5s; margin-bottom: 32px;">
+      <div class="analysis-header">
+        <div class="analysis-title">
+          <h3>🧠 บทวิเคราะห์และข้อเสนอแนะเชิงยุทธศาสตร์การผลิตและตรวจสอบโลหิต (Blood Processing & Quality Management)</h3>
+          <p>วิเคราะห์ประสิทธิภาพการเตรียมส่วนประกอบโลหิต ความปลอดภัยทางน้ำยาแอนติเจน และการลดปริมาณโลหิตหมดอายุเชิงรุก</p>
+        </div>
+      </div>
+      
+      <div class="analysis-grid">
+        <!-- Card 1: Processing Analysis -->
+        <div class="analysis-card">
+          <h4>📊 บทวิเคราะห์จากฐานข้อมูลกระบวนการเตรียมและทดสอบทางห้องปฏิบัติการ (2564 - 2569)</h4>
+          <ul>
+            <li><strong>การเติบโตของปริมาณงานเตรียมคลังโลหิต:</strong> ยอดสถิติการปั่นแยกส่วนประกอบโลหิตและการตรวจสอบความเข้ากันได้กลุ่ม ABO/Rh ขยายตัวอย่างคงที่ สะท้อนถึงภาระงานในฝ่ายปฏิบัติการที่เพิ่มขึ้นอย่างมีนัยสำคัญเพื่อรักษาระดับการสำรองโลหิตในโรงพยาบาลศิริราช</li>
+            <li><strong>ความท้าทายของสารภูมิคุ้มกันแอนติบอดี (Antibody Identification):</strong> สถิติชี้ชัดว่าการตรวจพบสารภูมิคุ้มกันพิเศษในผู้บริจาคโลหิตและผู้รับโลหิต โดยเฉพาะแอนติบอดีชนิด <b>Anti-Mi(a)</b> มีสัดส่วนสูงที่สุด ซึ่งห้องปฏิบัติการมีความจำเป็นอย่างยิ่งที่ต้องสำรองคลังเลือดที่เป็นแอนติเจนลบ (Antigen-negative) ให้เพียงพอ</li>
+            <li><strong>ความมั่นคงทางเทคโนโลยี Antigentyping:</strong> การขยายขีดความสามารถการตรวจหา Rh Phenotypes และแอนติเจนหายากอื่น ๆ ช่วยยกระดับความปลอดภัยในการจับคู่และจ่ายเลือดที่เข้ากันได้ดีที่สุดเพื่อลดการกระตุ้นการสร้างภูมิคุ้มกันใหม่ (Alloimmunization) ในผู้ป่วยโรคเลือดเรื้อรัง</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: Waste and Inventory Loss Analysis -->
+        <div class="analysis-card">
+          <h4>🌐 การจัดการคลังโลหิตหมดอายุและการสูญเสียทรัพยากร (Loss Control & Management)</h4>
+          <ul>
+            <li><strong>สถิติตัวเลขโลหิตและพลาสมาหมดอายุ:</strong> ยอดการหมดอายุของเม็ดเลือดแดงเข้มข้น (Expired RBC) และ FFP มักเพิ่มสูงขึ้นในช่วงที่ความต้องการใช้ทางคลินิกต่ำลงหรือกระบวนการหมุนเวียนในคลังเกิดภาวะคอขวด (Bottlenecks) นับเป็นจุดสูญเสียทรัพยากรหลักที่สามารถควบคุมได้เชิงบริหาร</li>
+            <li><strong>การสูญเสียจากการควบคุมอุณหภูมิขนส่ง (Cold Chain Failures):</strong> แม้จะเป็นสัดส่วนไม่สูงแต่การปนเปื้อนหรือการเก็บอุณหภูมิที่ไม่ได้มาตรฐานเป็นสาเหตุของการตัดจ่ายทิ้ง ซึ่งต้องควบคุมเข้มงวดตามหลักมาตรฐานสากล AABB</li>
+            <li><strong>ความสมดุลของการสำรองและนำไปใช้งาน:</strong> การวางแผนจำลองและทำนายความต้องการทางโลหิตวิทยาของผู้ป่วยศิริราชพยาบาลเพื่อช่วยลดระยะเวลาสำรอง และหมุนเวียนไปใช้งานก่อนหมดอายุ (RBC มีอายุเก็บ 35-42 วัน)</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Actionable Recommendations Box -->
+      <div class="recommendations-box">
+        <h5>💡 ข้อเสนอแนะเชิงยุทธศาสตร์เพื่อการบริหารจัดการคุณภาพเชิงรุก (Strategic Recommendations)</h5>
+        <ol>
+          <li><strong>การนำเทคโนโลยี RFID/Barcode มาใช้เพื่อระบบ FIFO กึ่งอัตโนมัติ:</strong> ติดตั้งและประยุกต์ใช้งานระบบคลังโลหิตดิจิทัลที่จะแสดงผลรหัสสีแจ้งเตือนคลังโลหิตที่ใกล้หมดอายุล่วงหน้า 7 วัน เพื่อกระตุ้นให้เกิดการนำออกมาสลับจ่ายใช้งานและจำกัดสถิติน้ำยา/เม็ดเลือดแดงหมดอายุคลัง</li>
+          <li><strong>จัดระบบควบคุมคุณภาพอุณหภูมิ Cold Chain Logistics เชิงรุก:</strong> ฝึกอบรมบุคลากรทั้งในและนอกแผนกเรื่องกระบวนการดูแลควบคุมอุณหภูมิกล่องขนส่งโลหิตและอุปกรณ์บันทึกค่าอุณหภูมิ (Temp Logger) ในระหว่างเคลื่อนย้ายคลังพลาสมาและโลหิตเข้มข้น</li>
+          <li><strong>การสร้าง Rare Antigen Registry (ทะเบียนคลังแอนติเจนหายาก):</strong> พัฒนาระบบทะเบียนผู้บริจาคโลหิตที่มีลักษณะแอนติเจนเฉพาะกลุ่ม เพื่อความรวดเร็วในการประสานงานตามมาเจาะเลือดเมื่อมีผู้ป่วยที่มีแอนติบอดีหายากมาใช้บริการที่โรงพยาบาล</li>
+        </ol>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>ระบบรายงานข้อมูลสถิติธนาคารเลือด โรงพยาบาลศิริราช (Blood Laboratory Statistics Dashboard) &copy; 2026</p>
+    <p style="margin-top: 4px; opacity: 0.7;">การประมวลผลข้อมูลสถิตินี้ดึงข้อมูลตรงจากแฟ้มสถิติประจำปีของฝ่ายปฏิบัติการโดยอัตโนมัติ</p>
+  </footer>
+
+  <!-- Link to global data script -->
+  <script src="blood_lab_data.js"></script>
+  
+  <script>
+    // Constants for localization
+    const THAI_MONTHS_SHORT = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    const THAI_MONTHS_FULL = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+    // App state
+    let currentTab = 'BlProcessing';
+    let currentYear = '2569';
+    let currentMonth = 'all';
+    let chart1 = null;
+    let chart2 = null;
+    let chartAntibody = null;
+
+    // Global Datalabels Plugin for Chart.js
+    const globalDatalabelsPlugin = {
+      id: 'globalDatalabels',
+      afterDatasetsDraw(chart) {
+        const { ctx, config } = chart;
+        if (config.type === 'pie' || config.type === 'doughnut') return;
+        if (config.options && config.options.plugins && config.options.plugins.globalDatalabels === false) return;
+        ctx.save();
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+          if (meta.hidden) return;
+          meta.data.forEach((element, index) => {
+            const val = dataset.data[index];
+            if (val === null || val === undefined || val === 0) return;
+            ctx.font = '600 10px Sarabun, sans-serif';
+            ctx.fillStyle = 'var(--text-2)';
+            if (config.options && config.options.indexAxis === 'y') {
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(val.toLocaleString(), element.x + 4, element.y);
+            } else {
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              ctx.fillText(val.toLocaleString(), element.x, element.y - 4);
+            }
+          });
+        });
+        ctx.restore();
+      }
+    };
+    Chart.register(globalDatalabelsPlugin);
+
+
+    // =====================================================
+    //  EXPORT PDF  –  populates print header then prints
+    // =====================================================
+    function exportPDF() { window.print(); }, 1500);
+      }, 200);
+    }, 350);
+    }
+
+    // Populate the print header with dynamic context
+    function preparePrintHeader() {
+      const tabNames = {
+        'BlProcessing'  : 'Bl.processing (ABO/Rh)',
+        'ExpiredBlood'  : 'เลือดหมดอายุ (Expired RBC)',
+        'RequestedBlood': 'ขอเลือด (Requested Blood)',
+        'FFPExpired'    : 'FFP หมดอายุ (Expired FFP)',
+        'Antigentyping' : 'Antigentyping'
+      };
+      const yearLabel = currentYear === 'compare' ? 'เปรียบเทียบทุกปี (2564–2569)' : `ปี ${currentYear}`;
+      const monthLabel = currentMonth === 'all' ? 'ทุกเดือน' : `เดือน${THAI_MONTHS_FULL[parseInt(currentMonth)-1]}`;
+
+      const badge = document.getElementById('prh-tab-badge');
+      const dateEl = document.getElementById('prh-date');
+      if (badge) badge.textContent = `${tabNames[currentTab] || currentTab}  ·  ${yearLabel}  ·  ${monthLabel}`;
+
+      const now = new Date();
+      const thaiDate = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+      const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      if (dateEl) dateEl.textContent = `วันที่ออกรายงาน: ${thaiDate} เวลา ${timeStr} น.`;
+    }
+
+    // Also auto-run when browser triggers print (Ctrl+P)
+    window.addEventListener('beforeprint', preparePrintHeader);
+
+    // =====================================================
+    //  REFRESH DATA
+    // =====================================================
+    function refreshData() {
+      const btn = document.getElementById('btn-refresh');
+      btn.innerHTML = '<span style="display:inline-block;animation:spin 0.6s linear infinite">🔄</span> กำลังโหลด...';
+      btn.disabled = true;
+      // Add spin keyframe once
+      if (!document.getElementById('spin-style')) {
+        const s = document.createElement('style');
+        s.id = 'spin-style';
+        s.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+        document.head.appendChild(s);
+      }
+      setTimeout(() => window.location.reload(), 400);
+    }
+
+    // Initialize the dashboard
+    window.addEventListener('load', () => {
+      // Set active themes in CSS custom properties (Crimson default for BlProcessing)
+      const root = document.documentElement;
+      root.style.setProperty('--theme-active-bg',    'var(--crimson-lt)');
+      root.style.setProperty('--theme-active-color', 'var(--crimson)');
+      root.style.setProperty('--theme-active-border','var(--crimson-md)');
+      root.style.setProperty('--tab-active-color',   'var(--crimson)');
+
+      updateKPIs();
+      renderDashboard();
+      renderYearSelect();
+      renderMonthSelect();
+      updateFilterLabel();
+    });
+
+    // Handle Year Filtering
+    function filterYear(year, element) {
+      selectYear(year);
+    }
+
+    // Handle Month Filtering
+    function filterMonth(month, element) {
+      if (month === 'all') {
+        clearMonthFilter();
+      } else {
+        selectMonth(month);
+      }
+    }
+
+    // Switch Tab Navigation
+    function switchTab(tab, element) {
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active', 'theme-blue', 'theme-purple', 'theme-teal', 'theme-all');
+      });
+      
+      currentTab = tab;
+      
+      // Apply theme style
+      if (tab === 'RequestedBlood') {
+        element.classList.add('active', 'theme-blue');
+      } else if (tab === 'FFPExpired') {
+        element.classList.add('active', 'theme-purple');
+      } else if (tab === 'Antigentyping') {
+        element.classList.add('active', 'theme-teal');
+      } else {
+        element.classList.add('active'); // Crimson default
+      }
+      
+      // Apply theme styles on filter elements dynamically
+      let activeBg = "var(--crimson-lt)";
+      let activeColor = "var(--crimson)";
+      let activeBorder = "var(--crimson-md)";
+      if (tab === 'RequestedBlood') {
+        activeBg = "var(--blue-lt)";
+        activeColor = "var(--blue)";
+        activeBorder = "var(--blue-md)";
+      } else if (tab === 'FFPExpired') {
+        activeBg = "var(--purple-lt)";
+        activeColor = "var(--purple)";
+        activeBorder = "var(--purple-md)";
+      } else if (tab === 'Antigentyping') {
+        activeBg = "var(--teal-lt)";
+        activeColor = "var(--teal)";
+        activeBorder = "var(--teal-md)";
+      }
+      
+      const root = document.documentElement;
+      root.style.setProperty('--theme-active-bg', activeBg);
+      root.style.setProperty('--theme-active-color', activeColor);
+      root.style.setProperty('--theme-active-border', activeBorder);
+      
+      renderDashboard();
+      renderYearTabs();
+      renderMonthTabs();
+    }
+
+    // Calculate annual values and render UI components
+    function updateKPIs() {
+      const kpiContainer = document.getElementById('kpi-summary-grid');
+      kpiContainer.innerHTML = '';
+
+      const stats = getYearSummary(currentYear);
+      
+      const cards = [
+        {
+          id: "BlProcessing",
+          title: "Bl.processing (ABO/Rh)",
+          value: stats.blProcessingTotal,
+          color: "var(--crimson)",
+          bg: "var(--crimson-lt)",
+          icon: "🩸",
+          growth: stats.blProcessingGrowth,
+          tab: "BlProcessing"
+        },
+        {
+          id: "RhNeg",
+          title: "สถิติ Rh- (ยูนิท)",
+          value: stats.rhNegTotal,
+          color: "var(--crimson)",
+          bg: "var(--crimson-lt)",
+          icon: "🧬",
+          growth: stats.rhNegGrowth,
+          tab: "BlProcessing"
+        },
+        {
+          title: "เลือดหมดอายุ (RBC)",
+          value: stats.expiredBloodTotal,
+          color: "var(--crimson)",
+          bg: "var(--crimson-lt)",
+          icon: "💔",
+          growth: stats.expiredBloodGrowth,
+          tab: "ExpiredBlood"
+        },
+        {
+          title: "ขอเลือดรวม (RBC)",
+          value: stats.requestedBloodTotal,
+          color: "var(--blue)",
+          bg: "var(--blue-lt)",
+          icon: "📦",
+          growth: stats.requestedBloodGrowth,
+          tab: "RequestedBlood"
+        },
+        {
+          title: "FFP หมดอายุ",
+          value: stats.ffpExpiredTotal,
+          color: "var(--purple)",
+          bg: "var(--purple-lt)",
+          icon: "❄️",
+          growth: stats.ffpExpiredGrowth,
+          tab: "FFPExpired"
+        },
+        {
+          title: "Antigentyping",
+          value: stats.antigenTotal,
+          color: "var(--teal)",
+          bg: "var(--teal-lt)",
+          icon: "🔬",
+          growth: stats.antigenGrowth,
+          tab: "Antigentyping"
+        }
+      ];
+
+      cards.forEach(c => {
+        let growthHtml = '';
+        if (currentYear !== 'compare' && c.growth !== null) {
+          const isUp = c.growth > 0;
+          const classStr = isUp ? 'up' : 'down';
+          const symbolStr = isUp ? '▲' : '▼';
+          const formattedVal = Math.abs(c.growth).toFixed(1);
+          growthHtml = `<div class="kpi-badge ${classStr}">${symbolStr} ${formattedVal}% YoY</div>`;
+        } else {
+          growthHtml = `<div class="kpi-badge same">สถิติสะสม</div>`;
+        }
+
+        const isNoData = (c.value === "ไม่มีข้อมูล" || c.value === null);
+        const formattedValue = isNoData ? "ไม่มีข้อมูล" : (typeof c.value === 'number' ? c.value.toLocaleString() : c.value);
+        const card = document.createElement('div');
+        card.className = 'kpi-card';
+        card.style.setProperty('--theme-color', c.color);
+        card.style.setProperty('--theme-bg', c.bg);
+        card.onclick = () => {
+          const navLinks = document.querySelectorAll('.nav-menu .nav-link');
+          if (c.tab === "BlProcessing") switchTab('BlProcessing', navLinks[0]);
+          else if (c.tab === "ExpiredBlood") switchTab('ExpiredBlood', navLinks[1]);
+          else if (c.tab === "RequestedBlood") switchTab('RequestedBlood', navLinks[2]);
+          else if (c.tab === "FFPExpired") switchTab('FFPExpired', navLinks[3]);
+          else if (c.tab === "Antigentyping") switchTab('Antigentyping', navLinks[4]);
+        };
+
+        const breakdown = getKPIBreakdown(c.id || c.tab, currentYear, currentMonth);
+        const breakdownHtml = generateBreakdownHtml(breakdown, c.color, isNoData);
+
+        card.innerHTML = `
+          <div class="kpi-card-header">
+            <div class="kpi-icon-wrap">${c.icon}</div>
+            ${growthHtml}
+          </div>
+          <div class="kpi-label">${c.title}</div>
+          <div class="kpi-value">${formattedValue}</div>
+          <hr class="kpi-breakdown-divider" />
+          ${breakdownHtml}
+        `;
+        kpiContainer.appendChild(card);
+      });
+    }
+
+    // Helper: calculate breakdown details for a card
+    function getKPIBreakdown(cardTab, year, month) {
+      const yearsToSum = year === 'compare' ? ["2564", "2565", "2566", "2567", "2568", "2569"] : [year];
+      
+      if (cardTab === 'RhNeg') {
+        let o = 0, a = 0, b = 0, ab = 0;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.BlProcessing || !data.BlProcessing.aboRh) return;
+          data.BlProcessing.aboRh.forEach(item => {
+            if (item.rh !== 'D-') return;
+            const grp = item.group;
+            let val = 0;
+            if (month === 'all') {
+              val = item.total || 0;
+            } else {
+              val = item.months[parseInt(month) - 1] || 0;
+            }
+            if (grp === 'O') o += val;
+            else if (grp === 'A') a += val;
+            else if (grp === 'B') b += val;
+            else if (grp === 'AB') ab += val;
+          });
+        });
+        const total = o + a + b + ab;
+        return [
+          { label: 'Group O', value: o, total: total },
+          { label: 'Group A', value: a, total: total },
+          { label: 'Group B', value: b, total: total },
+          { label: 'Group AB', value: ab, total: total }
+        ];
+      }
+      
+      if (cardTab === 'BlProcessing') {
+        let o = 0, a = 0, b = 0, ab = 0;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.BlProcessing || !data.BlProcessing.aboRh) return;
+          data.BlProcessing.aboRh.forEach(item => {
+            const grp = item.group;
+            let val = 0;
+            if (month === 'all') {
+              val = item.total || 0;
+            } else {
+              val = item.months[parseInt(month) - 1] || 0;
+            }
+            if (grp === 'O') o += val;
+            else if (grp === 'A') a += val;
+            else if (grp === 'B') b += val;
+            else if (grp === 'AB') ab += val;
+          });
+        });
+        const total = o + a + b + ab;
+        return [
+          { label: 'Group O', value: o, total: total },
+          { label: 'Group A', value: a, total: total },
+          { label: 'Group B', value: b, total: total },
+          { label: 'Group AB', value: ab, total: total }
+        ];
+      }
+      
+      if (cardTab === 'ExpiredBlood') {
+        let o = 0, a = 0, b = 0, ab = 0;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.ExpiredBlood) return;
+          data.ExpiredBlood.forEach(item => {
+            if (month === 'all' || item.monthIdx === parseInt(month)) {
+              o += item.expired.O || 0;
+              a += item.expired.A || 0;
+              b += item.expired.B || 0;
+              ab += item.expired.AB || 0;
+            }
+          });
+        });
+        const total = o + a + b + ab;
+        return [
+          { label: 'Group O', value: o, total: total },
+          { label: 'Group A', value: a, total: total },
+          { label: 'Group B', value: b, total: total },
+          { label: 'Group AB', value: ab, total: total }
+        ];
+      }
+      
+      if (cardTab === 'RequestedBlood') {
+        let o = 0, a = 0, b = 0, ab = 0;
+        let hasData = false;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.RequestedBlood) return;
+          hasData = true;
+          data.RequestedBlood.forEach(item => {
+            if (month === 'all' || item.monthIdx === parseInt(month)) {
+              o += item.totalRBC.O || 0;
+              a += item.totalRBC.A || 0;
+              b += item.totalRBC.B || 0;
+              ab += item.totalRBC.AB || 0;
+            }
+          });
+        });
+        if (!hasData && year !== 'compare') return null;
+        const total = o + a + b + ab;
+        return [
+          { label: 'Group O', value: o, total: total },
+          { label: 'Group A', value: a, total: total },
+          { label: 'Group B', value: b, total: total },
+          { label: 'Group AB', value: ab, total: total }
+        ];
+      }
+      
+      if (cardTab === 'FFPExpired') {
+        let o = 0, a = 0, b = 0, ab = 0;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.FFPExpired) return;
+          data.FFPExpired.forEach(item => {
+            if (month === 'all' || item.monthIdx === parseInt(month)) {
+              o += item.groups.O || 0;
+              a += item.groups.A || 0;
+              b += item.groups.B || 0;
+              ab += item.groups.AB || 0;
+            }
+          });
+        });
+        const total = o + a + b + ab;
+        return [
+          { label: 'Group O', value: o, total: total },
+          { label: 'Group A', value: a, total: total },
+          { label: 'Group B', value: b, total: total },
+          { label: 'Group AB', value: ab, total: total }
+        ];
+      }
+      
+      if (cardTab === 'Antigentyping') {
+        let pheno = 0, mia = 0, g6pd = 0, dat = 0;
+        let hasData = false;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.Antigentyping) return;
+          hasData = true;
+          data.Antigentyping.forEach(item => {
+            if (month === 'all' || item.monthIdx === parseInt(month)) {
+              pheno += item.rhPhenotyping || 0;
+              mia += item.antigenMia || 0;
+              g6pd += item.g6pd || 0;
+              dat += item.dat || 0;
+            }
+          });
+        });
+        if (!hasData && year !== 'compare') return null;
+        const total = pheno + mia + g6pd + dat;
+        return [
+          { label: 'Rh Phenotyping', value: pheno, total: total },
+          { label: 'Antigen-Mi<sup>a</sup>', value: mia, total: total },
+          { label: 'G6PD Screening', value: g6pd, total: total },
+          { label: 'DAT Testing', value: dat, total: total }
+        ];
+      }
+      return null;
+    }
+
+    // Helper: generate breakdown HTML list with progress bars
+    function generateBreakdownHtml(breakdown, color, isNoData = false) {
+      if (isNoData || !breakdown) {
+        return `<div class="kpi-breakdown-empty">ไม่มีข้อมูลสถิติปีนี้</div>`;
+      }
+      
+      let html = `<div class="kpi-breakdown-list">`;
+      breakdown.forEach(item => {
+        const pct = item.total > 0 ? ((item.value / item.total) * 100).toFixed(1) : '0.0';
+        const formattedVal = item.value.toLocaleString();
+        html += `
+          <div class="kpi-breakdown-item">
+            <div class="kpi-breakdown-text">
+              <span class="kpi-breakdown-label">${item.label}</span>
+              <span class="kpi-breakdown-value">${formattedVal} (${pct}%)</span>
+            </div>
+            <div class="kpi-breakdown-bar-bg">
+              <div class="kpi-breakdown-bar-fill" style="width: ${pct}%; --theme-color: ${color};"></div>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      return html;
+    }
+
+    // Helper: calculate year totals and growth
+    function getYearSummary(year) {
+      if (year === 'compare') {
+        const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+        const blTotal = yearsList.reduce((acc, y) => acc + sumAboRh(BLOOD_LAB_DATA[y], currentMonth), 0);
+        const expTotal = yearsList.reduce((acc, y) => acc + sumExpired(BLOOD_LAB_DATA[y], currentMonth), 0);
+        const reqTotal = yearsList.reduce((acc, y) => acc + (sumRequested(BLOOD_LAB_DATA[y], currentMonth) || 0), 0);
+        const ffpTotal = yearsList.reduce((acc, y) => acc + sumFFP(BLOOD_LAB_DATA[y], currentMonth), 0);
+        const agTotal = yearsList.reduce((acc, y) => acc + (sumAntigen(BLOOD_LAB_DATA[y], currentMonth) || 0), 0);
+        const rhNegTotal = yearsList.reduce((acc, y) => acc + sumRhNeg(BLOOD_LAB_DATA[y], currentMonth), 0);
+
+        return {
+          blProcessingTotal: blTotal,
+          expiredBloodTotal: expTotal,
+          requestedBloodTotal: reqTotal,
+          ffpExpiredTotal: ffpTotal,
+          antigenTotal: agTotal,
+          rhNegTotal: rhNegTotal,
+          blProcessingGrowth: null,
+          expiredBloodGrowth: null,
+          requestedBloodGrowth: null,
+          ffpExpiredGrowth: null,
+          antigenGrowth: null,
+          rhNegGrowth: null
+        };
+      }
+
+      const current = BLOOD_LAB_DATA[year];
+      const prevYearStr = (parseInt(year) - 1).toString();
+      const previous = BLOOD_LAB_DATA[prevYearStr];
+
+      const blTotal = sumAboRh(current, currentMonth);
+      const expTotal = sumExpired(current, currentMonth);
+      const reqTotal = sumRequested(current, currentMonth);
+      const ffpTotal = sumFFP(current, currentMonth);
+      const agTotal = sumAntigen(current, currentMonth);
+      const rhNegTotal = sumRhNeg(current, currentMonth);
+
+      const getGrowth = (curVal, prevVal) => {
+        if (!prevVal || prevVal === 0 || curVal === 0) return null;
+        return ((curVal - prevVal) / prevVal) * 100;
+      };
+
+      return {
+        blProcessingTotal: blTotal,
+        expiredBloodTotal: expTotal,
+        requestedBloodTotal: reqTotal === null ? "ไม่มีข้อมูล" : reqTotal,
+        ffpExpiredTotal: ffpTotal,
+        antigenTotal: agTotal === null ? "ไม่มีข้อมูล" : agTotal,
+        rhNegTotal: rhNegTotal,
+        blProcessingGrowth: previous ? getGrowth(blTotal, sumAboRh(previous, currentMonth)) : null,
+        expiredBloodGrowth: previous ? getGrowth(expTotal, sumExpired(previous, currentMonth)) : null,
+        requestedBloodGrowth: previous && reqTotal !== null ? getGrowth(reqTotal, sumRequested(previous, currentMonth)) : null,
+        ffpExpiredGrowth: previous ? getGrowth(ffpTotal, sumFFP(previous, currentMonth)) : null,
+        antigenGrowth: previous && agTotal !== null ? getGrowth(agTotal, sumAntigen(previous, currentMonth)) : null,
+        rhNegGrowth: previous ? getGrowth(rhNegTotal, sumRhNeg(previous, currentMonth)) : null
+      };
+    }
+
+    // Helper to format Antibody names correctly (with super/subscripts)
+    function formatAntibodyName(name, useHTML = false) {
+      if (!name || name === "Antibody") return name;
+      const parts = name.split('+').map(part => {
+        let p = part.trim();
+        let lower = p.toLowerCase();
+        
+        if (lower === "lea") return useHTML ? "Le<sup>a</sup>" : "Leᵃ";
+        if (lower === "leb") return useHTML ? "Le<sup>b</sup>" : "Leᵇ";
+        if (lower === "mia") return useHTML ? "Mi<sup>a</sup>" : "Miᵃ";
+        if (lower === "dia") return useHTML ? "Di<sup>a</sup>" : "Diᵃ";
+        if (lower === "fya") return useHTML ? "Fy<sup>a</sup>" : "Fyᵃ";
+        if (lower === "fyb") return useHTML ? "Fy<sup>b</sup>" : "Fyᵇ";
+        if (lower === "jka") return useHTML ? "Jk<sup>a</sup>" : "Jkᵃ";
+        if (lower === "jkb") return useHTML ? "Jk<sup>b</sup>" : "Jkᵇ";
+        if (lower === "ka") return useHTML ? "Kp<sup>a</sup>" : "Kpᵃ";
+        if (lower === "kb") return useHTML ? "Kp<sup>b</sup>" : "Kpᵇ";
+        if (lower === "p1") return useHTML ? "P<sub>1</sub>" : "P₁";
+        if (lower === "a1") return useHTML ? "A<sub>1</sub>" : "A₁";
+        if (lower === "m1") return useHTML ? "M<sub>1</sub>" : "M₁";
+        if (lower === "anti a") return "Anti-A";
+        if (lower === "anti b") return "Anti-B";
+        if (lower === "auto ab" || lower === "autoantibody" || lower === "auto") return "Autoantibody";
+        if (lower === "auto+anti-i" || lower === "autoanti-i" || lower === "auto-anti-i") return "Auto-anti-I";
+        if (lower === "autoantibody-d" || lower === "auto-anti-d") return "Auto-anti-D";
+        if (lower === "cold auto") return "Cold Autoantibody";
+        if (lower === "uniden" || lower === "unidentified") return "Unidentified";
+        if (lower === "nonspecific ab") return "Nonspecific Ab";
+        
+        return p;
+      });
+      return parts.join(useHTML ? " + " : " + ");
+    }
+
+    // Helper to identify which months have statistics for a given year
+    function getActiveMonthsForYear(year) {
+      if (!BLOOD_LAB_DATA[year]) return [];
+      const active = [];
+      const data = BLOOD_LAB_DATA[year];
+      if (data.BlProcessing && data.BlProcessing.aboRh) {
+        for (let m = 0; m < 12; m++) {
+          let sum = 0;
+          data.BlProcessing.aboRh.forEach(item => {
+            let val = item.months[m];
+            if (typeof val === 'string') {
+              val = val.trim();
+              if (val === '-' || val === '') val = 0;
+              else val = parseFloat(val) || 0;
+            }
+            sum += val || 0;
+          });
+          if (sum > 0) {
+            active.push(m);
+          }
+        }
+      } else {
+        for (let m = 0; m < 12; m++) {
+          active.push(m);
+        }
+      }
+      return active;
+    }
+
+    // Functions to sum values for KPI display
+    function sumRhNeg(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.BlProcessing || !dataObj.BlProcessing.aboRh) return 0;
+      let total = 0;
+      dataObj.BlProcessing.aboRh.forEach(item => {
+        if (item.rh === 'D-') {
+          if (monthIdx === 'all') {
+            total += item.total || 0;
+          } else {
+            const mIdx = parseInt(monthIdx) - 1;
+            let val = item.months[mIdx];
+            if (typeof val === 'string') {
+              val = val.trim();
+              if (val === '-' || val === '') val = 0;
+              else val = parseFloat(val) || 0;
+            }
+            total += val || 0;
+          }
+        }
+      });
+      return total;
+    }
+
+    function sumAboRh(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.BlProcessing || !dataObj.BlProcessing.aboRh) return 0;
+      let total = 0;
+      dataObj.BlProcessing.aboRh.forEach(item => {
+        if (monthIdx === 'all') {
+          total += item.total || 0;
+        } else {
+          const mIdx = parseInt(monthIdx) - 1;
+          let val = item.months[mIdx];
+          if (typeof val === 'string') {
+            val = val.trim();
+            if (val === '-' || val === '') val = 0;
+            else val = parseFloat(val) || 0;
+          }
+          total += val || 0;
+        }
+      });
+      return total;
+    }
+
+    function sumExpired(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.ExpiredBlood) return 0;
+      let total = 0;
+      dataObj.ExpiredBlood.forEach(item => {
+        if (monthIdx === 'all' || item.monthIdx === parseInt(monthIdx)) {
+          total += item.expired.total || 0;
+        }
+      });
+      return total;
+    }
+
+    function sumRequested(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.RequestedBlood) return null;
+      let total = 0;
+      dataObj.RequestedBlood.forEach(item => {
+        if (monthIdx === 'all' || item.monthIdx === parseInt(monthIdx)) {
+          total += item.totalRBC.total || 0;
+        }
+      });
+      return total;
+    }
+
+    function sumFFP(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.FFPExpired) return 0;
+      let total = 0;
+      dataObj.FFPExpired.forEach(item => {
+        if (monthIdx === 'all' || item.monthIdx === parseInt(monthIdx)) {
+          total += item.normalFFP || 0;
+        }
+      });
+      return total;
+    }
+
+    function sumAntigen(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.Antigentyping) return null;
+      let total = 0;
+      dataObj.Antigentyping.forEach(item => {
+        if (monthIdx === 'all' || item.monthIdx === parseInt(monthIdx)) {
+          total += (item.rhPhenotyping || 0) + (item.antigenMia || 0) + (item.g6pd || 0) + (item.dat || 0);
+        }
+      });
+      return total;
+    }
+
+    // MAIN RENDER CONTROLLER
+    function renderDashboard() {
+      // Check if data is available for current year & tab
+      const isAvailable = currentYear === 'compare' || (BLOOD_LAB_DATA[currentYear] && BLOOD_LAB_DATA[currentYear][currentTab] !== null);
+      
+      const chartsContainer = document.getElementById('charts-container');
+      const tableSection = document.getElementById('table-data-section');
+      const emptyPlaceholder = document.getElementById('data-empty-placeholder');
+
+      if (!isAvailable) {
+        chartsContainer.style.display = 'none';
+        tableSection.style.display = 'none';
+        emptyPlaceholder.style.display = 'block';
+        
+        let customDesc = "ข้อมูลงานสถิตินี้ยังไม่ถูกลงบันทึกในระบบแฟ้มข้อมูลประชากรประจำปีดังกล่าว";
+        if (currentTab === 'RequestedBlood' && currentYear === '2564') {
+          customDesc = "ห้องปฏิบัติการสาขา Blood Collection เริ่มจัดเก็บแบบบันทึกสถิติใบเบิกเลือดและการขอรับโลหิตตั้งแต่ปีปฏิทิน 2565 เป็นต้นไป (ไม่พบสถิติในปี 2564)";
+        } else if (currentTab === 'Antigentyping' && (currentYear === '2564' || currentYear === '2566')) {
+          customDesc = "แบบสรุปสถิติงานบริการตรวจวิเคราะห์คัดกรองหมู่เลือดพิเศษ Antigentyping และ G6PD ไม่มีข้อมูลจัดเก็บหรือจัดแยกแผ่นงานเฉพาะในปีปฏิทิน 2564 และ 2566";
+        }
+        document.getElementById('empty-state-desc').innerText = customDesc;
+        return;
+      }
+
+      chartsContainer.style.display = 'grid';
+      tableSection.style.display = 'block';
+      emptyPlaceholder.style.display = 'none';
+
+      // Clear previous charts
+      if (chart1) chart1.destroy();
+      if (chart2) chart2.destroy();
+      if (chartAntibody) chartAntibody.destroy();
+
+      // Hide antibody chart card by default
+      document.getElementById('antibody-chart-card').style.display = 'none';
+
+      // Reset chart-2-wrap styles to default full-width
+      const chart2Wrap = document.getElementById('chart-2-wrap');
+      if (chart2Wrap) {
+        chart2Wrap.style.maxWidth = 'none';
+        chart2Wrap.style.width = '100%';
+        chart2Wrap.style.margin = '0';
+        chart2Wrap.style.display = 'block';
+      }
+      const customLegend = document.getElementById('chart-2-custom-legend');
+      if (customLegend) {
+        customLegend.style.display = 'none';
+        customLegend.innerHTML = '';
+      }
+
+      // Render tab specific components
+      if (currentYear === 'compare') {
+        renderComparisonView();
+      } else {
+        if (currentTab === 'BlProcessing') {
+          renderBlProcessing();
+        } else if (currentTab === 'ExpiredBlood') {
+          renderExpiredBlood();
+        } else if (currentTab === 'RequestedBlood') {
+          renderRequestedBlood();
+        } else if (currentTab === 'FFPExpired') {
+          renderFFPExpired();
+        } else if (currentTab === 'Antigentyping') {
+          renderAntigentyping();
+        }
+      }
+    }
+
+    // RENDERING Tab 1: Bl.processing
+    function renderBlProcessing() {
+      const chart2Wrap = document.getElementById('chart-2-wrap');
+      if (chart2Wrap) {
+        chart2Wrap.style.maxWidth = '100%';
+        chart2Wrap.style.width = '100%';
+        chart2Wrap.style.margin = '0 auto';
+      }
+
+      const data = BLOOD_LAB_DATA[currentYear].BlProcessing;
+      const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+
+      if (currentMonth !== 'all') {
+        const mIdx = parseInt(currentMonth) - 1;
+        const mName = THAI_MONTHS_FULL[mIdx];
+        document.getElementById('chart-1-title').innerText = `แนวโน้มสถิติ ABO/Rh ประจำเดือน${mName} เปรียบเทียบรายปี`;
+        document.getElementById('chart-1-sub').innerText = `เปรียบเทียบสถิติการคัดกรองหมู่เลือดเฉพาะเดือนเดียวกันตั้งแต่ปี 2564 - 2569`;
+        document.getElementById('chart-2-title').innerText = `สัดส่วนฟีโนไทป์ Rh เดือน${THAI_MONTHS_SHORT[mIdx]} ปี ${currentYear}`;
+        document.getElementById('chart-2-sub').innerText = `จำแนกรายละเอียดเฉพาะกลุ่มตัวอย่างในเดือน${mName} ปี ${currentYear}`;
+      } else {
+        document.getElementById('chart-1-title').innerText = "สถิติจำนวนผู้รับการคัดกรองหมู่เลือด ABO รายเดือน";
+        document.getElementById('chart-1-sub').innerText = `วิเคราะห์การประมวลผลจำแนกรายเดือนประจำปีปฏิทิน ${currentYear}`;
+        document.getElementById('chart-2-title').innerText = "สัดส่วนร้อยละฟีโนไทป์ Rh";
+        document.getElementById('chart-2-sub').innerText = `จำแนกรายละเอียด Rh (D+, D-, Del, Weak-D) ในรอบปี ${currentYear}`;
+      }
+
+      // Aggregate ABO monthly data
+      const monthsData = Array(12).fill(0).map(() => ({ O:0, A:0, B:0, AB:0 }));
+      let totalDplus = 0, totalDel = 0, totalDminus = 0, totalWeakD = 0;
+
+      data.aboRh.forEach(item => {
+        const grp = item.group;
+        const rh = item.rh;
+        
+        // Sum D details for selected month or full year
+        let val = 0;
+        if (currentMonth === 'all') {
+          val = item.total;
+        } else {
+          val = item.months[parseInt(currentMonth) - 1] || 0;
+        }
+
+        if (rh === 'D+') totalDplus += val;
+        else if (rh === 'Del') totalDel += val;
+        else if (rh === 'D-') totalDminus += val;
+        else if (rh === 'Weak-D') totalWeakD += val;
+
+        for (let m = 0; m < 12; m++) {
+          monthsData[m][grp] += item.months[m] || 0;
+        }
+      });
+
+      // Chart 1: ABO bar chart OR YoY month line chart
+      const ctx1 = document.getElementById('chart-1').getContext('2d');
+      if (currentMonth !== 'all') {
+        const activeYears = yearsList.filter(y => {
+          const activeMonths = getActiveMonthsForYear(y);
+          return activeMonths.includes(parseInt(currentMonth) - 1);
+        });
+        const values = activeYears.map(y => sumAboRh(BLOOD_LAB_DATA[y], currentMonth));
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeYears,
+            datasets: [{
+              label: `ยอดตรวจ ABO/Rh เดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ราย)`,
+              data: values,
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220,38,38,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#dc2626',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      } else {
+        const activeMonths = getActiveMonthsForYear(currentYear);
+        chart1 = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: activeMonths.map(m => THAI_MONTHS_SHORT[m]),
+            datasets: [
+              { label: 'Group O', data: activeMonths.map(m => monthsData[m].O), backgroundColor: '#fca5a5' },
+              { label: 'Group A', data: activeMonths.map(m => monthsData[m].A), backgroundColor: '#93c5fd' },
+              { label: 'Group B', data: activeMonths.map(m => monthsData[m].B), backgroundColor: '#c084fc' },
+              { label: 'Group AB', data: activeMonths.map(m => monthsData[m].AB), backgroundColor: '#fed7aa' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: {
+              y: {
+                stacked: true,
+                grace: '8%'
+              },
+              x: { stacked: true }
+            }
+          },
+          plugins: [{
+            id: 'stackedTotals',
+            afterDatasetsDraw(chart) {
+              const { ctx, data } = chart;
+              ctx.save();
+              const activeMonths = getActiveMonthsForYear(currentYear);
+              const numBars = activeMonths.length;
+              
+              for (let i = 0; i < numBars; i++) {
+                let sum = 0;
+                let topY = null;
+                let topX = null;
+                
+                for (let datasetIndex = data.datasets.length - 1; datasetIndex >= 0; datasetIndex--) {
+                  const val = data.datasets[datasetIndex].data[i] || 0;
+                  sum += val;
+                  
+                  if (val > 0 && topY === null) {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    if (meta.data[i]) {
+                      topY = meta.data[i].y;
+                      topX = meta.data[i].x;
+                    }
+                  }
+                }
+                
+                if (sum > 0 && topY !== null && topX !== null) {
+                  ctx.font = 'bold 11px Sarabun';
+                  ctx.fillStyle = 'var(--text-2)';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'bottom';
+                  ctx.fillText(sum.toLocaleString(), topX, topY - 5);
+                }
+              }
+              ctx.restore();
+            }
+          }]
+        });
+      }
+
+            // Chart 2: Rh phenotype proportion (Horizontal Bar)
+      const ctx2 = document.getElementById('chart-2').getContext('2d');
+      chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['Rh D+', 'Rh Del', 'Rh D-', 'Rh Weak-D'],
+          datasets: [{
+            data: [totalDplus, totalDel, totalDminus, totalWeakD],
+            backgroundColor: ['#dc2626', '#3b82f6', '#475569', '#eab308'],
+            borderRadius: 4,
+            barThickness: 16
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            globalDatalabels: false
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              grace: '22%'
+            },
+            y: {
+              grid: { display: false }
+            }
+          }
+        },
+        plugins: [{
+          id: 'valueLabels',
+          afterDatasetsDraw(chart) {
+            const { ctx, data } = chart;
+            ctx.save();
+            const total = data.datasets[0].data.reduce((acc, val) => acc + val, 0);
+            const meta = chart.getDatasetMeta(0);
+            meta.data.forEach((bar, index) => {
+              const val = data.datasets[0].data[index];
+              const pct = total ? ((val / total) * 100).toFixed(3) : 0;
+              let pctStr = parseFloat(pct) >= 1 ? `${parseFloat(pct).toFixed(1)}%` : `${pct}%`;
+              if (val === 0) pctStr = '0%';
+              const text = `${val.toLocaleString()} ราย (${pctStr})`;
+              
+              ctx.font = 'bold 11px Sarabun';
+              ctx.fillStyle = 'var(--text-2)';
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(text, bar.x + 8, bar.y);
+            });
+            ctx.restore();
+          }
+        }]
+      });
+
+      // === Build grouped ABO/Rh table (O / A / B / AB sections) ===
+      const tableWrapper = document.getElementById('table-wrapper');
+      const GROUPS = ['O', 'A', 'B', 'AB'];
+      const GROUP_COLORS = {
+        O:  { bg: '#fef2f2', accent: '#dc2626', label: 'หมู่เลือด O' },
+        A:  { bg: '#eff6ff', accent: '#2563eb', label: 'หมู่เลือด A' },
+        B:  { bg: '#faf5ff', accent: '#7c3aed', label: 'หมู่เลือด B' },
+        AB: { bg: '#fff7ed', accent: '#d97706', label: 'หมู่เลือด AB' },
+      };
+      const RH_ORDER = ['D+', 'Del', 'D-', 'Weak-D'];
+      const RH_BADGE = {
+        'D+':     { color: '#dc2626', bg: '#fee2e2' },
+        'Del':    { color: '#2563eb', bg: '#dbeafe' },
+        'D-':     { color: '#475569', bg: '#f1f5f9' },
+        'Weak-D': { color: '#d97706', bg: '#fef3c7' },
+      };
+
+      // Organise data: grouped[group][rh] = item
+      const grouped = {};
+      GROUPS.forEach(g => { grouped[g] = {}; });
+      data.aboRh.forEach(item => {
+        if (grouped[item.group]) grouped[item.group][item.rh] = item;
+      });
+
+      // Grand column totals across all groups
+      const colTotals = Array(12).fill(0);
+      let grandTotal = 0;
+      data.aboRh.forEach(item => {
+        grandTotal += item.total;
+        for (let m = 0; m < 12; m++) colTotals[m] += item.months[m] || 0;
+      });
+
+      // Helper: highlight class for selected month column
+      const hl = idx => (idx + 1).toString() === currentMonth;
+
+      // Month header cells
+      const thMonths = THAI_MONTHS_SHORT.map((m, idx) => {
+        const sel = hl(idx);
+        return `<th style="${sel ? 'background:var(--teal-lt);color:var(--teal);border:2px solid var(--teal);' : ''}">${m}</th>`;
+      }).join('');
+
+      let tableHtml = `
+        <table style="border-collapse:collapse; width:100%;">
+          <thead>
+            <tr>
+              <th style="min-width:170px; text-align:left;">ประเภท / ฟีโนไทป์ Rh</th>
+              ${thMonths}
+              <th class="col-total">รวมปี</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      GROUPS.forEach(grp => {
+        const gc = GROUP_COLORS[grp];
+        const rhItems = RH_ORDER.map(rh => grouped[grp][rh]).filter(Boolean);
+
+        // Group subtotal across Rh
+        const grpMonths = Array(12).fill(0);
+        let grpTotal = 0;
+        rhItems.forEach(item => {
+          grpTotal += item.total;
+          for (let m = 0; m < 12; m++) grpMonths[m] += item.months[m] || 0;
+        });
+
+        // Section header row
+        tableHtml += `
+          <tr>
+            <td colspan="14"
+                style="background:${gc.accent};color:#fff;font-weight:800;font-size:12px;
+                       padding:6px 14px;letter-spacing:0.5px;border:none;">
+              ${gc.label}  ·  รวม ${grpTotal.toLocaleString()} ราย
+            </td>
+          </tr>
+        `;
+
+        // Rh sub-rows
+        rhItems.forEach(item => {
+          const badge = RH_BADGE[item.rh] || {};
+          tableHtml += `
+            <tr>
+              <td style="padding-left:22px;">
+                <span style="display:inline-block;background:${badge.bg};color:${badge.color};
+                             font-weight:700;font-size:10.5px;padding:1px 7px;border-radius:10px;
+                             margin-right:6px;">${item.rh}</span>${item.group} (Rh ${item.rh})
+              </td>
+              ${item.months.map((val, idx) => {
+                const sel = hl(idx);
+                return `<td class="${sel ? 'highlight-cell' : ''}">${val.toLocaleString()}</td>`;
+              }).join('')}
+              <td class="col-total">${item.total.toLocaleString()}</td>
+            </tr>
+          `;
+        });
+
+        // Group subtotal row
+        tableHtml += `
+          <tr style="background:${gc.bg}; font-weight:700;">
+            <td style="padding-left:14px; color:${gc.accent}; font-weight:800;">
+              ✦ รวมหมู่เลือด ${grp}
+            </td>
+            ${grpMonths.map((val, idx) => {
+              const sel = hl(idx);
+              return `<td class="${sel ? 'highlight-cell col-total' : 'col-total'}" style="color:${gc.accent};">${val.toLocaleString()}</td>`;
+            }).join('')}
+            <td class="col-total" style="color:${gc.accent}; font-size:13px;">${grpTotal.toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      // Grand total row
+      tableHtml += `
+            <tr class="row-total">
+              <td>⬛ ยอดตรวจรวม ABO/Rh ทั้งหมด</td>
+              ${colTotals.map((val, idx) => {
+                const sel = hl(idx);
+                return `<td class="${sel ? 'highlight-cell col-total' : ''}">${val.toLocaleString()}</td>`;
+              }).join('')}
+              <td class="col-total">${grandTotal.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      
+      // If there are Antibody rows, display them in a separate sub-table and render the bar chart sorted from high to low
+      if (data.antibodyId && data.antibodyId.length > 1) {
+        // Map, convert totals to number, and sort descending
+        const sortedAntibodies = data.antibodyId.slice(1).map(item => {
+          let val = 0;
+          if (currentMonth === 'all') {
+            val = typeof item.total === 'number' ? item.total : parseInt(item.total) || 0;
+          } else {
+            val = item.months[parseInt(currentMonth) - 1] || 0;
+          }
+          return {
+            name: item.name,
+            months: item.months,
+            total: val,
+            annualTotal: typeof item.total === 'number' ? item.total : parseInt(item.total) || 0
+          };
+        }).sort((a, b) => b.total - a.total);
+
+        // Display the chart card
+        const antibodyCard = document.getElementById('antibody-chart-card');
+        antibodyCard.style.display = 'block';
+
+        // Filter out items with 0 total for clean visualization
+        const chartDataList = sortedAntibodies.filter(item => item.total > 0);
+        const labels = chartDataList.map(item => formatAntibodyName(item.name, false));
+        const totals = chartDataList.map(item => item.total);
+
+        // Curated multi-color palette (one distinct color per antibody bar)
+        const ANTIBODY_PALETTE_BG = [
+          'rgba(220,  38,  38, 0.80)',  // crimson-red
+          'rgba( 37, 99, 235, 0.80)',  // royal-blue
+          'rgba(  5,150,105, 0.80)',  // emerald
+          'rgba(124, 58,237, 0.80)',  // violet
+          'rgba(217,119,  6, 0.80)',  // amber
+          'rgba(  2,132,199, 0.80)',  // sky-blue
+          'rgba(190, 24, 93, 0.80)',  // pink
+          'rgba( 20,184,166, 0.80)',  // teal
+          'rgba(234, 88, 12, 0.80)',  // orange
+          'rgba(101,163, 13, 0.80)',  // lime
+          'rgba( 79, 70,229, 0.80)',  // indigo
+          'rgba(168, 85,247, 0.80)',  // purple
+          'rgba(  6,182,212, 0.80)',  // cyan
+          'rgba(239, 68, 68, 0.80)',  // red-500
+          'rgba( 16,185,129, 0.80)',  // green
+          'rgba(245,158, 11, 0.80)',  // yellow-amber
+          'rgba( 59,130,246, 0.80)',  // blue-500
+          'rgba(236, 72,153, 0.80)',  // hot-pink
+          'rgba(132,204, 22, 0.80)',  // yellow-green
+          'rgba(251,146, 60, 0.80)',  // light-orange
+        ];
+        const ANTIBODY_PALETTE_BORDER = ANTIBODY_PALETTE_BG.map(c => c.replace('0.80', '1'));
+
+        const barBgColors    = chartDataList.map((_, i) => ANTIBODY_PALETTE_BG[i % ANTIBODY_PALETTE_BG.length]);
+        const barBorderColors = chartDataList.map((_, i) => ANTIBODY_PALETTE_BORDER[i % ANTIBODY_PALETTE_BORDER.length]);
+
+        // Inline plugin: draw value on top of each bar with matching color
+        const antibodyLabelPlugin = {
+          id: 'antibodyLabels',
+          afterDatasetsDraw(chart) {
+            const { ctx } = chart;
+            ctx.save();
+            chart.data.datasets[0].data.forEach((value, i) => {
+              if (!value) return;
+              const bar = chart.getDatasetMeta(0).data[i];
+              ctx.font = 'bold 11px Sarabun, sans-serif';
+              ctx.fillStyle = ANTIBODY_PALETTE_BORDER[i % ANTIBODY_PALETTE_BORDER.length];
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              ctx.shadowColor = 'rgba(255,255,255,0.95)';
+              ctx.shadowBlur = 4;
+              ctx.fillText(value.toLocaleString(), bar.x, bar.y - 3);
+              ctx.shadowBlur = 0;
+            });
+            ctx.restore();
+          }
+        };
+
+        const ctxAb = document.getElementById('chart-antibody').getContext('2d');
+        chartAntibody = new Chart(ctxAb, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'จำนวนที่ตรวจพบ (ราย)',
+              data: totals,
+              backgroundColor: barBgColors,
+              borderColor: barBorderColors,
+              borderWidth: 1.5,
+              borderRadius: 6,
+              barPercentage: 0.65
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false,
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  labelColor: (ctx) => ({
+                    borderColor: barBorderColors[ctx.dataIndex],
+                    backgroundColor: barBgColors[ctx.dataIndex],
+                    borderWidth: 2,
+                    borderRadius: 4
+                  })
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grace: '12%',
+                title: {
+                  display: true,
+                  text: 'จำนวนที่ตรวจพบ (ราย)',
+                  font: { family: 'Sarabun', weight: 'bold' }
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'ชนิดของสารภูมิคุ้มกัน (Antibody)',
+                  font: { family: 'Sarabun', weight: 'bold' }
+                },
+                ticks: {
+                  maxRotation: 35,
+                  minRotation: 0
+                }
+              }
+            }
+          },
+          plugins: [antibodyLabelPlugin]
+        });
+
+
+        // Compute grand total for % calculation
+        const abTotalAll = sortedAntibodies.reduce((s, x) => s + x.annualTotal, 0);
+
+        tableHtml += `
+          <div style="margin-top:28px; padding-top:18px; border-top:2px solid var(--border);">
+
+            <!-- Section Header -->
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+              <div style="width:38px;height:38px;border-radius:10px;
+                          background:linear-gradient(135deg,#dc2626,#7c3aed);
+                          display:flex;align-items:center;justify-content:center;
+                          font-size:18px;flex-shrink:0;">🧬</div>
+              <div>
+                <div style="font-size:13.5px;font-weight:800;color:var(--text-1);">
+                  สถิติผลการตรวจวิเคราะห์แยกชนิดสารภูมิคุ้มกัน
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:1px;">
+                  Antibody Identification in Donors — เรียงลำดับตามความถี่สูงสุด · รวมทั้งสิ้น
+                  <strong style="color:var(--crimson);">${abTotalAll.toLocaleString()} ราย</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table style="border-collapse:collapse;width:100%;">
+                <thead>
+                  <tr>
+                    <th style="width:36px;text-align:center;">#</th>
+                    <th style="min-width:160px;text-align:left;">ชนิดสารภูมิคุ้มกัน (Antibody)</th>
+                    ${THAI_MONTHS_SHORT.map((m, idx) => {
+                      const sel = (idx + 1).toString() === currentMonth;
+                      return `<th style="${sel ? 'background:var(--teal-lt);color:var(--teal);border:2px solid var(--teal);' : ''}">${m}</th>`;
+                    }).join('')}
+                    <th class="col-total" style="min-width:70px;">รวมปี</th>
+                    <th style="min-width:110px;text-align:left;padding-left:10px;">สัดส่วน</th>
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+
+        let rank = 0;
+        // Use a closure-captured copy of the palette arrays for table rows
+        const _bgPal  = ANTIBODY_PALETTE_BG;
+        const _brdPal = ANTIBODY_PALETTE_BORDER;
+        let tableRank = 0; // track palette index separately (rank can skip zero rows)
+        sortedAntibodies.forEach(item => {
+          if (item.annualTotal === 0) return;   // hide zero rows
+          rank++;
+          tableRank = rank - 1; // 0-based palette index
+          const pct = abTotalAll > 0 ? ((item.annualTotal / abTotalAll) * 100) : 0;
+          const pctStr = pct >= 1 ? pct.toFixed(1) : pct.toFixed(2);
+          const barWidth = Math.max(pct, 2).toFixed(1);
+
+          // Use palette color for this row (matching chart bar)
+          const rowColor  = _brdPal[tableRank % _brdPal.length];
+          const rowBg     = _bgPal[tableRank % _bgPal.length].replace('0.80', '0.12');
+
+          // Rank badge: keep gold/silver/bronze for top-3, else use palette color
+          const rankColor = rank === 1 ? '#d97706' : rank === 2 ? '#64748b' : rank === 3 ? '#b45309' : rowColor;
+          const rankBg    = rank === 1 ? '#fef3c7' : rank === 2 ? '#f1f5f9' : rank === 3 ? '#fef3c7' : rowBg;
+
+          tableHtml += `
+            <tr style="border-left:3px solid ${rowColor};">
+              <td style="text-align:center;padding:6px 4px;">
+                <span style="display:inline-flex;align-items:center;justify-content:center;
+                             width:22px;height:22px;border-radius:50%;
+                             background:${rankBg};color:${rankColor};
+                             font-size:10px;font-weight:800;">${rank}</span>
+              </td>
+              <td style="font-weight:700;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;
+                             background:${rowColor};margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>${formatAntibodyName(item.name, true)}
+              </td>
+              ${item.months.map((val, idx) => {
+                const sel = (idx + 1).toString() === currentMonth;
+                return `<td class="${sel ? 'highlight-cell' : ''}" style="color:${val > 0 ? 'var(--text-1)' : 'var(--text-4)'};">${val > 0 ? val.toLocaleString() : '—'}</td>`;
+              }).join('')}
+              <td class="col-total" style="color:${rowColor};font-weight:800;">${item.annualTotal.toLocaleString()}</td>
+              <td style="padding:4px 10px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div style="flex:1;background:var(--border);border-radius:99px;height:7px;overflow:hidden;">
+                    <div style="width:${barWidth}%;background:${rowColor};
+                                height:100%;border-radius:99px;transition:width 0.4s ease;opacity:0.85;"></div>
+                  </div>
+                  <span style="font-size:10.5px;font-weight:700;color:${rowColor};white-space:nowrap;">${pctStr}%</span>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        tableHtml += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+
+      }
+
+      tableWrapper.innerHTML = tableHtml;
+      if (currentMonth !== 'all') {
+        const mName = THAI_MONTHS_FULL[parseInt(currentMonth)-1];
+        document.getElementById('table-display-title').innerText = `ตารางแจกแจงสถิติประมวลผล ABO/Rh และ Antibody (เฉพาะเดือน${mName})`;
+        document.getElementById('table-display-desc').innerText = `รายละเอียดสถิติและข้อมูล Antibody เจาะลึกเฉพาะเดือน${mName} ในรอบปี ${currentYear}`;
+      } else {
+        document.getElementById('table-display-title').innerText = "ตารางแจกแจงสถิติประมวลผล ABO/Rh และ Antibody";
+        document.getElementById('table-display-desc').innerText = `รายละเอียดสถิติสรุปงานประมวลผลโลหิต (Blood Processing) ประจำรอบปี ${currentYear}`;
+      }
+    }
+
+    // RENDERING Tab 2: เลือดหมดอายุ
+    function renderExpiredBlood() {
+      const data = BLOOD_LAB_DATA[currentYear].ExpiredBlood;
+      const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+
+      if (currentMonth !== 'all') {
+        const mIdx = parseInt(currentMonth) - 1;
+        const mName = THAI_MONTHS_FULL[mIdx];
+        document.getElementById('chart-1-title').innerText = `แนวโน้มจำนวนถุงโลหิตแดงหมดอายุเฉพาะเดือน${mName} เปรียบเทียบรายปี`;
+        document.getElementById('chart-1-sub').innerText = `เปรียบเทียบความเสียหายเฉพาะเดือนเดียวกันตั้งแต่ปี 2564 - 2569`;
+        document.getElementById('chart-2-title').innerText = `สัดส่วนส่วนประกอบโลหิตแดงหมดอายุ เดือน${THAI_MONTHS_SHORT[mIdx]} ปี ${currentYear}`;
+        document.getElementById('chart-2-sub').innerText = `สัดส่วนจำแนกรายผลิตภัณฑ์เฉพาะเดือน${mName} ปี ${currentYear}`;
+      } else {
+        document.getElementById('chart-1-title').innerText = "แนวโน้มจำนวนถุงโลหิตเกล็ดแดงที่หมดอายุรายเดือน (Expired Red Blood Cells)";
+        document.getElementById('chart-1-sub').innerText = `กราฟเส้นวิเคราะห์จำนวนการหมดอายุเปรียบเทียบในแต่ละเดือนปี ${currentYear}`;
+        document.getElementById('chart-2-title').innerText = "สัดส่วนประเภทของส่วนประกอบโลหิตแดงที่หมดอายุ (PRC, LPB, PFB, Adsol)";
+        document.getElementById('chart-2-sub').innerText = `จำแนกรายละเอียดความเสียหายรายผลิตภัณฑ์คลังในรอบปี ${currentYear}`;
+      }
+
+      // Sum component totals
+      let totalPrc = 0, totalLpb = 0, totalPfb = 0, totalAdsol = 0;
+      data.forEach(item => {
+        if (currentMonth === 'all' || item.monthIdx.toString() === currentMonth) {
+          totalPrc += item.components.PRC || 0;
+          totalLpb += item.components.LPB || 0;
+          totalPfb += item.components.PFB || 0;
+          totalAdsol += item.components.Adsol || 0;
+        }
+      });
+
+      // Chart 1: YoY month line chart OR Monthly Trend line chart
+      const ctx1 = document.getElementById('chart-1').getContext('2d');
+      if (currentMonth !== 'all') {
+        const activeYears = yearsList.filter(y => {
+          const activeMonths = getActiveMonthsForYear(y);
+          return activeMonths.includes(parseInt(currentMonth) - 1);
+        });
+        const values = activeYears.map(y => sumExpired(BLOOD_LAB_DATA[y], currentMonth));
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeYears,
+            datasets: [{
+              label: `จำนวนถุงหมดอายุเดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ถุง)`,
+              data: values,
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220,38,38,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#dc2626',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      } else {
+        const activeMonths = getActiveMonthsForYear(currentYear);
+        const expiredTotalMonthly = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.expired.total : 0;
+        });
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeMonths.map(m => THAI_MONTHS_SHORT[m]),
+            datasets: [{
+              label: 'จำนวนถุงหมดอายุรวม',
+              data: expiredTotalMonthly,
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220,38,38,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      // Chart 2: Component Breakdown (Bar)
+      const ctx2 = document.getElementById('chart-2').getContext('2d');
+      chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['PRC', 'LPB', 'PFB', 'Adsol'],
+          datasets: [{
+            label: 'จำนวนถุงที่หมดอายุแยกประเภท',
+            data: [totalPrc, totalLpb, totalPfb, totalAdsol],
+            backgroundColor: ['#f87171', '#60a5fa', '#c084fc', '#34d399']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // Table Render
+      const tableWrapper = document.getElementById('table-wrapper');
+      let tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th rowspan="2">เดือน</th>
+              <th colspan="5" style="text-align:center; border-bottom: 1.5px solid var(--border-strong);">จำนวนเตรียมเลือด (Donor+Other)</th>
+              <th colspan="4" style="text-align:center; border-bottom: 1.5px solid var(--border-strong);">ประเภทผลิตภัณฑ์ (Blood Component)</th>
+              <th colspan="5" style="text-align:center; border-bottom: 1.5px solid var(--border-strong);">ถุงเลือดหมดอายุ (Blood Exp.)</th>
+              <th rowspan="2">Rh=neg คืน</th>
+            </tr>
+            <tr>
+              <th>O</th><th>A</th><th>B</th><th>AB</th><th class="col-total">รวม</th>
+              <th>PRC</th><th>LPB</th><th>PFB</th><th>Adsol</th>
+              <th>O</th><th>A</th><th>B</th><th>AB</th><th class="col-total">รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let sumPrep = { O:0, A:0, B:0, AB:0, total:0 };
+      let sumComp = { PRC:0, LPB:0, PFB:0, Adsol:0 };
+      let sumExp = { O:0, A:0, B:0, AB:0, total:0 };
+
+      data.forEach(item => {
+        sumPrep.O += item.donorOther.O;
+        sumPrep.A += item.donorOther.A;
+        sumPrep.B += item.donorOther.B;
+        sumPrep.AB += item.donorOther.AB;
+        sumPrep.total += item.donorOther.total;
+
+        sumComp.PRC += item.components.PRC;
+        sumComp.LPB += item.components.LPB;
+        sumComp.PFB += item.components.PFB;
+        sumComp.Adsol += item.components.Adsol;
+
+        sumExp.O += item.expired.O;
+        sumExp.A += item.expired.A;
+        sumExp.B += item.expired.B;
+        sumExp.AB += item.expired.AB;
+        sumExp.total += item.expired.total;
+
+        const isSelected = item.monthIdx.toString() === currentMonth;
+        const rowStyle = isSelected ? 'style="background-color: var(--teal-lt); font-weight: 700;"' : '';
+        const cellClass = item.expired.total > 10 ? 'highlight-cell' : '';
+
+        tableHtml += `
+          <tr ${rowStyle}>
+            <td>${THAI_MONTHS_FULL[item.monthIdx - 1]}</td>
+            <td>${item.donorOther.O.toLocaleString()}</td>
+            <td>${item.donorOther.A.toLocaleString()}</td>
+            <td>${item.donorOther.B.toLocaleString()}</td>
+            <td>${item.donorOther.AB.toLocaleString()}</td>
+            <td class="col-total">${item.donorOther.total.toLocaleString()}</td>
+            
+            <td>${item.components.PRC.toLocaleString()}</td>
+            <td>${item.components.LPB.toLocaleString()}</td>
+            <td>${item.components.PFB.toLocaleString()}</td>
+            <td>${item.components.Adsol.toLocaleString()}</td>
+            
+            <td>${item.expired.O.toLocaleString()}</td>
+            <td>${item.expired.A.toLocaleString()}</td>
+            <td>${item.expired.B.toLocaleString()}</td>
+            <td>${item.expired.AB.toLocaleString()}</td>
+            <td class="col-total ${cellClass}">${item.expired.total.toLocaleString()}</td>
+            <td>${item.rhNeg}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+            <tr class="row-total">
+              <td>ยอดรวมปี</td>
+              <td>${sumPrep.O.toLocaleString()}</td>
+              <td>${sumPrep.A.toLocaleString()}</td>
+              <td>${sumPrep.B.toLocaleString()}</td>
+              <td>${sumPrep.AB.toLocaleString()}</td>
+              <td class="col-total">${sumPrep.total.toLocaleString()}</td>
+              
+              <td>${sumComp.PRC.toLocaleString()}</td>
+              <td>${sumComp.LPB.toLocaleString()}</td>
+              <td>${sumComp.PFB.toLocaleString()}</td>
+              <td>${sumComp.Adsol.toLocaleString()}</td>
+              
+              <td>${sumExp.O.toLocaleString()}</td>
+              <td>${sumExp.A.toLocaleString()}</td>
+              <td>${sumExp.B.toLocaleString()}</td>
+              <td>${sumExp.AB.toLocaleString()}</td>
+              <td class="col-total">${sumExp.total.toLocaleString()}</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+
+      tableWrapper.innerHTML = tableHtml;
+      if (currentMonth !== 'all') {
+        const mName = THAI_MONTHS_FULL[parseInt(currentMonth)-1];
+        document.getElementById('table-display-title').innerText = `ตารางแจกแจงสถิติกระบวนการโลหิตเสียสภาพคลัง (เฉพาะเดือน${mName})`;
+        document.getElementById('table-display-desc').innerText = `ข้อมูลปริมาณสถิติและจำแนกผลิตภัณฑ์ความเสียหายเจาะลึกเฉพาะเดือน${mName} ในรอบปี ${currentYear}`;
+      } else {
+        document.getElementById('table-display-title').innerText = "ตารางแจกแจงสถิติกระบวนการโลหิตเสียสภาพคลัง";
+        document.getElementById('table-display-desc').innerText = `ข้อมูลปริมาณสถิติการหมดอายุ (Expired) ของถุงเกล็ดโลหิตแดงแยกประเภทรายผลิตภัณฑ์และรายเดือนประจำปี ${currentYear}`;
+      }
+    }
+
+    // RENDERING Tab 3: ขอเลือด
+    function renderRequestedBlood() {
+      const data = BLOOD_LAB_DATA[currentYear].RequestedBlood;
+      const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+
+      if (currentMonth !== 'all') {
+        const mIdx = parseInt(currentMonth) - 1;
+        const mName = THAI_MONTHS_FULL[mIdx];
+        document.getElementById('chart-1-title').innerText = `ยอดการขอเบิกเลือดจากแหล่งภายนอกเดือน${mName} เปรียบเทียบรายปี`;
+        document.getElementById('chart-1-sub').innerText = `เปรียบเทียบคำส่งเบิกโลหิตแดงรวมสภากาชาดและศิริราชเดือนเดียวกันรายปี`;
+        document.getElementById('chart-2-title').innerText = `สัดส่วนการขอเบิกเลือด เดือน${THAI_MONTHS_SHORT[mIdx]} ปี ${currentYear}`;
+        document.getElementById('chart-2-sub').innerText = `สัดส่วนร้อยละการส่งขอเบิกเลือดจากสภากาชาดไทย เทียบกับโรงพยาบาลอื่นๆ เฉพาะเดือน${mName} ปี ${currentYear}`;
+      } else {
+        document.getElementById('chart-1-title').innerText = "ยอดการเบิกสัญญารับโลหิตจากแหล่งภายนอกรายเดือน";
+        document.getElementById('chart-1-sub').innerText = `ยอดรวมขอเบิกถุงเลือดเกล็ดแดงจำแนกระหว่าง กาชาด และ โรงพยาบาลอื่นๆ ปี ${currentYear}`;
+        document.getElementById('chart-2-title').innerText = "สัดส่วนการขอเลือด";
+        document.getElementById('chart-2-sub').innerText = `สัดส่วนร้อยละปริมาณการเบิกโลหิตสะสมระหว่างสภากาชาดไทย และโรงพยาบาลอื่นๆ ปี ${currentYear}`;
+      }
+
+      // Sum Red Cross vs Others for Chart
+      let chartRedCrossTotal = 0;
+      let chartOthersTotal = 0;
+      let rcO = 0, rcA = 0, rcB = 0, rcAB = 0;
+      let otO = 0, otA = 0, otB = 0, otAB = 0;
+      data.forEach(item => {
+        if (currentMonth === 'all' || item.monthIdx.toString() === currentMonth) {
+          chartRedCrossTotal += item.redCross.total || 0;
+          chartOthersTotal += item.others.total || 0;
+          
+          rcO += item.redCross.O || 0;
+          rcA += item.redCross.A || 0;
+          rcB += item.redCross.B || 0;
+          rcAB += item.redCross.AB || 0;
+          
+          otO += item.others.O || 0;
+          otA += item.others.A || 0;
+          otB += item.others.B || 0;
+          otAB += item.others.AB || 0;
+        }
+      });
+      const totalO = rcO + otO;
+      const totalA = rcA + otA;
+      const totalB = rcB + otB;
+      const totalAB = rcAB + otAB;
+
+      // Chart 1: YoY month line chart OR Stacked Bar Chart for Red Cross vs Others
+      const ctx1 = document.getElementById('chart-1').getContext('2d');
+      if (currentMonth !== 'all') {
+        const activeYears = yearsList.filter(y => {
+          const activeMonths = getActiveMonthsForYear(y);
+          return activeMonths.includes(parseInt(currentMonth) - 1);
+        });
+        const values = activeYears.map(y => sumRequested(BLOOD_LAB_DATA[y], currentMonth) || 0);
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeYears,
+            datasets: [{
+              label: `ยอดขอเบิกรวมเดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ถุง)`,
+              data: values,
+              borderColor: '#2563eb',
+              backgroundColor: 'rgba(37,99,235,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#2563eb',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      } else {
+        const activeMonths = getActiveMonthsForYear(currentYear);
+        const redCrossMonthly = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.redCross.total : 0;
+        });
+        const othersMonthly = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.others.total : 0;
+        });
+        chart1 = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: activeMonths.map(m => THAI_MONTHS_SHORT[m]),
+            datasets: [
+              { label: 'เบิกสภากาชาด', data: redCrossMonthly, backgroundColor: '#3b82f6' },
+              { label: 'เบิกแห่งอื่นๆ', data: othersMonthly, backgroundColor: '#f59e0b' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: {
+              y: {
+                stacked: true,
+                grace: '8%'
+              },
+              x: { stacked: true }
+            }
+          },
+          plugins: [{
+            id: 'stackedTotals',
+            afterDatasetsDraw(chart) {
+              const { ctx, data } = chart;
+              ctx.save();
+              const activeMonths = getActiveMonthsForYear(currentYear);
+              const numBars = activeMonths.length;
+              
+              for (let i = 0; i < numBars; i++) {
+                let sum = 0;
+                let topY = null;
+                let topX = null;
+                
+                for (let datasetIndex = data.datasets.length - 1; datasetIndex >= 0; datasetIndex--) {
+                  const val = data.datasets[datasetIndex].data[i] || 0;
+                  sum += val;
+                  
+                  if (val > 0 && topY === null) {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    if (meta.data[i]) {
+                      topY = meta.data[i].y;
+                      topX = meta.data[i].x;
+                    }
+                  }
+                }
+                
+                if (sum > 0 && topY !== null && topX !== null) {
+                  ctx.font = 'bold 11px Sarabun';
+                  ctx.fillStyle = 'var(--text-2)';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'bottom';
+                  ctx.fillText(sum.toLocaleString(), topX, topY - 5);
+                }
+              }
+              ctx.restore();
+            }
+          }]
+        });
+      }
+
+      // Load logo images for Red Cross vs Others
+      if (!window.imgRedCross) {
+        window.imgRedCross = new Image();
+        window.imgRedCross.src = 'logo_red_cross.png';
+        window.imgRedCross.onload = () => {
+          if (currentTab === 'RequestedBlood' && chart2) {
+            chart2.update();
+          }
+        };
+      }
+      if (!window.imgOthers) {
+        window.imgOthers = new Image();
+        window.imgOthers.src = 'logo_others.png';
+        window.imgOthers.onload = () => {
+          if (currentTab === 'RequestedBlood' && chart2) {
+            chart2.update();
+          }
+        };
+      }
+
+      // Configure flex layout for custom legend side-by-side
+      const chart2Wrap = document.getElementById('chart-2-wrap');
+      if (chart2Wrap) {
+        chart2Wrap.style.display = 'flex';
+        chart2Wrap.style.alignItems = 'center';
+        chart2Wrap.style.gap = '20px';
+        chart2Wrap.style.flexDirection = 'row';
+      }
+      const customLegendEl = document.getElementById('chart-2-custom-legend');
+      if (customLegendEl) {
+        customLegendEl.style.display = 'flex';
+      }
+
+      // Chart 2: Red Cross vs Others (Pie)
+      const ctx2 = document.getElementById('chart-2').getContext('2d');
+      const pieTotal = chartRedCrossTotal + chartOthersTotal;
+      const pieData = [chartRedCrossTotal, chartOthersTotal];
+      const pieColors = ['#dc2626', '#f59e0b'];
+      const pieLabels = ['สภากาชาดไทย', 'โรงพยาบาลอื่นๆ'];
+
+      // Simple internal label plugin to draw percentage directly inside slices
+      const piePercentPlugin = {
+        id: 'piePercent',
+        afterDraw(chart) {
+          const { ctx } = chart;
+          const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+          if (total === 0) return;
+          ctx.save();
+          chart.data.datasets[0].data.forEach((value, i) => {
+            if (value === 0) return;
+            const meta = chart.getDatasetMeta(0);
+            const arc = meta.data[i];
+            const pct = ((value / total) * 100).toFixed(1) + '%';
+            
+            const angle = (arc.startAngle + arc.endAngle) / 2;
+            const r = arc.outerRadius * 0.55;
+            const x = arc.x + Math.cos(angle) * r;
+            const y = arc.y + Math.sin(angle) * r;
+            
+            ctx.font = 'bold 12.5px Sarabun, sans-serif';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+            ctx.shadowBlur = 2;
+            ctx.fillText(pct, x, y);
+          });
+          ctx.restore();
+        }
+      };
+
+      chart2 = new Chart(ctx2, {
+        type: 'pie',
+        data: {
+          labels: pieLabels,
+          datasets: [{
+            data: pieData,
+            backgroundColor: pieColors,
+            borderColor: '#fff',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label(ctx) {
+                  const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+                  const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+                  return ` ${ctx.label}: ${ctx.parsed.toLocaleString()} ถุง (${pct}%)`;
+                }
+              }
+            }
+          }
+        },
+        plugins: [piePercentPlugin]
+      });
+
+      // Render custom HTML legend
+      if (customLegendEl) {
+        const pctRC = pieTotal > 0 ? ((chartRedCrossTotal / pieTotal) * 100).toFixed(1) : '0.0';
+        const pctOthers = pieTotal > 0 ? ((chartOthersTotal / pieTotal) * 100).toFixed(1) : '0.0';
+        
+        customLegendEl.innerHTML = `
+          <div style="font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; display: flex; flex-direction: column; border-bottom: 1px dashed var(--border-strong); padding-bottom: 8px; gap: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <span>ยอดขอเบิกรวม (Total)</span>
+              <span style="font-size: 15.5px; font-weight: 800; color: var(--text-1);">${pieTotal.toLocaleString()} ถุง</span>
+            </div>
+            <div style="display: flex; gap: 6px; font-size: 10.5px; color: #64748b; font-weight: normal; margin-top: 2px;">
+              <span style="background: #f1f5f9; padding: 1.5px 6px; border-radius: 4px;">O: <b>${totalO.toLocaleString()}</b></span>
+              <span style="background: #f1f5f9; padding: 1.5px 6px; border-radius: 4px;">A: <b>${totalA.toLocaleString()}</b></span>
+              <span style="background: #f1f5f9; padding: 1.5px 6px; border-radius: 4px;">B: <b>${totalB.toLocaleString()}</b></span>
+              <span style="background: #f1f5f9; padding: 1.5px 6px; border-radius: 4px;">AB: <b>${totalAB.toLocaleString()}</b></span>
+            </div>
+          </div>
+          
+          <div class="legend-card" style="display: flex; flex-direction: column; background: #fff5f5; border: 1px solid #fee2e2; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 44px; height: 24px; border-radius: 4px; overflow: hidden; background: #fff; border: 1px solid #ef4444; display: flex; align-items: center; justify-content: center; padding: 1px; flex-shrink:0;">
+                <img src="logo_red_cross.png" style="max-width:100%; max-height:100%; object-fit:contain;">
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">สภากาชาดไทย</div>
+                <div style="font-size: 12px; color: #475569; margin-top: 1px; font-weight: 600;">${chartRedCrossTotal.toLocaleString()} ถุง</div>
+              </div>
+              <div style="font-size: 15.5px; font-weight: 800; color: #dc2626; text-align: right; margin-left: 4px;">${pctRC}%</div>
+            </div>
+            <div style="margin-top: 8px; border-top: 1px dashed rgba(239,68,68,0.12); padding-top: 8px; display: flex; gap: 6px; font-size: 10px; color: #dc2626;">
+              <span style="background: rgba(239,68,68,0.05); padding: 1.5px 5px; border-radius: 3px;">O: <b>${rcO.toLocaleString()}</b></span>
+              <span style="background: rgba(239,68,68,0.05); padding: 1.5px 5px; border-radius: 3px;">A: <b>${rcA.toLocaleString()}</b></span>
+              <span style="background: rgba(239,68,68,0.05); padding: 1.5px 5px; border-radius: 3px;">B: <b>${rcB.toLocaleString()}</b></span>
+              <span style="background: rgba(239,68,68,0.05); padding: 1.5px 5px; border-radius: 3px;">AB: <b>${rcAB.toLocaleString()}</b></span>
+            </div>
+          </div>
+          
+          <div class="legend-card" style="display: flex; flex-direction: column; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 12px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #fff; border: 1px solid #f59e0b; display: flex; align-items: center; justify-content: center; padding: 1px; flex-shrink:0; margin-left: 6px;">
+                <img src="logo_others.png" style="max-width:100%; max-height:100%; object-fit:contain;">
+              </div>
+              <div style="flex: 1; min-width: 0; padding-left: 6px;">
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">โรงพยาบาลอื่นๆ</div>
+                <div style="font-size: 12px; color: #475569; margin-top: 1px; font-weight: 600;">${chartOthersTotal.toLocaleString()} ถุง</div>
+              </div>
+              <div style="font-size: 15.5px; font-weight: 800; color: #d97706; text-align: right; margin-left: 4px;">${pctOthers}%</div>
+            </div>
+            <div style="margin-top: 8px; border-top: 1px dashed rgba(245,158,11,0.12); padding-top: 8px; display: flex; gap: 6px; font-size: 10px; color: #d97706; padding-left: 6px;">
+              <span style="background: rgba(245,158,11,0.05); padding: 1.5px 5px; border-radius: 3px;">O: <b>${otO.toLocaleString()}</b></span>
+              <span style="background: rgba(245,158,11,0.05); padding: 1.5px 5px; border-radius: 3px;">A: <b>${otA.toLocaleString()}</b></span>
+              <span style="background: rgba(245,158,11,0.05); padding: 1.5px 5px; border-radius: 3px;">B: <b>${otB.toLocaleString()}</b></span>
+              <span style="background: rgba(245,158,11,0.05); padding: 1.5px 5px; border-radius: 3px;">AB: <b>${otAB.toLocaleString()}</b></span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Table Render
+      const tableWrapper = document.getElementById('table-wrapper');
+      let tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th rowspan="2">เดือน</th>
+              <th colspan="5" style="text-align:center; border-bottom: 1.5px solid var(--border-strong);">เบิกสภากาชาด (Red Cross)</th>
+              <th colspan="5" style="text-align:center; border-bottom: 1.5px solid var(--border-strong);">เบิกแหล่งอื่นๆ (Others)</th>
+              <th colspan="5" style="text-align:center; border-bottom: 1.5px solid var(--border-strong);">ยอดเบิกรวมสุทธิ (Total RBC Requested)</th>
+            </tr>
+            <tr>
+              <th>O</th><th>A</th><th>B</th><th>AB</th><th class="col-total">รวม</th>
+              <th>O</th><th>A</th><th>B</th><th>AB</th><th class="col-total">รวม</th>
+              <th>O</th><th>A</th><th>B</th><th>AB</th><th class="col-total">รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let totalRC = { O:0, A:0, B:0, AB:0, total:0 };
+      let totalOthers = { O:0, A:0, B:0, AB:0, total:0 };
+      let totalRbc = { O:0, A:0, B:0, AB:0, total:0 };
+
+      data.forEach(item => {
+        totalRC.O += item.redCross.O;
+        totalRC.A += item.redCross.A;
+        totalRC.B += item.redCross.B;
+        totalRC.AB += item.redCross.AB;
+        totalRC.total += item.redCross.total;
+
+        totalOthers.O += item.others.O;
+        totalOthers.A += item.others.A;
+        totalOthers.B += item.others.B;
+        totalOthers.AB += item.others.AB;
+        totalOthers.total += item.others.total;
+
+        totalRbc.O += item.totalRBC.O;
+        totalRbc.A += item.totalRBC.A;
+        totalRbc.B += item.totalRBC.B;
+        totalRbc.AB += item.totalRBC.AB;
+        totalRbc.total += item.totalRBC.total;
+
+        const isSelected = item.monthIdx.toString() === currentMonth;
+        const rowStyle = isSelected ? 'style="background-color: var(--teal-lt); font-weight: 700;"' : '';
+
+        tableHtml += `
+          <tr ${rowStyle}>
+            <td>${THAI_MONTHS_FULL[item.monthIdx - 1]}</td>
+            <td>${item.redCross.O.toLocaleString()}</td>
+            <td>${item.redCross.A.toLocaleString()}</td>
+            <td>${item.redCross.B.toLocaleString()}</td>
+            <td>${item.redCross.AB.toLocaleString()}</td>
+            <td class="col-total">${item.redCross.total.toLocaleString()}</td>
+            
+            <td>${item.others.O.toLocaleString()}</td>
+            <td>${item.others.A.toLocaleString()}</td>
+            <td>${item.others.B.toLocaleString()}</td>
+            <td>${item.others.AB.toLocaleString()}</td>
+            <td class="col-total">${item.others.total.toLocaleString()}</td>
+            
+            <td>${item.totalRBC.O.toLocaleString()}</td>
+            <td>${item.totalRBC.A.toLocaleString()}</td>
+            <td>${item.totalRBC.B.toLocaleString()}</td>
+            <td>${item.totalRBC.AB.toLocaleString()}</td>
+            <td class="col-total">${item.totalRBC.total.toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+            <tr class="row-total">
+              <td>ยอดรวมปี</td>
+              <td>${totalRC.O.toLocaleString()}</td>
+              <td>${totalRC.A.toLocaleString()}</td>
+              <td>${totalRC.B.toLocaleString()}</td>
+              <td>${totalRC.AB.toLocaleString()}</td>
+              <td class="col-total">${totalRC.total.toLocaleString()}</td>
+              
+              <td>${totalOthers.O.toLocaleString()}</td>
+              <td>${totalOthers.A.toLocaleString()}</td>
+              <td>${totalOthers.B.toLocaleString()}</td>
+              <td>${totalOthers.AB.toLocaleString()}</td>
+              <td class="col-total">${totalOthers.total.toLocaleString()}</td>
+              
+              <td>${totalRbc.O.toLocaleString()}</td>
+              <td>${totalRbc.A.toLocaleString()}</td>
+              <td>${totalRbc.B.toLocaleString()}</td>
+              <td>${totalRbc.AB.toLocaleString()}</td>
+              <td class="col-total">${totalRbc.total.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+
+      tableWrapper.innerHTML = tableHtml;
+      if (currentMonth !== 'all') {
+        const mName = THAI_MONTHS_FULL[parseInt(currentMonth)-1];
+        document.getElementById('table-display-title').innerText = `ตารางแจกแจงสถิติปริมาณใบขอรับบริการเบิกเลือดภายนอก (เฉพาะเดือน${mName})`;
+        document.getElementById('table-display-desc').innerText = `สถิติใบส่งจองขอเบิกโลหิตแดง (Red Blood Cells) เจาะลึกเฉพาะเดือน${mName} ในรอบปี ${currentYear}`;
+      } else {
+        document.getElementById('table-display-title').innerText = "ตารางแจกแจงสถิติปริมาณใบขอรับบริการเบิกเลือดภายนอก";
+        document.getElementById('table-display-desc').innerText = `รายละเอียดสถิติคำสั่งส่งจองขอเบิกโลหิตเกล็ดแดง (Red Blood Cells) จำแนกรายประเภทและรายกลุ่มของหน่วยงานภายนอก ประจำปี ${currentYear}`;
+      }
+    }
+
+    // RENDERING Tab 4: FFP หมดอายุ
+    function renderFFPExpired() {
+      const data = BLOOD_LAB_DATA[currentYear].FFPExpired;
+      const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+
+      if (currentMonth !== 'all') {
+        const mIdx = parseInt(currentMonth) - 1;
+        const mName = THAI_MONTHS_FULL[mIdx];
+        document.getElementById('chart-1-title').innerText = `แนวโน้มยอด FFP หมดอายุเฉพาะเดือน${mName} เปรียบเทียบรายปี`;
+        document.getElementById('chart-1-sub').innerText = `ยอดสูญเสียผลิตภัณฑ์พลาสมาเฉพาะเดือนเดียวกันตั้งแต่ปี 2564 - 2569`;
+        document.getElementById('chart-2-title').innerText = `ยอด FFP หมดอายุ เดือน${THAI_MONTHS_SHORT[mIdx]} จำแนกตามกลุ่มโลหิต`;
+        document.getElementById('chart-2-sub').innerText = `สัดส่วนความเสียหายรายกรุ๊ปเลือดในเดือน${mName} ปี ${currentYear}`;
+      } else {
+        document.getElementById('chart-1-title').innerText = "แนวโน้มการหมดอายุของถุงพลาสมาแช่แข็ง FFP รายเดือน";
+        document.getElementById('chart-1-sub').innerText = `ยอดการสูญเสียเสียสภาพคลังของผลิตภัณฑ์ Fresh Frozen Plasma ประจำปี ${currentYear}`;
+        document.getElementById('chart-2-title').innerText = "สถิติจำนวน FFP หมดอายุ จำแนกรายกลุ่มโลหิต";
+        document.getElementById('chart-2-sub').innerText = `สัดส่วนร้อยละความเสียหายรายประเภทกรุ๊ปเลือดในรอบปี ${currentYear}`;
+      }
+
+      // Sum group totals for selected month or year
+      let sumA = 0, sumB = 0, sumAB = 0, sumO = 0;
+      data.forEach(item => {
+        if (currentMonth === 'all' || item.monthIdx.toString() === currentMonth) {
+          sumA += item.groups.A || 0;
+          sumB += item.groups.B || 0;
+          sumAB += item.groups.AB || 0;
+          sumO += item.groups.O || 0;
+        }
+      });
+
+      // Chart 1: YoY month line chart OR monthly trend line chart
+      const ctx1 = document.getElementById('chart-1').getContext('2d');
+      if (currentMonth !== 'all') {
+        const activeYears = yearsList.filter(y => {
+          const activeMonths = getActiveMonthsForYear(y);
+          return activeMonths.includes(parseInt(currentMonth) - 1);
+        });
+        const values = activeYears.map(y => sumFFP(BLOOD_LAB_DATA[y], currentMonth));
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeYears,
+            datasets: [{
+              label: `ยอด FFP หมดอายุเดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ถุง)`,
+              data: values,
+              borderColor: '#7c3aed',
+              backgroundColor: 'rgba(124,58,237,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#7c3aed',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      } else {
+        const activeMonths = getActiveMonthsForYear(currentYear);
+        const ffpMonthly = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.normalFFP : 0;
+        });
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeMonths.map(m => THAI_MONTHS_SHORT[m]),
+            datasets: [{
+              label: 'ยอดถุง FFP หมดอายุรายเดือน',
+              data: ffpMonthly,
+              borderColor: '#7c3aed',
+              backgroundColor: 'rgba(124,58,237,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.35
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      // Chart 2: Group distribution (Bar)
+      const ctx2 = document.getElementById('chart-2').getContext('2d');
+      chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['Group A', 'Group B', 'Group AB', 'Group O'],
+          datasets: [{
+            label: 'จำนวน FFP หมดอายุแยกรายกรุ๊ป',
+            data: [sumA, sumB, sumAB, sumO],
+            backgroundColor: ['#93c5fd', '#c084fc', '#fed7aa', '#fca5a5']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // Table Render
+      const tableWrapper = document.getElementById('table-wrapper');
+      let tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>เดือน</th>
+              <th>Group A</th>
+              <th>Group B</th>
+              <th>Group AB</th>
+              <th>Group O</th>
+              <th class="col-total">รวมปกติ (Normal FFP)</th>
+              <th>ผิดปกติ (Abnormal FFP)</th>
+              <th>คืนจากวอร์ด (Return)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let sumGrp = { A:0, B:0, AB:0, O:0 };
+      let sumNormal = 0, sumAbnormal = 0, sumReturned = 0;
+
+      data.forEach(item => {
+        sumGrp.A += item.groups.A;
+        sumGrp.B += item.groups.B;
+        sumGrp.AB += item.groups.AB;
+        sumGrp.O += item.groups.O;
+        sumNormal += item.normalFFP;
+        sumAbnormal += item.abnormalFFP;
+        sumReturned += item.returnedWard;
+
+        const isSelected = item.monthIdx.toString() === currentMonth;
+        const rowStyle = isSelected ? 'style="background-color: var(--teal-lt); font-weight: 700;"' : '';
+
+        tableHtml += `
+          <tr ${rowStyle}>
+            <td>${THAI_MONTHS_FULL[item.monthIdx - 1]}</td>
+            <td>${item.groups.A.toLocaleString()}</td>
+            <td>${item.groups.B.toLocaleString()}</td>
+            <td>${item.groups.AB.toLocaleString()}</td>
+            <td>${item.groups.O.toLocaleString()}</td>
+            <td class="col-total">${item.normalFFP.toLocaleString()}</td>
+            <td>${item.abnormalFFP.toLocaleString()}</td>
+            <td>${item.returnedWard.toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+            <tr class="row-total">
+              <td>ยอดรวมปี</td>
+              <td>${sumGrp.A.toLocaleString()}</td>
+              <td>${sumGrp.B.toLocaleString()}</td>
+              <td>${sumGrp.AB.toLocaleString()}</td>
+              <td>${sumGrp.O.toLocaleString()}</td>
+              <td class="col-total">${sumNormal.toLocaleString()}</td>
+              <td>${sumAbnormal.toLocaleString()}</td>
+              <td>${sumReturned.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+
+      tableWrapper.innerHTML = tableHtml;
+      if (currentMonth !== 'all') {
+        const mName = THAI_MONTHS_FULL[parseInt(currentMonth)-1];
+        document.getElementById('table-display-title').innerText = `ตารางแจกแจงสถิติพลาสมาเสียสภาพคลัง (เฉพาะเดือน${mName})`;
+        document.getElementById('table-display-desc').innerText = `สถิติหมดอายุของถุงพลาสมาแช่แข็ง (FFP) เจาะลึกเฉพาะเดือน${mName} ในรอบปี ${currentYear}`;
+      } else {
+        document.getElementById('table-display-title').innerText = "ตารางแจกแจงสถิติพลาสมาเสียสภาพคลัง";
+        document.getElementById('table-display-desc').innerText = `สถิติสรุปจำนวนการหมดอายุของถุงพลาสมาแช่แข็งสภากาชาดและศิริราช (Fresh Frozen Plasma) รายเดือนและรายกรุ๊ปประจำปี ${currentYear}`;
+      }
+    }
+
+    // RENDERING Tab 5: Antigentyping
+    function renderAntigentyping() {
+      const data = BLOOD_LAB_DATA[currentYear].Antigentyping;
+      const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+
+      if (currentMonth !== 'all') {
+        const mIdx = parseInt(currentMonth) - 1;
+        const mName = THAI_MONTHS_FULL[mIdx];
+        document.getElementById('chart-1-title').innerText = `ยอดการส่งตรวจหมู่เลือดพิเศษเดือน${mName} เปรียบเทียบรายปี`;
+        document.getElementById('chart-1-sub').innerText = `เปรียบเทียบเคสงานบริการคัดกรองพิเศษเดือนเดียวกันรายปีปฏิทิน`;
+        document.getElementById('chart-2-title').innerText = `สัดส่วนรายการตรวจพิเศษ เดือน${THAI_MONTHS_SHORT[mIdx]} ปี ${currentYear}`;
+        document.getElementById('chart-2-sub').innerText = `ร้อยละรายการตรวจวิเคราะห์แล็บเฉพาะเดือน${mName} ปี ${currentYear}`;
+      } else {
+        document.getElementById('chart-1-title').innerText = "สถิติจำนวนเคสการส่งตรวจคัดกรองหมู่เลือดพิเศษรายเดือน";
+        document.getElementById('chart-1-sub').innerText = `เปรียบเทียบยอดการตรวจ Rh Phenotyping, Antigen-Mi\u{1D43}, G6PD และ DAT ปี ${currentYear}`;
+        document.getElementById('chart-2-title').innerText = "สัดส่วนรวมการให้บริการตรวจวิเคราะห์ของห้องปฏิบัติการ";
+        document.getElementById('chart-2-sub').innerText = `ร้อยละสะสมของประเภทรายการตรวจแล็บพิเศษในรอบปี ${currentYear}`;
+      }
+
+      // Sum totals for selected month or year (with defensive Number() cast for safety)
+      let sumPheno = 0, sumMia = 0, sumG6pd = 0, sumDat = 0;
+      data.forEach(item => {
+        if (currentMonth === 'all' || item.monthIdx.toString() === currentMonth) {
+          sumPheno += Number(item.rhPhenotyping) || 0;
+          sumMia += Number(item.antigenMia) || 0;
+          sumG6pd += Number(item.g6pd) || 0;
+          sumDat += Number(item.dat) || 0;
+        }
+      });
+
+      // Chart 1: YoY month line chart OR Grouped Bar Chart
+      const ctx1 = document.getElementById('chart-1').getContext('2d');
+      if (currentMonth !== 'all') {
+        const activeYears = yearsList.filter(y => {
+          const activeMonths = getActiveMonthsForYear(y);
+          return activeMonths.includes(parseInt(currentMonth) - 1);
+        });
+        const values = activeYears.map(y => sumAntigen(BLOOD_LAB_DATA[y], currentMonth) || 0);
+        chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: activeYears,
+            datasets: [{
+              label: `ยอดบริการรวมเดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ราย)`,
+              data: values,
+              borderColor: '#0d9488',
+              backgroundColor: 'rgba(13,148,136,0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#0d9488',
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              globalDatalabels: false
+            },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      } else {
+        const activeMonths = getActiveMonthsForYear(currentYear);
+        const phenoData = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.rhPhenotyping : 0;
+        });
+        const miaData = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.antigenMia : 0;
+        });
+        const g6pdData = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.g6pd : 0;
+        });
+        const datData = activeMonths.map(m => {
+          const record = data.find(item => item.monthIdx === m + 1);
+          return record ? record.dat : 0;
+        });
+        chart1 = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: activeMonths.map(m => THAI_MONTHS_SHORT[m]),
+            datasets: [
+              { label: 'Rh Phenotyping', data: phenoData, backgroundColor: '#0d9488' },
+              { label: 'Antigen-Mi\u{1D43}', data: miaData, backgroundColor: '#f59e0b' },
+              { label: 'G6PD Testing', data: g6pdData, backgroundColor: '#38bdf8' },
+              { label: 'DAT Testing', data: datData, backgroundColor: '#6366f1' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      // Chart 2: Proportion (Pie)
+      const ctx2 = document.getElementById('chart-2').getContext('2d');
+      
+      const antigenProportionDatalabelsPlugin = {
+        id: 'antigenProportionDatalabels',
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          ctx.save();
+          const meta = chart.getDatasetMeta(0);
+          const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+          const emojis = ['\u{1F9EC} ', '\u{1F9EA} ', '\u{1FA78} ', '\u{1F50D} '];
+          
+          const labelsList = [];
+          
+          meta.data.forEach((element, index) => {
+            const val = chart.data.datasets[0].data[index];
+            if (val === null || val === undefined || val === 0) return;
+            const pctVal = total > 0 ? ((val / total) * 100).toFixed(1) + '%' : '0%';
+            const label = chart.data.labels[index];
+            const text = `${emojis[index]}${label}: ${val.toLocaleString()} (${pctVal})`;
+            
+            const midAngle = (element.startAngle + element.endAngle) / 2;
+            const x1 = element.x + Math.cos(midAngle) * element.outerRadius;
+            const y1 = element.y + Math.sin(midAngle) * element.outerRadius;
+            const x2 = element.x + Math.cos(midAngle) * (element.outerRadius + 8);
+            const y2 = element.y + Math.sin(midAngle) * (element.outerRadius + 8);
+            const isRight = Math.cos(midAngle) >= 0;
+            const x3 = x2 + (isRight ? 10 : -10);
+            const y3 = y2;
+            
+            labelsList.push({
+              x1, y1, x2, y2, isRight, text,
+              x3, y3,
+              angle: midAngle,
+              adjustedY: y2
+            });
+          });
+          
+          // Separate into left and right sides to prevent overlapping
+          const leftLabels = labelsList.filter(l => !l.isRight).sort((a, b) => a.y2 - b.y2);
+          const rightLabels = labelsList.filter(l => l.isRight).sort((a, b) => a.y2 - b.y2);
+          
+          const minSpacing = 16; // minimum vertical spacing in pixels
+          
+          // Adjust left side overlaps
+          for (let i = 1; i < leftLabels.length; i++) {
+            if (leftLabels[i].adjustedY - leftLabels[i-1].adjustedY < minSpacing) {
+              leftLabels[i].adjustedY = leftLabels[i-1].adjustedY + minSpacing;
+            }
+          }
+          
+          // Adjust right side overlaps
+          for (let i = 1; i < rightLabels.length; i++) {
+            if (rightLabels[i].adjustedY - rightLabels[i-1].adjustedY < minSpacing) {
+              rightLabels[i].adjustedY = rightLabels[i-1].adjustedY + minSpacing;
+            }
+          }
+          
+          // Draw connection lines and text labels
+          const allAdjusted = [...leftLabels, ...rightLabels];
+          allAdjusted.forEach(item => {
+            const x3_adj = item.x2 + (item.isRight ? 10 : -10);
+            const y3_adj = item.adjustedY;
+            
+            ctx.beginPath();
+            ctx.moveTo(item.x1, item.y1);
+            ctx.lineTo(item.x2, item.y2);
+            ctx.lineTo(x3_adj, y3_adj);
+            ctx.strokeStyle = '#64748b'; // slate-500
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            
+            ctx.font = 'bold 11px Sarabun, sans-serif';
+            ctx.fillStyle = 'var(--text-2)';
+            ctx.textAlign = item.isRight ? 'left' : 'right';
+            ctx.textBaseline = 'middle';
+            
+            const textX = x3_adj + (item.isRight ? 4 : -4);
+            ctx.fillText(item.text, textX, y3_adj);
+          });
+          
+          ctx.restore();
+        }
+      };
+
+      chart2 = new Chart(ctx2, {
+        type: 'pie',
+        plugins: [antigenProportionDatalabelsPlugin],
+        data: {
+          labels: ['Rh Phenotyping', 'Antigen-Mi\u{1D43}', 'G6PD', 'DAT'],
+          datasets: [{
+            data: [sumPheno, sumMia, sumG6pd, sumDat],
+            backgroundColor: ['#0d9488', '#f59e0b', '#38bdf8', '#6366f1']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 120,
+              right: 120,
+              top: 15,
+              bottom: 15
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                font: { family: 'Sarabun', size: 11 }
+              }
+            }
+          }
+        }
+      });
+
+            // Table Render
+      const tableWrapper = document.getElementById('table-wrapper');
+      let tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>เดือน</th>
+              <th>Rh Phenotyping (ราย)</th>
+              <th>Antigen-Mi<sup>a</sup> (ราย)</th>
+              <th>G6PD (ราย)</th>
+              <th>DAT (ราย)</th>
+              <th class="col-total">ยอดตรวจรวมในเดือน</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let totalPheno = 0, totalMia = 0, totalG6pd = 0, totalDat = 0, totalGrand = 0;
+
+      data.forEach(item => {
+        const p = Number(item.rhPhenotyping) || 0;
+        const mia = Number(item.antigenMia) || 0;
+        const g = Number(item.g6pd) || 0;
+        const d = Number(item.dat) || 0;
+        const rowSum = p + mia + g + d;
+        
+        totalPheno += p;
+        totalMia += mia;
+        totalG6pd += g;
+        totalDat += d;
+        totalGrand += rowSum;
+
+        const isSelected = item.monthIdx.toString() === currentMonth;
+        const rowStyle = isSelected ? 'style="background-color: var(--teal-lt); font-weight: 700;"' : '';
+        // Skip rows where all values are zero (months with no data for this year)
+        const hasData = rowSum > 0 || isSelected;
+
+        if (!hasData) return; // hide zero-month rows for cleaner display
+
+        tableHtml += `
+          <tr ${rowStyle}>
+            <td>${THAI_MONTHS_FULL[item.monthIdx - 1]}</td>
+            <td>${p.toLocaleString()}</td>
+            <td>${mia.toLocaleString()}</td>
+            <td>${g.toLocaleString()}</td>
+            <td>${d.toLocaleString()}</td>
+            <td class="col-total">${rowSum.toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+            <tr class="row-total">
+              <td>ยอดรวมปี</td>
+              <td>${totalPheno.toLocaleString()}</td>
+              <td>${totalMia.toLocaleString()}</td>
+              <td>${totalG6pd.toLocaleString()}</td>
+              <td>${totalDat.toLocaleString()}</td>
+              <td class="col-total">${totalGrand.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+
+      tableWrapper.innerHTML = tableHtml;
+      if (currentMonth !== 'all') {
+        const mName = THAI_MONTHS_FULL[parseInt(currentMonth)-1];
+        document.getElementById('table-display-title').innerText = `ตารางแสดงผลลัพธ์คัดกรองหมู่เลือดแล็บพิเศษ (เฉพาะเดือน${mName})`;
+        document.getElementById('table-display-desc').innerText = `รายละเอียดสถิติบริการคัดกรองหมู่เลือดและชีวเคมีพิเศษ เจาะลึกเฉพาะเดือน${mName} ในรอบปี ${currentYear}`;
+      } else {
+        document.getElementById('table-display-title').innerText = "ตารางแสดงผลลัพธ์คัดกรองหมู่เลือดแล็บพิเศษ";
+        document.getElementById('table-display-desc').innerText = `สถิติปริมาณเคสบริการที่เข้าคัดกรองพิเศษประเภทหมู่เลือดและตรวจสารชีวเคมี (Antigentyping & G6PD) ประจำปี ${currentYear}`;
+      }
+    }
+
+    // RENDERING THE COMPARISON VIEW (ALL YEARS COMPARISON)
+    function renderComparisonView() {
+      const yearsList = ["2564", "2565", "2566", "2567", "2568", "2569"];
+
+      if (currentMonth !== 'all') {
+        const mName = THAI_MONTHS_FULL[parseInt(currentMonth)-1];
+        document.getElementById('chart-1-title').innerText = `สถิติเปรียบเทียบความเสียหายเฉพาะเดือน${mName} รายปี (2564 - 2569)`;
+        document.getElementById('chart-1-sub').innerText = `กราฟแท่งเปรียบเทียบยอดการหมดอายุสะสมของผลิตภัณฑ์เลือดเกล็ดแดงและพลาสมาเฉพาะเดือน${mName}`;
+        document.getElementById('chart-2-title').innerText = `จำนวนบริการและแล็บคัดกรองเฉพาะเดือน${mName} รายปี (2564 - 2569)`;
+        document.getElementById('chart-2-sub').innerText = `กราฟสรุปปริมาณสถิติงาน Bl.processing, ใบเบิก และแล็บคัดกรองเฉพาะเดือน${mName}`;
+        document.getElementById('table-display-title').innerText = `ตารางเปรียบเทียบแนวโน้มสถิติประจำเดือน${mName} สะสมรายปี`;
+        document.getElementById('table-display-desc').innerText = `ตารางแสดงสรุปปริมาณสถิติประจำเดือน${mName} เปรียบเทียบในแต่ละรอบปี ตั้งแต่ปี 2564 ถึง ปัจจุบัน`;
+      } else {
+        document.getElementById('chart-1-title').innerText = "กราฟสรุปสถิติเปรียบเทียบความเสียหายรายปี (2564 - 2569)";
+        document.getElementById('chart-1-sub').innerText = "กราฟแท่งเปรียบเทียบสถิติยอดเลือดแดงและพลาสมาเสียสภาพรายปี (ถุง)";
+        document.getElementById('chart-2-title').innerText = "กราฟสรุปจำนวนบริการและแล็บคัดกรองรายปี (2564 - 2569)";
+        document.getElementById('chart-2-sub').innerText = "กราฟแท่งสรุปสถิติจำนวนงาน Bl.processing และการขอเบิกเลือดรายปี";
+        document.getElementById('table-display-title').innerText = "ตารางเปรียบเทียบแนวโน้มสถิติรายปีสะสม (Annual Historical Summary)";
+        document.getElementById('table-display-desc').innerText = "ตารางแสดงยอดผลสรุปปริมาณสถิติประจำปีเปรียบเทียบความต้องการโลหิตและการเสื่อมสภาพคลังสะสมย้อนหลัง ตั้งแต่ปี 2564 ถึง ปัจจุบัน";
+      }
+
+      const blTotals = yearsList.map(y => sumAboRh(BLOOD_LAB_DATA[y], currentMonth));
+      const expTotals = yearsList.map(y => sumExpired(BLOOD_LAB_DATA[y], currentMonth));
+      const reqTotals = yearsList.map(y => sumRequested(BLOOD_LAB_DATA[y], currentMonth) || 0);
+      const ffpTotals = yearsList.map(y => sumFFP(BLOOD_LAB_DATA[y], currentMonth));
+      const agTotals = yearsList.map(y => sumAntigen(BLOOD_LAB_DATA[y], currentMonth) || 0);
+
+      // Chart 1: Expirations Comparison
+      const ctx1 = document.getElementById('chart-1').getContext('2d');
+      chart1 = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: yearsList,
+          datasets: [
+            { label: 'เลือดเกล็ดแดงหมดอายุ (RBC)', data: expTotals, backgroundColor: '#ef4444' },
+            { label: 'พลาสมาหมดอายุ (FFP)', data: ffpTotals, backgroundColor: '#a855f7' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // Chart 2: Services Comparison
+      const ctx2 = document.getElementById('chart-2').getContext('2d');
+      chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: yearsList,
+          datasets: [
+            { label: 'งานประมวลผลโลหิต (Bl.processing)', data: blTotals, backgroundColor: '#f43f5e' },
+            { label: 'คำขอเบิกรับเลือดรวม (RBC Request)', data: reqTotals, backgroundColor: '#3b82f6' },
+            { label: 'ตรวจแล็บ Antigentyping', data: agTotals, backgroundColor: '#0d9488' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // Render Comparison Data Table
+      const tableWrapper = document.getElementById('table-wrapper');
+      // Map years → notes for partial-data years
+      const antigenNote = {
+        '2567': ' (ก.ย.–พ.ย.)', // only 3 months (fiscal year sheet)
+      };
+      let tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>ปีปฏิทิน</th>
+              <th>ABO/Rh Tests (Bl.processing)</th>
+              <th>ถุงเลือดแดงหมดอายุ (Expired RBC)</th>
+              <th>ใบคำขอเบิกเลือดรวม (Requested Blood)</th>
+              <th>ถุง FFP หมดอายุ (Expired FFP)</th>
+              <th>การตรวจ Antigen Typing (ราย)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      yearsList.forEach((y, idx) => {
+        const blData = BLOOD_LAB_DATA[y];
+        const hasAntigen = blData && blData.Antigentyping;
+        const bl = blTotals[idx].toLocaleString();
+        const exp = expTotals[idx].toLocaleString();
+        const req = reqTotals[idx] === 0 ? "ไม่มีการบันทึก" : reqTotals[idx].toLocaleString();
+        const ffp = ffpTotals[idx].toLocaleString();
+        let agVal;
+        if (!hasAntigen) {
+          agVal = `<span style="color:var(--text-3); font-style:italic;">ไม่มีการบันทึก</span>`;
+        } else if (agTotals[idx] === 0) {
+          agVal = `<span style="color:var(--text-3); font-style:italic;">ไม่มีการบันทึก</span>`;
+        } else {
+          const note = antigenNote[y] || '';
+          agVal = `${agTotals[idx].toLocaleString()}<span style="font-size:10.5px; color:var(--text-3); margin-left:4px;">${note}</span>`;
+        }
+
+        tableHtml += `
+          <tr>
+            <td>${y}</td>
+            <td>${bl}</td>
+            <td style="color:var(--crimson); font-weight:700;">${exp}</td>
+            <td>${req}</td>
+            <td style="color:var(--purple); font-weight:700;">${ffp}</td>
+            <td style="font-weight:600;">${agVal}</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `
+          </tbody>
+        </table>
+      `;
+
+      tableWrapper.innerHTML = tableHtml;
+    }
+
+    // =====================================================
+    //  TAB SWITCH  –  updated for new tab-nav-bar
+    // =====================================================
+    function switchTab(tab, element) {
+      currentTab = tab;
+
+      // Update tab-btn active state
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById('tabbtn-' + tab);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Theme color per tab
+      const themes = {
+        BlProcessing:   { color: 'var(--crimson)',  bg: 'var(--crimson-lt)',  border: 'var(--crimson-md)'  },
+        ExpiredBlood:   { color: 'var(--crimson)',  bg: 'var(--crimson-lt)',  border: 'var(--crimson-md)'  },
+        RequestedBlood: { color: 'var(--blue)',     bg: 'var(--blue-lt)',     border: 'var(--blue-md)'     },
+        FFPExpired:     { color: 'var(--purple)',   bg: 'var(--purple-lt)',   border: 'var(--purple-md)'   },
+        Antigentyping:  { color: 'var(--teal)',     bg: 'var(--teal-lt)',     border: 'var(--teal-md)'     },
+      };
+      const t = themes[tab] || themes.BlProcessing;
+      const root = document.documentElement;
+      root.style.setProperty('--theme-active-bg',     t.bg);
+      root.style.setProperty('--theme-active-color',  t.color);
+      root.style.setProperty('--theme-active-border', t.border);
+      root.style.setProperty('--tab-active-color',    t.color);
+
+      renderDashboard();
+      renderYearSelect();
+      renderMonthSelect();
+      updateFilterLabel();
+    }
+
+    // =====================================================
+    //  YEAR / MONTH  DROP-DOWN  RENDERERS
+    // =====================================================
+    function renderYearSelect() {
+      const sel = document.getElementById('year-select');
+      if (!sel) return;
+      const years = ["2569", "2568", "2567", "2566", "2565", "2564", "compare"];
+      sel.innerHTML = years.map(y => {
+        const label = y === 'compare' ? '📊 เปรียบเทียบทุกปี' : `ปี ${y}  —  ${getYearTabDesc(y)}`;
+        return `<option value="${y}" ${currentYear === y ? 'selected' : ''}>${label}</option>`;
+      }).join('');
+    }
+
+    function renderMonthSelect() {
+      const sel = document.getElementById('month-select');
+      if (!sel) return;
+      const activeMonths = currentYear === 'compare'
+        ? [0,1,2,3,4,5,6,7,8,9,10,11]
+        : getActiveMonthsForYear(currentYear);
+
+      let opts = `<option value="all">★ ทุกเดือน (${currentYear === 'compare' ? 'ม.ค.–ธ.ค.' : activeMonths.length + ' เดือน'})</option>`;
+      THAI_MONTHS_FULL.forEach((m, i) => {
+        const avail = activeMonths.includes(i);
+        opts += `<option value="${i+1}" ${!avail ? 'disabled' : ''} ${currentMonth === String(i+1) ? 'selected' : ''}>${avail ? '' : '□ '}${m}</option>`;
+      });
+      sel.innerHTML = opts;
+      sel.value = currentMonth === 'all' ? 'all' : currentMonth;
+    }
+
+    function updateFilterLabel() {
+      const el = document.getElementById('active-filter-label');
+      if (!el) return;
+      const yearLabel = currentYear === 'compare' ? 'เปรียบเทียบ 2564–2569' : `ปี ${currentYear}`;
+      const monthLabel = currentMonth === 'all'
+        ? 'ทุกเดือน'
+        : THAI_MONTHS_FULL[parseInt(currentMonth) - 1];
+      el.textContent = `${yearLabel}  ·  ${monthLabel}`;
+    }
+
+    function onMonthSelectChange(val) {
+      if (val === 'all') clearMonthFilter();
+      else selectMonth(val);
+    }
+
+    // Keep old stubs so any leftover references don’t break
+    function renderYearTabs()  { renderYearSelect();  updateFilterLabel(); }
+    function renderMonthTabs() { renderMonthSelect(); updateFilterLabel(); }
+
+    function getYearTabDesc(year) {
+      if (year === 'compare') return 'เปรียบเทียบทุกปี';
+      const activeMonths = getActiveMonthsForYear(year);
+      if (activeMonths.length === 0) return 'ไม่มีข้อมูล';
+      if (activeMonths.length === 12) return 'ม.ค. – ธ.ค. (12 เดือน)';
+      const s = THAI_MONTHS_SHORT[activeMonths[0]];
+      const e = THAI_MONTHS_SHORT[activeMonths[activeMonths.length - 1]];
+      return `${s} – ${e} (${activeMonths.length} เดือน)`;
+    }
+
+    function selectYear(year) {
+      currentYear = year;
+      if (currentMonth !== 'all') {
+        const activeMonths = getActiveMonthsForYear(year);
+        if (!activeMonths.includes(parseInt(currentMonth) - 1)) currentMonth = 'all';
+      }
+      updateKPIs();
+      renderDashboard();
+      renderYearSelect();
+      renderMonthSelect();
+      updateFilterLabel();
+    }
+
+    function selectMonth(month) {
+      currentMonth = currentMonth === month ? 'all' : month;
+      updateKPIs();
+      renderDashboard();
+      renderMonthSelect();
+      updateFilterLabel();
+    }
+
+    function clearMonthFilter() {
+      currentMonth = 'all';
+      updateKPIs();
+      renderDashboard();
+      renderMonthSelect();
+      updateFilterLabel();
+    }
+  
+// Toggle laboratory navigation dropdown
+function toggleNavDropdown(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dropdown = event.currentTarget.nextElementSibling;
+  if (dropdown) {
+    dropdown.classList.toggle('show');
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const dropdowns = document.querySelectorAll('.nav-dropdown-content');
+  dropdowns.forEach(d => {
+    if (!event.target.closest('.nav-item-dropdown')) {
+      d.classList.remove('show');
+    }
+  });
+});
+
+// Premium Web Audio API synthesized click-click sound effect
+function playClickSound() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    // Primary contact press click ("cl")
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(2500, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.012);
+    
+    gain1.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.012);
+    
+    osc1.start();
+    osc1.stop(ctx.currentTime + 0.012);
+    
+    // Secondary contact release click ("ick")
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(2000, ctx.currentTime + 0.03);
+    osc2.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.042);
+    
+    gain2.gain.setValueAtTime(0.02, ctx.currentTime + 0.03);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.042);
+    
+    osc2.start(ctx.currentTime + 0.03);
+    osc2.stop(ctx.currentTime + 0.042);
+  } catch (e) {
+    console.warn("Click sound failed:", e);
+  }
+}
+
+// Attach click sound listener to all interactive elements
+document.addEventListener('click', function(event) {
+  const target = event.target.closest('button, a, .month-tab, .nav-dropdown, [role="button"], .month-tab-abbr');
+  if (target) {
+    playClickSound();
+  }
+});</script>
+
+</body>
+</html>
