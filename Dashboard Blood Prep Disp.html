@@ -978,6 +978,10 @@
   </style>
 </head>
 <body class="indigo-theme">
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
 <!-- ===== HEADER ===== -->
 <header class="header">
@@ -1936,4 +1940,3 @@ document.addEventListener('click', function(event) {
 </script>
 </body>
 </html>
-                         

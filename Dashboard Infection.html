@@ -1107,6 +1107,10 @@
 </style>
 </head>
 <body class="infection-theme">
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
 <!-- ===== HEADER ===== -->
 <header class="header">
@@ -2637,4 +2641,3 @@ document.addEventListener('click', function(event) {
 
 </body>
 </html>
- 
