@@ -849,7 +849,8 @@
                                                             3517,
                                                             3498
                                                         ]
-                             }
+                             },
+                 "plateletExpired": [null,null,null,null,null,null,null,null,null,null,null,null]
              },
     "2564":  {
                  "antibodyId":  {
@@ -1701,7 +1702,8 @@
                                                             3552,
                                                             3786
                                                         ]
-                             }
+                             },
+                 "plateletExpired": [null,null,null,null,null,null,null,null,null,null,null,null]
              },
     "2569":  {
                  "antibodyId":  {
@@ -2553,7 +2555,14 @@
                                                             null,
                                                             null
                                                         ]
-                             }
+                             },
+                 "plateletExpired": {
+                     "ldppc":  [0,0,0,11,0,0,1,0,0,0,0,0],
+                     "ldppcA": [0,0,0,1,1,0,1,0,0,0,0,0],
+                     "sdp":    [0,0,0,5,3,0,0,0,0,0,0,0],
+                     "sdpA":   [0,0,0,6,3,0,6,0,0,0,0,0],
+                     "total":  [0,0,0,23,7,0,8,0,0,0,0,0]
+                 }
              },
     "2566":  {
                  "antibodyId":  {
@@ -3405,7 +3414,8 @@
                                                             3534,
                                                             3896
                                                         ]
-                             }
+                             },
+                 "plateletExpired": [null,null,null,null,null,null,null,null,null,null,null,null]
              },
     "2568":  {
                  "antibodyId":  {
@@ -4257,7 +4267,8 @@
                                                             3323,
                                                             3381
                                                         ]
-                             }
+                             },
+                 "plateletExpired": [null,null,null,null,null,null,null,null,null,null,null,null]
              },
     "2565":  {
                  "antibodyId":  {
@@ -5109,7 +5120,8 @@
                                                             3774,
                                                             3704
                                                         ]
-                             }
+                             },
+                 "plateletExpired": [null,null,null,null,null,null,null,null,null,null,null,null]
              }
 };
 

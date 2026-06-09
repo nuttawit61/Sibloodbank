@@ -1145,6 +1145,10 @@
 </style>
 </head>
 <body>
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
 <!-- ===== HEADER ===== -->
 <header class="header blood-theme">
@@ -1184,7 +1188,7 @@
 
     <div class="header-meta">
       <div class="pill pill-red" id="headerYearPill">📅 ปี 2569</div>
-      <div class="pill pill-teal" id="headerMonthsPill"><span class="live-dot"></span> ข้อมูล ม.ค.–เม.ย. 2569</div>
+      <div class="pill pill-teal" id="headerMonthsPill"><span class="live-dot"></span> ข้อมูล ม.ค.–พ.ค. 2569</div>
       <div class="pill pill-blue" id="headerFilePill">📄 สถิติ 69.xlsx</div>
     </div>
 
@@ -1244,7 +1248,7 @@
   <!-- ===== KPI GRID ===== -->
   <div class="kpi-section-title fade-up" style="animation-delay: 0.2s;">
     <span>📈 ดัชนีชี้วัดหลัก (Key Performance Indicators)</span>
-    <span style="font-size:12px; font-weight:normal; color:var(--text-3); margin-left:auto;" id="kpiPeriodNote">รวม 4 เดือน (ม.ค., ก.พ., มี.ค., เม.ย.)</span>
+    <span style="font-size:12px; font-weight:normal; color:var(--text-3); margin-left:auto;" id="kpiPeriodNote">รวม 5 เดือน (ม.ค., ก.พ., มี.ค., เม.ย., พ.ค.)</span>
   </div>
   <div class="kpi-grid" id="kpiGrid">
     <!-- KPI cards rendered dynamically -->
@@ -1269,7 +1273,7 @@
         </div>
       </div>
       <div class="chart-wrap">
-        <canvas id="chartDonationMonthly" height="220"></canvas>
+        <canvas id="chartDonationMonthly" height="320"></canvas>
       </div>
     </div>
 
@@ -1648,44 +1652,44 @@ const BC68 = {
 };
 
 const BC69 = {
-  visitOnsite:      [3000,3271,3569,3699,null,null,null,null,null,null,null,null],
-  visitMobile:      [1696,2107,1982,1449,null,null,null,null,null,null,null,null],
-  visitTotal:       [4696,5378,5551,5148,0,0,0,0,0,0,0,null],
-  deferOnsite:      [515,635,759,767,null,null,null,null,null,null,null,null],
-  deferMobile:      [589,748,581,387,null,null,null,null,null,null,null,null],
-  deferTotal:       [1104,1383,1340,1154,0,0,0,0,0,0,0,null],
-  donationOnsite:   [2485,2636,2810,2932,null,null,null,null,null,null,null,null],
-  donationMobile:   [1107,1359,1401,1062,null,null,null,null,null,null,null,null],
-  donationTotal:    [3592,3995,4211,3994,0,0,0,0,0,0,0,null],
-  newOnsite:        [346,616,436,447,null,null,null,null,null,null,null,null],
-  newMobile:        [421,624,454,315,null,null,null,null,null,null,null,null],
-  newTotal:         [767,1240,890,762,0,0,0,0,0,0,0,null],
-  oldOnsite:        [2139,2020,2374,2485,null,null,null,null,null,null,null,null],
-  oldMobile:        [686,735,947,747,null,null,null,null,null,null,null,null],
-  oldTotal:         [2825,2755,3321,3232,0,0,0,0,0,0,0,null],
-  replaceOnsite:    [123,283,162,174,null,null,null,null,null,null,null,null],
-  replaceMobile:    [0,0,0,0,null,null,null,null,null,null,null,null],
-  replaceTotal:     [123,283,162,174,null,null,null,null,null,null,null,null],
-  directOnsite:     [null,null,null,null,null,null,null,null,null,null,null,null],
-  autologous:       [1,3,6,2,null,null,null,null,null,null,null,null],
-  voluntary:        [3467,3708,4043,3816,null,null,null,null,null,null,null,null],
+  visitOnsite:      [3000,3271,3569,3699,3230,null,null,null,null,null,null,null],
+  visitMobile:      [1696,2107,1982,1449,1742,null,null,null,null,null,null,null],
+  visitTotal:       [4696,5378,5551,5148,4972,0,0,0,0,0,0,null],
+  deferOnsite:      [515,635,759,767,747,null,null,null,null,null,null,null],
+  deferMobile:      [589,748,581,387,510,null,null,null,null,null,null,null],
+  deferTotal:       [1104,1383,1340,1154,1257,0,0,0,0,0,0,null],
+  donationOnsite:   [2485,2636,2810,2932,2483,null,null,null,null,null,null,null],
+  donationMobile:   [1107,1359,1401,1062,1232,null,null,null,null,null,null,null],
+  donationTotal:    [3592,3995,4211,3994,3715,0,0,0,0,0,0,null],
+  newOnsite:        [346,616,436,447,435,null,null,null,null,null,null,null],
+  newMobile:        [421,624,454,315,453,null,null,null,null,null,null,null],
+  newTotal:         [767,1240,890,762,888,0,0,0,0,0,0,null],
+  oldOnsite:        [2139,2020,2374,2485,2048,null,null,null,null,null,null,null],
+  oldMobile:        [686,735,947,747,779,null,null,null,null,null,null,null],
+  oldTotal:         [2825,2755,3321,3232,2827,0,0,0,0,0,0,null],
+  replaceOnsite:    [123,283,162,174,187,null,null,null,null,null,null,null],
+  replaceMobile:    [0,0,0,0,0,null,null,null,null,null,null,null],
+  replaceTotal:     [123,283,162,174,187,null,null,null,null,null,null,null],
+  directOnsite:     [null,null,null,null,2,null,null,null,null,null,null,null],
+  autologous:       [1,3,6,2,3,null,null,null,null,null,null,null],
+  voluntary:        [3467,3708,4043,3816,3523,null,null,null,null,null,null,null],
   voluntaryExclMobile: [null,null,null,null,null,null,null,null,null,null,null,null],
-  bloodLetting:     [8,9,11,6,null,null,null,null,null,null,null,null],
-  reactionOnsite:   [33,35,37,33,null,null,null,null,null,null,null,null],
-  reactionMobile:   [53,70,47,37,null,null,null,null,null,null,null,null],
-  reactionTotal:    [86,105,84,70,null,null,null,null,null,null,null,null],
-  oldMaleOnsite:    [1167,1122,1323,1381,null,null,null,null,null,null,null,null],
-  oldFemaleOnsite:  [972,898,1051,1104,null,null,null,null,null,null,null,null],
-  oldMaleMobile:    [449,354,530,408,null,null,null,null,null,null,null,null],
-  oldFemaleMobile:  [237,381,417,339,null,null,null,null,null,null,null,null],
-  newMaleOnsite:    [169,332,234,240,null,null,null,null,null,null,null,null],
-  newFemaleOnsite:  [177,284,202,207,null,null,null,null,null,null,null,null],
-  newMaleMobile:    [284,325,231,180,null,null,null,null,null,null,null,null],
-  newFemaleMobile:  [137,299,223,135,null,null,null,null,null,null,null,null],
+  bloodLetting:     [8,9,11,6,12,null,null,null,null,null,null,null],
+  reactionOnsite:   [33,35,37,33,31,null,null,null,null,null,null,null],
+  reactionMobile:   [53,70,47,37,45,null,null,null,null,null,null,null],
+  reactionTotal:    [86,105,84,70,76,null,null,null,null,null,null,null],
+  oldMaleOnsite:    [1167,1122,1323,1381,1189,null,null,null,null,null,null,null],
+  oldFemaleOnsite:  [972,898,1051,1104,859,null,null,null,null,null,null,null],
+  oldMaleMobile:    [449,354,530,408,387,null,null,null,null,null,null,null],
+  oldFemaleMobile:  [237,381,417,339,392,null,null,null,null,null,null,null],
+  newMaleOnsite:    [169,332,234,240,285,null,null,null,null,null,null,null],
+  newFemaleOnsite:  [177,284,202,207,150,null,null,null,null,null,null,null],
+  newMaleMobile:    [284,325,231,180,192,null,null,null,null,null,null,null],
+  newFemaleMobile:  [137,299,223,135,261,null,null,null,null,null,null,null],
   drivesConducted:  [null,null,null,null,null,null,null,null,null,null,null,null],
-  drivesMeetingTarget:[170,163,169,258,null,null,null,null,null,null,null,null],
-  facultyDonors:    [196,207,327,353,null,null,null,null,null,null,null,null],
-  externalDonors:   [0,3,0,29,null,null,null,null,null,null,null,null]
+  drivesMeetingTarget:[170,163,169,258,165,null,null,null,null,null,null,null],
+  facultyDonors:    [196,207,327,353,210,null,null,null,null,null,null,null],
+  externalDonors:   [0,3,0,29,24,null,null,null,null,null,null,null]
 };
 
 // =====================================================
@@ -1716,7 +1720,7 @@ const currentData = () => getYearData(selectedYear);
 const prevData = () => getYearData(selectedYear - 1);
 
 function getAvailableIdx(year) {
-  if (year === 2569) return [0, 1, 2, 3]; // ม.ค. - เม.ย. 2569 (4 เดือน)
+  if (year === 2569) return [0, 1, 2, 3, 4]; // ม.ค. - พ.ค. 2569 (5 เดือน)
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // ม.ค. - ธ.ค.
 }
 
@@ -1759,7 +1763,7 @@ function buildYearTabs() {
     const active = selectedYear === y;
     const tab = document.createElement('div');
     tab.className = 'month-tab' + (active ? ' active' : '');
-    let info = y === 2569 ? 'ม.ค. - เม.ย. (4 เดือน)' : 'ม.ค. - ธ.ค. (12 เดือน)';
+    let info = y === 2569 ? 'ม.ค. - พ.ค. (5 เดือน)' : 'ม.ค. - ธ.ค. (12 เดือน)';
     tab.innerHTML = `
       <div class="month-tab-abbr">ปี ${y}</div>
       <div class="month-tab-num">${info}</div>
@@ -1780,7 +1784,7 @@ function buildYearTabs() {
   document.getElementById('selectedYearTag').textContent = `ปีปฏิทิน ${selectedYear}`;
   document.getElementById('headerYearPill').innerHTML = `📅 ปี ${selectedYear}`;
   
-  const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–เม.ย.' : 'ม.ค.–ธ.ค.';
+  const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–พ.ค.' : 'ม.ค.–ธ.ค.';
   document.getElementById('headerMonthsPill').innerHTML = `<span class="live-dot"></span> ข้อมูล ${totalMonthsStr} ${selectedYear}`;
   document.getElementById('headerFilePill').textContent = `📄 สถิติ ${selectedYear - 2500}.xlsx`;
   
@@ -1817,7 +1821,7 @@ function buildMonthTabs() {
 
   const tag = document.getElementById('selectedMonthTag');
   if (selectedMonth === null) {
-    const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–เม.ย.' : 'ม.ค.–ธ.ค.';
+    const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–พ.ค.' : 'ม.ค.–ธ.ค.';
     tag.textContent = `รวมทุกเดือน (${totalMonthsStr} ${selectedYear})`;
   } else {
     tag.textContent = `${MONTHS_FULL_FY[selectedMonth]} ${selectedYear}`;
@@ -1849,9 +1853,9 @@ function renderMonthPanel() {
     const defRate = visits ? (defVal / visits * 100) : 0;
     const reactRate = donation ? (reactVal / donation * 100) : 0;
 
-    const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–เม.ย.' : 'ม.ค.–ธ.ค.';
-    const quartersStr = selectedYear === 2569 ? 'ไตรมาส 1 - 2' : 'ทั้งปี';
-    const monthsCount = selectedYear === 2569 ? '4 เดือน' : '12 เดือน';
+    const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–พ.ค.' : 'ม.ค.–ธ.ค.';
+    const quartersStr = selectedYear === 2569 ? 'ไตรมาส 1 - 2 (ม.ค.–พ.ค.)' : 'ทั้งปี';
+    const monthsCount = selectedYear === 2569 ? '5 เดือน' : '12 เดือน';
     
     panel.innerHTML = `
       <div class="mdp-month-badge" style="background: linear-gradient(135deg, var(--red) 0%, var(--pink) 100%); width:120px;">
@@ -1969,6 +1973,14 @@ function renderKPI() {
   const onlineAppts = sumOf('drivesMeetingTarget', idxs);
   const facultyStaff = sumOf('facultyDonors', idxs);
 
+  const newDonors = sumOf('newTotal', idxs);
+  const newOnsite = sumOf('newOnsite', idxs);
+  const newMobile = sumOf('newMobile', idxs);
+
+  const oldDonors = sumOf('oldTotal', idxs);
+  const oldOnsite = sumOf('oldOnsite', idxs);
+  const oldMobile = sumOf('oldMobile', idxs);
+
   // Compare with same period in previous year
   const pData = prevData();
   const visitsPrev = pData ? sum(pData.visitTotal, idxs) : null;
@@ -1977,6 +1989,8 @@ function renderKPI() {
   const reactPrev = pData ? sum(pData.reactionTotal, idxs) : null;
   const onlinePrev = pData ? sum(pData.drivesMeetingTarget, idxs) : null;
   const facultyPrev = pData ? sum(pData.facultyDonors, idxs) : null;
+  const newPrev = pData ? sum(pData.newTotal, idxs) : null;
+  const oldPrev = pData ? sum(pData.oldTotal, idxs) : null;
 
   const kpis = [
     {
@@ -1992,6 +2006,31 @@ function renderKPI() {
       split2Label: 'Mobile', split2Val: `${fmt(dMobile)} <small>(${pct(dMobile, donation)}%)</small>`
     },
     {
+      icon: '🛑', label: 'Defer (ผู้ถูกปฏิเสธ/เลื่อนบริจาค)', val: fmt(defer), sub: `คิดเป็น ${visits ? (defer / visits * 100).toFixed(1) : 0}% ของคัดกรองรวม`, color: 'var(--amber)', bg: 'var(--amber-lt)',
+      badge: d2badge(delta(defer, defPrev), selectedYear - 1),
+      split1Label: 'On-site Defer', split1Val: `${fmt(defOnsite)} <small>(${vOnsite ? (defOnsite / vOnsite * 100).toFixed(1) : 0}%)</small>`,
+      split2Label: 'Mobile Defer', split2Val: `${fmt(defMobile)} <small>(${vMobile ? (defMobile / vMobile * 100).toFixed(1) : 0}%)</small>`
+    },
+    {
+      icon: '🆕', label: 'ผู้บริจาคใหม่ (New Donors)', val: fmt(newDonors), sub: `คิดเป็น ${donation ? (newDonors / donation * 100).toFixed(1) : 0}% ของผู้บริจาครวม`, color: 'var(--teal)', bg: 'var(--teal-lt)',
+      badge: d2badge(delta(newDonors, newPrev), selectedYear - 1),
+      split1Label: 'On-site', split1Val: `${fmt(newOnsite)} <small>(${pct(newOnsite, newDonors)}%)</small>`,
+      split2Label: 'Mobile', split2Val: `${fmt(newMobile)} <small>(${pct(newMobile, newDonors)}%)</small>`
+    },
+    {
+      icon: '🔄', label: 'ผู้บริจาคเก่า (Returning Donors)', val: fmt(oldDonors), sub: `คิดเป็น ${donation ? (oldDonors / donation * 100).toFixed(1) : 0}% ของผู้บริจาครวม`, color: 'var(--blue)', bg: 'var(--blue-lt)',
+      badge: d2badge(delta(oldDonors, oldPrev), selectedYear - 1),
+      split1Label: 'On-site', split1Val: `${fmt(oldOnsite)} <small>(${pct(oldOnsite, oldDonors)}%)</small>`,
+      split2Label: 'Mobile', split2Val: `${fmt(oldMobile)} <small>(${pct(oldMobile, oldDonors)}%)</small>`
+    },
+    {
+      icon: '⚠️', label: 'Donor Reaction (อาการข้างเคียง)', val: fmt(reaction), sub: `คิดเป็น ${donation ? (reaction / donation * 100).toFixed(2) : 0}% ของจำนวนบริจาค`, color: 'var(--red)', bg: 'var(--red-lt)',
+      badge: d2badge(delta(reaction, reactPrev), selectedYear - 1),
+      split1Label: 'On-site React', split1Val: `<span style="color:#dc2626;font-weight:700;">${fmt(rOnsite)}</span> <small>(${dOnsite ? (rOnsite / dOnsite * 100).toFixed(2) : 0}%)</small>`,
+      split2Label: 'Mobile React', split2Val: `<span style="color:#dc2626;font-weight:700;">${fmt(rMobile)}</span> <small>(${dMobile ? (rMobile / dMobile * 100).toFixed(2) : 0}%)</small>`,
+      valueStyle: 'color: #dc2626;'
+    },
+    {
       icon: '📱', label: 'Online Registered (ลงทะเบียนออนไลน์)', val: fmt(onlineAppts), sub: 'ลงทะเบียนนัดบริจาคล่วงหน้า', color: 'var(--blue)', bg: 'var(--blue-lt)',
       badge: d2badge(delta(onlineAppts, onlinePrev), selectedYear - 1),
       split1Label: 'สัดส่วนนัด', split1Val: `${dOnsite ? (onlineAppts / dOnsite * 100).toFixed(1) : 0}% <small>ของ On-site</small>`,
@@ -2002,19 +2041,6 @@ function renderKPI() {
       badge: d2badge(delta(facultyStaff, facultyPrev), selectedYear - 1),
       split1Label: 'สัดส่วนคณะ', split1Val: `${donation ? (facultyStaff / donation * 100).toFixed(1) : 0}% <small>ของผู้บริจาครวม</small>`,
       split2Label: 'ปีก่อนหน้า', split2Val: `${fmt(facultyPrev)} <small>ราย</small>`
-    },
-    {
-      icon: '🛑', label: 'Defer (ผู้ถูกปฏิเสธ/เลื่อนบริจาค)', val: fmt(defer), sub: `คิดเป็น ${visits ? (defer / visits * 100).toFixed(1) : 0}% ของคัดกรองรวม`, color: 'var(--amber)', bg: 'var(--amber-lt)',
-      badge: d2badge(delta(defer, defPrev), selectedYear - 1),
-      split1Label: 'On-site Defer', split1Val: `${fmt(defOnsite)} <small>(${vOnsite ? (defOnsite / vOnsite * 100).toFixed(1) : 0}%)</small>`,
-      split2Label: 'Mobile Defer', split2Val: `${fmt(defMobile)} <small>(${vMobile ? (defMobile / vMobile * 100).toFixed(1) : 0}%)</small>`
-    },
-    {
-      icon: '⚠️', label: 'Donor Reaction (อาการข้างเคียง)', val: fmt(reaction), sub: `คิดเป็น ${donation ? (reaction / donation * 100).toFixed(2) : 0}% ของจำนวนบริจาค`, color: 'var(--red)', bg: 'var(--red-lt)',
-      badge: d2badge(delta(reaction, reactPrev), selectedYear - 1),
-      split1Label: 'On-site React', split1Val: `<span style="color:#dc2626;font-weight:700;">${fmt(rOnsite)}</span> <small>(${dOnsite ? (rOnsite / dOnsite * 100).toFixed(2) : 0}%)</small>`,
-      split2Label: 'Mobile React', split2Val: `<span style="color:#dc2626;font-weight:700;">${fmt(rMobile)}</span> <small>(${dMobile ? (rMobile / dMobile * 100).toFixed(2) : 0}%)</small>`,
-      valueStyle: 'color: #dc2626;'
     }
   ];
 

@@ -1184,6 +1184,10 @@
 </style>
 </head>
 <body>
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
 <!-- ===== HEADER ===== -->
 <header class="header std-theme">
@@ -1223,7 +1227,7 @@
 
     <div class="header-meta">
       <div class="pill pill-red" id="headerYearPill">📅 ปี 2569</div>
-      <div class="pill pill-teal" id="headerMonthsPill"><span class="live-dot"></span> ข้อมูล ม.ค.–เม.ย. 2569</div>
+      <div class="pill pill-teal" id="headerMonthsPill"><span class="live-dot"></span> ข้อมูล ม.ค.–พ.ค. 2569</div>
       <div class="pill pill-blue" id="headerFilePill">📄 สถิติ 69.xlsx</div>
     </div>
 
@@ -1283,7 +1287,7 @@
   <!-- ===== KPI GRID ===== -->
   <div class="kpi-section-title fade-up" style="animation-delay: 0.2s;">
     <span>📈 ดัชนีชี้วัดหลัก (Key Performance Indicators)</span>
-    <span style="font-size:12px; font-weight:normal; color:var(--text-3); margin-left:auto;" id="kpiPeriodNote">รวม 4 เดือน (ม.ค., ก.พ., มี.ค., เม.ย.)</span>
+    <span style="font-size:12px; font-weight:normal; color:var(--text-3); margin-left:auto;" id="kpiPeriodNote">รวม 5 เดือน (ม.ค., ก.พ., มี.ค., เม.ย., พ.ค.)</span>
   </div>
   <div class="kpi-grid" id="kpiGrid">
     <!-- KPI cards rendered dynamically -->
@@ -1701,40 +1705,40 @@ const STD68 = {
 
 const STD69 = {
   // --- Standard Lab ---
-  lab_ab_iden_hdfn: [3,4,2,4,null,null,null,null,null,null,null,null],
-  lab_abo_rh_hdfn: [132,121,158,141,null,null,null,null,null,null,null,null],
-  lab_anc_ab_iden: [5,17,11,9,null,null,null,null,null,null,null,null],
-  lab_anc_abo_rh: [234,219,260,197,null,null,null,null,null,null,null,null],
-  lab_anc_rh_del: [0,0,0,0,null,null,null,null,null,null,null,null],
-  lab_anc_rh_ve: [0,1,1,2,null,null,null,null,null,null,null,null],
-  lab_bg_ab_iden: [13,18,11,4,null,null,null,null,null,null,null,null],
-  lab_bg_ab_screen: [223,246,259,215,null,null,null,null,null,null,null,null],
-  lab_bg_abo: [414,438,491,408,null,null,null,null,null,null,null,null],
-  lab_bg_rh: [0,0,1,0,null,null,null,null,null,null,null,null],
-  lab_bg_rh_del: [0,1,0,0,null,null,null,null,null,null,null,null],
-  lab_cell_1_papain: [0,0,0,0,null,null,null,null,null,null,null,null],
-  lab_cell_12_glycerol: [0,1,1,0,null,null,null,null,null,null,null,null],
-  lab_cell_40_glycerol: [0,1,0,1,null,null,null,null,null,null,null,null],
-  lab_cell_5_glycerol: [0,1,1,1,null,null,null,null,null,null,null,null],
-  lab_cell_abo: [6,6,6,6,null,null,null,null,null,null,null,null],
-  lab_cell_alsever: [0,1,1,1,null,null,null,null,null,null,null,null],
-  lab_cell_ph_5_4: [0,0,0,0,null,null,null,null,null,null,null,null],
-  lab_cell_ph_6_0: [0,1,0,0,null,null,null,null,null,null,null,null],
-  lab_dat: [178,160,170,195,null,null,null,null,null,null,null,null],
-  lab_exchange: [0,1,2,0,null,null,null,null,null,null,null,null],
-  lab_iat_ab_screen: [116,85,130,116,null,null,null,null,null,null,null,null],
-  lab_iat_abo: [15,14,18,19,null,null,null,null,null,null,null,null],
-  lab_intra_uterine: [0,0,1,0,null,null,null,null,null,null,null,null],
-  lab_total_case_hdfn: [227,193,225,239,null,null,null,null,null,null,null,null],
-  lab_xmatch_hdfn: [52,49,53,40,null,null,null,null,null,null,null,null],
+  lab_ab_iden_hdfn: [3,4,2,4,2,null,null,null,null,null,null,null],
+  lab_abo_rh_hdfn: [132,121,158,141,138,null,null,null,null,null,null,null],
+  lab_anc_ab_iden: [5,17,11,9,0,null,null,null,null,null,null,null],
+  lab_anc_abo_rh: [234,219,260,197,237,null,null,null,null,null,null,null],
+  lab_anc_rh_del: [0,0,0,0,0,null,null,null,null,null,null,null],
+  lab_anc_rh_ve: [0,1,1,2,1,null,null,null,null,null,null,null],
+  lab_bg_ab_iden: [13,18,11,4,10,null,null,null,null,null,null,null],
+  lab_bg_ab_screen: [223,246,259,215,254,null,null,null,null,null,null,null],
+  lab_bg_abo: [414,438,491,408,515,null,null,null,null,null,null,null],
+  lab_bg_rh: [0,0,1,0,1,null,null,null,null,null,null,null],
+  lab_bg_rh_del: [0,1,0,0,0,null,null,null,null,null,null,null],
+  lab_cell_1_papain: [0,0,0,0,0,null,null,null,null,null,null,null],
+  lab_cell_12_glycerol: [0,1,1,0,1,null,null,null,null,null,null,null],
+  lab_cell_40_glycerol: [0,1,0,1,0,null,null,null,null,null,null,null],
+  lab_cell_5_glycerol: [0,1,1,1,1,null,null,null,null,null,null,null],
+  lab_cell_abo: [6,6,6,6,6,null,null,null,null,null,null,null],
+  lab_cell_alsever: [0,1,1,1,0,null,null,null,null,null,null,null],
+  lab_cell_ph_5_4: [0,0,0,0,0,null,null,null,null,null,null,null],
+  lab_cell_ph_6_0: [0,1,0,0,0,null,null,null,null,null,null,null],
+  lab_dat: [178,160,170,195,163,null,null,null,null,null,null,null],
+  lab_exchange: [0,1,2,0,2,null,null,null,null,null,null,null],
+  lab_iat_ab_screen: [116,85,130,116,108,null,null,null,null,null,null,null],
+  lab_iat_abo: [15,14,18,19,10,null,null,null,null,null,null,null],
+  lab_intra_uterine: [0,0,1,0,0,null,null,null,null,null,null,null],
+  lab_total_case_hdfn: [227,193,225,239,222,null,null,null,null,null,null,null],
+  lab_xmatch_hdfn: [52,49,53,40,66,null,null,null,null,null,null,null],
   // --- Standard Test ---
-  test_abo: [857,935,1039,862,null,null,null,null,null,null,null,null],
-  test_rh: [857,935,1039,862,null,null,null,null,null,null,null,null],
-  test_dat: [145,160,170,195,null,null,null,null,null,null,null,null],
-  test_iat: [558,550,649,528,null,null,null,null,null,null,null,null],
-  test_iat_ab_cells: [13,14,18,19,null,null,null,null,null,null,null,null],
-  test_xmatch: [44,49,53,40,null,null,null,null,null,null,null,null],
-  test_iden: [21,39,24,17,null,null,null,null,null,null,null,null]
+  test_abo: [857,935,1039,862,883,null,null,null,null,null,null,null],
+  test_rh: [857,935,1039,862,883,null,null,null,null,null,null,null],
+  test_dat: [145,160,170,195,163,null,null,null,null,null,null,null],
+  test_iat: [558,550,649,528,622,null,null,null,null,null,null,null],
+  test_iat_ab_cells: [13,14,18,19,10,null,null,null,null,null,null,null],
+  test_xmatch: [44,49,53,40,60,null,null,null,null,null,null,null],
+  test_iden: [21,39,24,17,29,null,null,null,null,null,null,null]
 };
 
 
@@ -1754,7 +1758,7 @@ const currentData = () => getYearData(selectedYear);
 const prevData = () => getYearData(selectedYear - 1);
 
 function getAvailableIdx(year) {
-  if (year === 2569) return [0, 1, 2, 3]; // ม.ค. - เม.ย. 2569 (4 เดือน)
+  if (year === 2569) return [0, 1, 2, 3, 4]; // ม.ค. - พ.ค. 2569 (5 เดือน)
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // ม.ค. - ธ.ค.
 }
 
@@ -1797,7 +1801,7 @@ function buildYearTabs() {
     const active = selectedYear === y;
     const tab = document.createElement('div');
     tab.className = 'month-tab' + (active ? ' active' : '');
-    let info = y === 2569 ? 'ม.ค. - เม.ย. (4 เดือน)' : 'ม.ค. - ธ.ค. (12 เดือน)';
+    let info = y === 2569 ? 'ม.ค. - พ.ค. (5 เดือน)' : 'ม.ค. - ธ.ค. (12 เดือน)';
     tab.innerHTML = `
       <div class="month-tab-abbr">ปี ${y}</div>
       <div class="month-tab-num">${info}</div>
@@ -1818,7 +1822,7 @@ function buildYearTabs() {
   document.getElementById('selectedYearTag').textContent = `ปีปฏิทิน ${selectedYear}`;
   document.getElementById('headerYearPill').innerHTML = `📅 ปี ${selectedYear}`;
   
-  const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–เม.ย.' : 'ม.ค.–ธ.ค.';
+  const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–พ.ค.' : 'ม.ค.–ธ.ค.';
   document.getElementById('headerMonthsPill').innerHTML = `<span class="live-dot"></span> ข้อมูล ${totalMonthsStr} ${selectedYear}`;
   document.getElementById('headerFilePill').textContent = `📄 สถิติ ${selectedYear - 2500}.xlsx`;
   
@@ -1855,7 +1859,7 @@ function buildMonthTabs() {
 
   const tag = document.getElementById('selectedMonthTag');
   if (selectedMonth === null) {
-    const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–เม.ย.' : 'ม.ค.–ธ.ค.';
+    const totalMonthsStr = selectedYear === 2569 ? 'ม.ค.–พ.ค.' : 'ม.ค.–ธ.ค.';
     tag.textContent = `รวมทุกเดือน (${totalMonthsStr} ${selectedYear})`;
   } else {
     tag.textContent = `${MONTHS_FULL_FY[selectedMonth]} ${selectedYear}`;

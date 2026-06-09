@@ -13,6 +13,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="blood_immuno_data.js"></script>
+  <script>
+  const barDatalabelsPlugin = {
+    id: 'barDatalabels',
+    afterDatasetsDraw(chart, args, opts) {
+      if (!opts || opts.enabled === false) return;
+      const { ctx, data } = chart;
+      ctx.save();
+      chart.data.datasets.forEach((dataset, di) => {
+        const meta = chart.getDatasetMeta(di);
+        if (meta.hidden) return;
+        meta.data.forEach((bar, idx) => {
+          const val = dataset.data[idx];
+          if (!val && val !== 0) return;
+          const label = Number(val).toLocaleString('th-TH');
+          ctx.font = opts.font || '600 11px Sarabun, sans-serif';
+          ctx.fillStyle = opts.color || '#374151';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(label, bar.x, bar.y - 3);
+        });
+      });
+      ctx.restore();
+    }
+  };
+  Chart.register(barDatalabelsPlugin);
+  </script>
 
   <style>
     :root {
@@ -492,89 +518,127 @@
 
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 1400px) {
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .kpi-grid { grid-template-columns: 1fr; }
     }
 
     .kpi-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
+      border-radius: 16px;
+      padding: 28px 28px 22px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
       position: relative;
       overflow: hidden;
       transition: all 0.25s ease;
     }
 
     .kpi-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-strong);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(0,0,0,.10);
+      border-color: var(--kpi-color);
     }
 
+    /* top accent bar */
     .kpi-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
+      top: 0; left: 0; right: 0;
+      height: 4px;
       background: var(--kpi-color);
+      border-radius: 16px 16px 0 0;
+    }
+
+    /* subtle background tint */
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: var(--kpi-bg);
+      opacity: 0.5;
+      pointer-events: none;
     }
 
     .kpi-icon-wrap {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
       background: var(--kpi-bg);
       color: var(--kpi-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      margin-bottom: 12px;
+      font-size: 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px var(--kpi-bg);
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-label {
-      font-size: 11.5px;
+      font-size: 12px;
       color: var(--text-3);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      line-height: 1.4;
+      word-break: break-word;
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-value {
-      font-size: 26px;
+      font-size: 38px;
       font-weight: 800;
-      color: var(--text-1);
-      margin: 4px 0;
+      color: var(--kpi-color);
+      margin: 10px 0 4px;
       line-height: 1.1;
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-value.big {
-      font-size: 12.5px;
+      font-size: 15px;
       font-weight: 700;
       white-space: normal;
     }
 
     .kpi-sub {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-3);
       font-weight: 500;
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-badge {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
       font-weight: 700;
       margin-top: 8px;
       border: 1px solid;
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-badge.up { background: var(--rose-lt); color: var(--rose); border-color: var(--rose-md); }
@@ -588,37 +652,43 @@
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-split-col {
       display: flex;
       flex-direction: column;
       flex: 1;
+      background: var(--kpi-bg);
+      border-radius: 10px;
+      padding: 10px 12px;
     }
 
     .kpi-split-label {
-      font-size: 10px;
-      color: var(--text-3);
-      font-weight: 600;
+      font-size: 11px;
+      color: var(--kpi-color);
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.4px;
     }
 
     .kpi-split-value {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 600;
       color: var(--text-2);
-      margin-top: 2px;
+      margin-top: 4px;
+      line-height: 1.3;
     }
 
     .kpi-split-value small {
-      font-size: 10px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 400;
       color: var(--text-3);
-      margin-left: 2px;
+      margin-left: 3px;
     }
 
     /* ===== CHARTS SECTION ===== */
@@ -677,255 +747,269 @@
     }
 
     /* ===== DATA TABLE SECTION (PREMIUM MODERN DESIGN) ===== */
+    /* ===== TABLE SECTION CARD ===== */
     .table-section {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 8px -1px rgba(15, 23, 42, 0.03);
-      padding: 28px;
-      margin-bottom: 32px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px -4px rgba(15,23,42,0.08), 0 2px 8px -1px rgba(15,23,42,0.04);
       overflow: hidden;
-      border-top: 4px solid var(--rose);
+      margin-bottom: 32px;
     }
 
     .table-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
       gap: 16px;
       flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
+      padding: 22px 28px 18px;
+      background: linear-gradient(135deg, #fff1f2 0%, #fdf4ff 100%);
+      border-bottom: 2px solid var(--rose-md);
     }
 
     .table-title h3 {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-1);
-      letter-spacing: -0.01em;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--rose-dk);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-title h3::before {
+      content: "📋";
+      font-size: 18px;
     }
 
     .table-title p {
       font-size: 12px;
       color: var(--text-3);
-      margin-top: 4px;
+      margin-top: 5px;
+      padding-left: 26px;
     }
 
     .table-wrap {
       overflow-x: auto;
-      margin: 0 -28px -28px;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
-    }
-    
-    /* Scrollbar style */
-    .table-wrap::-webkit-scrollbar {
-      height: 6px;
-    }
-    .table-wrap::-webkit-scrollbar-track {
-      background: var(--bg-alt);
-      border-radius: 3px;
-    }
-    .table-wrap::-webkit-scrollbar-thumb {
-      background: var(--rose-md);
-      border-radius: 3px;
-    }
-    .table-wrap::-webkit-scrollbar-thumb:hover {
-      background: var(--rose);
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
     }
 
+    /* Scrollbar */
+    .table-wrap::-webkit-scrollbar { height: 5px; }
+    .table-wrap::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--rose-md); border-radius: 3px; }
+    .table-wrap::-webkit-scrollbar-thumb:hover { background: var(--rose); }
+
+    /* ===== TABLE BASE ===== */
     #dataTable {
       width: 100%;
       border-collapse: collapse;
       font-size: 12.5px;
-      text-align: right;
+      text-align: center;
       font-family: 'Sarabun', 'Inter', sans-serif;
     }
 
     #dataTable th, #dataTable td {
-      padding: 11px 14px;
+      padding: 9px 12px;
       border-bottom: 1px solid #f1f5f9;
       white-space: nowrap;
-      transition: background 0.15s ease;
+      transition: background 0.12s ease;
     }
 
+    /* Header row */
+    #dataTable thead tr {
+      background: transparent;
+    }
     #dataTable th {
       font-weight: 700;
-      color: var(--text-2);
-      background: #f8fafc;
+      color: #ffffff;
+      background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
       position: sticky;
       top: 0;
       z-index: 10;
-      font-size: 12px;
+      font-size: 11.5px;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
-      border-bottom: 2px solid var(--border-strong);
+      letter-spacing: 0.04em;
+      border-bottom: none;
+      text-align: center;
+      padding: 11px 12px;
     }
 
+    /* Label column — sticky left */
     #dataTable th:first-child, #dataTable td:first-child {
       text-align: left;
       position: sticky;
       left: 0;
       z-index: 5;
       font-weight: 600;
-      border-right: 2px solid var(--border);
+      min-width: 230px;
+      max-width: 280px;
+      white-space: normal;
+      border-right: 2px solid rgba(0,0,0,0.07);
+    }
+    #dataTable th:first-child {
+      z-index: 11;
+      background: #9f1239;
+      border-right: 2px solid #fb7185;
+      min-width: 230px;
     }
 
-    /* Alternating rows background */
+    /* Alternating rows */
     #dataTable tbody tr:nth-child(even) td {
-      background: #fafafa;
+      background: #f8fafc;
     }
     #dataTable tbody tr:nth-child(odd) td {
       background: #ffffff;
     }
-    #dataTable tbody tr:nth-child(even) td:first-child {
-      background: #fafafa;
-    }
-    #dataTable tbody tr:nth-child(odd) td:first-child {
-      background: #ffffff;
-    }
+    #dataTable tbody tr:nth-child(even) td:first-child { background: #f8fafc; }
+    #dataTable tbody tr:nth-child(odd)  td:first-child { background: #ffffff; }
 
-    /* Row Hover */
+    /* Row hover */
     #dataTable tbody tr:hover td {
-      background: #fff1f2 !important; /* light rose hover */
-    }
-    #dataTable tbody tr:hover td:first-child {
       background: #fff1f2 !important;
     }
-
-    /* Indent for nested items */
-    .row-indent-1 {
-      padding-left: 28px !important;
-      color: var(--text-2);
-      position: relative;
-    }
-    .row-indent-1::before {
-      content: "↳";
-      position: absolute;
-      left: 14px;
-      color: var(--text-4);
-      font-weight: normal;
-    }
-    .row-indent-2 {
-      padding-left: 42px !important;
-      color: var(--text-3);
-      position: relative;
-    }
-    .row-indent-2::before {
-      content: "↳";
-      position: absolute;
-      left: 28px;
-      color: var(--text-4);
-      font-weight: normal;
-    }
-
-    /* Active Column Highlight */
-    .active-month-col {
-      background: rgba(219, 39, 119, 0.03) !important;
-      border-left: 1px solid var(--rose-md) !important;
-      border-right: 1px solid var(--rose-md) !important;
-    }
-    tr:hover td.active-month-col {
+    #dataTable tbody tr:hover td:first-child {
       background: #ffe4e6 !important;
     }
+
+    /* Indent classes */
+    .row-indent-1 {
+      padding-left: 30px !important;
+      color: var(--text-2);
+      position: relative;
+      font-size: 12px;
+    }
+    .row-indent-1::before {
+      content: "▸";
+      position: absolute;
+      left: 16px;
+      color: var(--rose-md);
+      font-size: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .row-indent-2 {
+      padding-left: 44px !important;
+      color: var(--text-3);
+      position: relative;
+      font-size: 11.5px;
+    }
+    .row-indent-2::before {
+      content: "◦";
+      position: absolute;
+      left: 30px;
+      color: var(--text-4);
+    }
+
+    /* ===== ACTIVE MONTH COLUMN ===== */
+    .active-month-col {
+      background: rgba(219,39,119,0.04) !important;
+      border-left: 1px solid rgba(219,39,119,0.25) !important;
+      border-right: 1px solid rgba(219,39,119,0.25) !important;
+    }
+    tr:hover td.active-month-col { background: #ffe4e6 !important; }
     th.active-month-col {
       background: var(--rose) !important;
       color: #ffffff !important;
-      border-left: 1px solid var(--rose-dk) !important;
-      border-right: 1px solid var(--rose-dk) !important;
     }
 
-    /* Totals Columns */
+    /* ===== SPECIAL COLUMNS ===== */
     .col-total {
       font-weight: 700;
       color: var(--rose-dk);
-      background: rgba(219, 39, 119, 0.05) !important;
-      border-left: 1.5px solid var(--rose-md) !important;
-      border-right: 1.5px solid var(--rose-md) !important;
+      background: rgba(219,39,119,0.06) !important;
+      border-left: 2px solid var(--rose-md) !important;
+      border-right: 2px solid var(--rose-md) !important;
     }
     th.col-total {
-      background: var(--rose-dk) !important;
-      color: #ffffff !important;
-      border-left: 1.5px solid var(--rose-dk) !important;
-      border-right: 1.5px solid var(--rose-dk) !important;
+      background: var(--rose) !important;
+      color: #fff !important;
+      border-left: 2px solid var(--rose-dk) !important;
+      border-right: 2px solid var(--rose-dk) !important;
     }
 
     .col-year-total {
       font-weight: 700;
-      color: var(--text-1);
-      background: #f1f5f9 !important;
-      border-left: 2px solid var(--border-strong) !important;
+      color: #1e293b;
+      background: #e2e8f0 !important;
+      border-left: 2px solid #94a3b8 !important;
     }
     th.col-year-total {
-      background: #cbd5e1 !important;
-      color: var(--text-1) !important;
-      border-left: 2px solid var(--border-strong) !important;
+      background: #881337 !important;
+      color: #ffffff !important;
+      border-left: 2px solid #fb7185 !important;
     }
 
     .col-year-pct {
       font-weight: 600;
       color: var(--text-2);
-      background: #f8fafc !important;
-      text-align: center;
+      background: #f1f5f9 !important;
+      font-size: 12px;
     }
     th.col-year-pct {
-      background: #e2e8f0 !important;
-      color: var(--text-2) !important;
+      background: #9f1239 !important;
+      color: #ffffff !important;
     }
 
-    /* Section Headers styling */
-    tr.section-header {
-      border-top: 2px solid var(--border-strong);
-    }
+    /* ===== SECTION HEADERS ===== */
     tr.section-header td {
       font-weight: 800;
-      color: var(--rose-dk);
-      text-align: left;
-      font-size: 13.5px;
-      background: rgba(219, 39, 119, 0.04) !important;
-      border-bottom: 2px solid var(--rose-md) !important;
-      border-left: 4px solid var(--rose) !important;
-      padding-top: 14px;
-      padding-bottom: 14px;
+      color: #fff;
+      text-align: left !important;
+      font-size: 12.5px;
+      letter-spacing: 0.01em;
+      background: linear-gradient(90deg, #be185d 0%, #9f1239 100%) !important;
+      border-bottom: none !important;
+      border-top: 4px solid transparent !important;
+      padding: 11px 20px !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
 
     tr.sub-section-header td {
       font-weight: 700;
-      color: var(--text-2);
-      text-align: left;
+      color: var(--rose-dk);
+      text-align: left !important;
       font-size: 12px;
-      background: #fdf2f8 !important; /* very soft pink tint */
-      padding-left: 20px;
+      background: linear-gradient(90deg, #fdf2f8 0%, #fce7f3 60%, #fff 100%) !important;
+      padding: 9px 20px !important;
+      border-top: 2px solid var(--rose-lt) !important;
       border-bottom: 1px solid var(--rose-lt) !important;
+      border-left: 3px solid var(--rose-md) !important;
     }
 
-    /* Total Rows */
+    /* ===== TOTAL ROWS ===== */
     tr.total-row td {
       font-weight: 700;
-      border-top: 1.5px solid var(--text-1) !important;
-      border-bottom: 2px solid var(--text-1) !important;
-      background: #f8fafc !important;
-      color: var(--text-1);
+      background: linear-gradient(90deg, #f0fdf4 0%, #f8fafc 100%) !important;
+      color: #166534;
+      border-top: 1.5px solid #86efac !important;
+      border-bottom: 1.5px solid #86efac !important;
+      font-size: 12.5px;
+    }
+    tr.total-row td:first-child {
+      border-left: 3px solid #22c55e !important;
+      color: #15803d;
     }
     tr.total-row:hover td {
-      background: #fff1f2 !important;
+      background: #dcfce7 !important;
     }
-    
-    /* Highlight for Occurrence items */
+
+    /* ===== VALUE HIGHLIGHTS ===== */
     .occur-cell-alert {
-      color: var(--red) !important;
+      color: #dc2626 !important;
       font-weight: 700;
+      background: rgba(220,38,38,0.06) !important;
     }
-    
-    /* Highlight for Ratio items */
     .ratio-good {
-      color: var(--teal) !important;
+      color: #0f766e !important;
       font-weight: 700;
+      background: rgba(20,184,166,0.06) !important;
     }
     .ratio-warning {
-      color: var(--amber) !important;
+      color: #b45309 !important;
       font-weight: 700;
+      background: rgba(245,158,11,0.08) !important;
     }
 
     /* ===== ANALYSIS SECTION ===== */
@@ -1152,6 +1236,10 @@
 </style>
 </head>
 <body class="rose-theme">
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
 <!-- ===== HEADER ===== -->
 <header class="header">
@@ -1160,8 +1248,8 @@
       <img src="F_01_png_v-logo_si_th.png" alt="Siriraj Logo" style="height: 54px; width: auto; object-fit: contain; margin-right: 2px;">
       <div class="header-divider" style="height: 32px; margin: 0 10px;"></div>
       <div class="logo-info">
-        <h1>Immunohematology Statistics</h1>
-        <p>งานบริการเตรียมโลหิตและทดสอบความเข้ากันได้ · คณะแพทยศาสตร์ศิริราชพยาบาล</p>
+        <h1>Immunohematology</h1>
+        <p>ภาควิชาเวชศาสตร์การธนาคารเลือด</p>
       </div>
     </div>
     
@@ -1260,8 +1348,8 @@
     <div class="chart-card fade-up" style="animation-delay: 0.25s;">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>แนวโน้มสถิติสิ่งส่งตรวจและการทำ Crossmatch รายเดือน</h3>
-          <p>เปรียบเทียบจำนวนสิ่งส่งตรวจคัดเตรียม (ตรวจรับ+ตรวจจ่าย) เทียบกับยอดการรัน Crossmatch (CM รวม)</p>
+          <h3>สถิติ Request และ Crossmatch ประจำปี</h3>
+          <p>เปรียบเทียบจำนวน Request ขอเลือด (ในเวลา+นอกเวลา) เทียบกับยอดการรัน Crossmatch (CM รวม)</p>
         </div>
       </div>
       <div class="chart-wrap">
@@ -1273,7 +1361,7 @@
     <div class="chart-card fade-up" style="animation-delay: 0.3s;">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>สัดส่วนการจ่ายผลิตภัณฑ์โลหิตแยกตามพื้นที่ความรับผิดชอบ</h3>
+          <h3>การจ่าย Blood Product ในเวลา / นอกเวลา</h3>
           <p>เปรียบเทียบปริมาณการจ่ายส่วนประกอบโลหิต FFP, Cryoprecipitate และเกล็ดเลือดสะสม สำหรับภายในศิริราช vs ภายนอก/ส่งต่อ</p>
         </div>
       </div>
@@ -1285,21 +1373,34 @@
 
   <!-- ===== CHARTS ROW 2 ===== -->
   <div class="charts-grid">
-    <!-- Chart 3: Blood Products Usage (RBC vs Platelets) -->
+    <!-- Chart 3a: RBC Usage -->
     <div class="chart-card fade-up" style="animation-delay: 0.35s;">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>สถิติการจ่ายส่วนประกอบของโลหิตกลุ่มเม็ดเลือดแดง vs เกล็ดเลือด (ยูนิท)</h3>
-          <p>ยอดสะสมแยกรายเดือนของผลิตภัณฑ์ Red Blood Cells (PRC, LPB, PFB, WB) เทียบกับ Platelets (PC, LPPC/LDPPC, SDP)</p>
+          <h3>การจ่าย RBC รายเดือน (ยูนิท)</h3>
+          <p>WB + PRC + LPB + PFB</p>
         </div>
       </div>
       <div class="chart-wrap">
-        <canvas id="chartUsageRbcPlt" height="230"></canvas>
+        <canvas id="chartUsageRbc" height="230"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 3b: Platelet Usage -->
+    <div class="chart-card fade-up" style="animation-delay: 0.37s;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>การจ่าย Platelet รายเดือน (ยูนิท)</h3>
+          <p>PC + LPPC/LDPPC + SDP</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chartUsagePlt" height="230"></canvas>
       </div>
     </div>
 
     <!-- Chart 4: Antibody / Quality profile -->
-    <div class="chart-card fade-up" style="animation-delay: 0.38s;">
+    <div class="chart-card fade-up" style="animation-delay: 0.39s;">
       <div class="chart-header">
         <div class="chart-title" id="chart4Header">
           <h3>ผลการจำแนกชนิดของสารภูมิคุ้มกัน (Antibody Identification Profile)</h3>
@@ -1312,12 +1413,27 @@
     </div>
   </div>
 
+  <!-- ===== PLATELET EXPIRED CHART ===== -->
+  <div class="charts-grid" style="grid-template-columns: 1fr;" id="pltExpChartSection">
+    <div class="chart-card fade-up" style="animation-delay: 0.43s;">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>เกล็ดเลือดหมดอายุ (Platelet Expired) รายเดือน แยกตามชนิด</h3>
+          <p>LDPPC, LDPPC(A), SDP, SDP(A) (ยูนิท)</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chartPltExpired" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== DETAILED DATA TABLE ===== -->
   <div class="table-section fade-up" style="animation-delay: 0.45s;">
     <div class="table-header">
       <div class="table-title">
-        <h3>รายงานตารางสถิติตัวเลขรายเดือนอย่างละเอียด (Tab: Immunohematology & Immunohematology2)</h3>
-        <p>รวบรวมตัวเลขการเตรียมโลหิต การเบิกจ่ายผลิตภัณฑ์ ความปลอดภัยในการถ่ายเลือด และการจำแนกแอนติบอดีสะสมประจำปี</p>
+        <h3 id="tableTitle">รายงานสถิติ Immunohematology ประจำปี 2569</h3>
+        <p>รวบรวมตัวเลขการเตรียมโลหิต · การเบิกจ่ายผลิตภัณฑ์ · ความปลอดภัยในการถ่ายเลือด · การจำแนกแอนติบอดีสะสมประจำปี</p>
       </div>
     </div>
     <div class="table-wrap">
@@ -1506,6 +1622,7 @@ function buildMonthTabs() {
         selectedMonth = i;
       }
       refresh();
+      buildCharts();
     });
     container.appendChild(tab);
   });
@@ -1667,24 +1784,62 @@ function renderKPI() {
   const badSpecimens = sum(c.occurrence.inappropriateSpecimen, idxs);
   const safetyVal = reactionCases + wbitCases + badSpecimens;
 
+  const emergencyVal = (c.requestEmergency && c.requestEmergency.total) ? sum(c.requestEmergency.total, idxs) : 0;
+
+  // Blood product dispensing
+  const u = c.bloodProductsUsage;
+  const rbcVal     = u && u.rbc ? sum(u.rbc, idxs) : 0;
+  const rbcWb      = u && u.wb  ? sum(u.wb,  idxs) : 0;
+  const rbcPrc     = u && u.prc ? sum(u.prc, idxs) : 0;
+  const rbcLpb     = u && u.lpb ? sum(u.lpb, idxs) : 0;
+  const rbcPfb     = u && u.pfb ? sum(u.pfb, idxs) : 0;
+  const plateletVal  = u && u.totalPlatelet && u.totalPlatelet.unit ? sum(u.totalPlatelet.unit, idxs) : 0;
+  const plateletPc   = u && u.pc   && u.pc.unit   ? sum(u.pc.unit,   idxs) : 0;
+  const plateletLppc = u && u.lppc && u.lppc.unit ? sum(u.lppc.unit, idxs) : 0;
+  const plateletSdp  = u && u.sdp  && u.sdp.unit  ? sum(u.sdp.unit,  idxs) : 0;
+  const cryoVal    = u && u.cryo && u.cryo.unit ? sum(u.cryo.unit, idxs) : 0;
+  const ffpVal     = u && u.ffp && u.ffp.unit ? sum(u.ffp.unit, idxs) : 0;
+
+  const pltExp = (c.plateletExpired && !Array.isArray(c.plateletExpired) && c.plateletExpired.total) ? c.plateletExpired : null;
+  const pltExpiredVal  = pltExp ? pltExp.total.reduce((t,v)=>t+(v||0),0) : 0;
+  const pltExpLdppc    = pltExp ? pltExp.ldppc.reduce((t,v)=>t+(v||0),0) : 0;
+  const pltExpLdppcA   = pltExp ? pltExp.ldppcA.reduce((t,v)=>t+(v||0),0) : 0;
+  const pltExpSdp      = pltExp ? pltExp.sdp.reduce((t,v)=>t+(v||0),0) : 0;
+  const pltExpSdpA     = pltExp ? pltExp.sdpA.reduce((t,v)=>t+(v||0),0) : 0;
+
   // Compare with previous year
   const p = prevData();
-  let specDelta = null, cmDelta = null, ctDelta = null, safetyDelta = null;
+  let specDelta = null, cmDelta = null, ctDelta = null, safetyDelta = null, emergencyDelta = null, pltExpiredDelta = null;
+  let receiveSpecDelta = null, dispenseSpecDelta = null;
+  let rbcDelta = null, plateletDelta = null, cryoDelta = null, ffpDelta = null;
   if (p) {
     const specPrev = sum(p.request.totalSpecimens, idxs);
+    const receivePrev = sum(p.request.receiveSpecimens, idxs);
+    const dispensePrev = sum(p.request.dispenseSpecimens, idxs);
     const cmPrev = sum(p.request.totalCrossmatch, idxs);
     const txPrev = sum(p.request.transfusionRbc, idxs);
     const ctPrev = txPrev > 0 ? (cmPrev / txPrev) : 0;
-    
+
     const reactionPrev = sum(p.occurrence.transfusionReaction, idxs);
     const wbitPrev = sum(p.occurrence.wrongBloodInTube, idxs);
     const badPrev = sum(p.occurrence.inappropriateSpecimen, idxs);
     const safetyPrev = reactionPrev + wbitPrev + badPrev;
 
     specDelta = delta(specimensVal, specPrev);
+    receiveSpecDelta = delta(receiveSpec, receivePrev);
+    dispenseSpecDelta = delta(dispenseSpec, dispensePrev);
     cmDelta = delta(crossmatchVal, cmPrev);
     ctDelta = ctPrev > 0 ? Math.round(((ctRatioVal - ctPrev) / ctPrev) * 100) : null;
     safetyDelta = delta(safetyVal, safetyPrev);
+    const emergPrev = (p.requestEmergency && p.requestEmergency.total) ? sum(p.requestEmergency.total, idxs) : 0;
+    emergencyDelta = delta(emergencyVal, emergPrev);
+    const pltExpPrev = (p.plateletExpired && p.plateletExpired.total) ? p.plateletExpired.total.reduce((t,v)=>t+(v||0),0) : 0;
+    pltExpiredDelta = delta(pltExpiredVal, pltExpPrev);
+    const pu = p.bloodProductsUsage;
+    rbcDelta      = delta(rbcVal,      pu && pu.rbc ? sum(pu.rbc, idxs) : 0);
+    plateletDelta = delta(plateletVal, pu && pu.totalPlatelet && pu.totalPlatelet.unit ? sum(pu.totalPlatelet.unit, idxs) : 0);
+    cryoDelta     = delta(cryoVal,     pu && pu.cryo && pu.cryo.unit ? sum(pu.cryo.unit, idxs) : 0);
+    ffpDelta      = delta(ffpVal,      pu && pu.ffp && pu.ffp.unit ? sum(pu.ffp.unit, idxs) : 0);
   }
 
   const kpiGrid = document.getElementById('kpiGrid');
@@ -1712,19 +1867,21 @@ function renderKPI() {
   kpiGrid.innerHTML = `
     <!-- Card 1: Total Specimens Request -->
     <div class="kpi-card" style="--kpi-color: var(--rose); --kpi-bg: var(--rose-lt);">
-      <div class="kpi-icon-wrap">🩸</div>
-      <div class="kpi-label">สิ่งส่งตรวจเตรียมเลือดทั้งหมด</div>
+      <div class="kpi-icon-wrap">📋</div>
+      <div class="kpi-label">Blood Request ขอเลือดในเวลา / นอกเวลา</div>
       <div class="kpi-value">${fmt(specimensVal)}</div>
-      <div class="kpi-sub">สิ่งส่งตรวจที่ส่งเช็คกรุ๊ปและจองเลือด</div>
+      <div class="kpi-sub">จำนวน Request ขอเลือดรวมทั้งหมด (ราย)</div>
       ${d2badge(specDelta, selectedYear - 1)}
       <div class="kpi-split-row">
         <div class="kpi-split-col">
-          <div class="kpi-split-label">ตรวจรับ</div>
+          <div class="kpi-split-label">ในเวลา</div>
           <div class="kpi-split-value">${fmt(receiveSpec)}<small>${pct(receiveSpec, specimensVal)}%</small></div>
+          ${d2badge(receiveSpecDelta, selectedYear - 1)}
         </div>
-        <div class="kpi-split-col" style="border-left: 1px solid var(--border); padding-left: 10px;">
-          <div class="kpi-split-label">ตรวจจ่าย</div>
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">นอกเวลา</div>
           <div class="kpi-split-value">${fmt(dispenseSpec)}<small>${pct(dispenseSpec, specimensVal)}%</small></div>
+          ${d2badge(dispenseSpecDelta, selectedYear - 1)}
         </div>
       </div>
     </div>
@@ -1738,11 +1895,11 @@ function renderKPI() {
       ${d2badge(cmDelta, selectedYear - 1)}
       <div class="kpi-split-row">
         <div class="kpi-split-col">
-          <div class="kpi-split-label">สำหรับตรวจรับ</div>
+          <div class="kpi-split-label">ในเวลา</div>
           <div class="kpi-split-value">${fmt(receiveCm)}</div>
         </div>
-        <div class="kpi-split-col" style="border-left: 1px solid var(--border); padding-left: 10px;">
-          <div class="kpi-split-label">สำหรับตรวจจ่าย</div>
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">นอกเวลา</div>
           <div class="kpi-split-value">${fmt(dispenseCm)}</div>
         </div>
       </div>
@@ -1751,17 +1908,18 @@ function renderKPI() {
     <!-- Card 3: C:T Ratio -->
     <div class="kpi-card" style="--kpi-color: var(--teal); --kpi-bg: var(--teal-lt);">
       <div class="kpi-icon-wrap">⚖️</div>
-      <div class="kpi-label">Crossmatch-to-Transfusion Ratio</div>
+      <div class="kpi-label">C : T Ratio</div>
       <div class="kpi-value" style="color: var(--teal);">${ctRatioVal ? ctRatioVal.toFixed(3) : '–'}</div>
       <div class="kpi-sub">เทียบยอด Crossmatch vs RBC เบิกใช้จริง</div>
       ${ctBadge}
+      ${d2badge(ctDelta, selectedYear - 1)}
       <div class="kpi-split-row">
         <div class="kpi-split-col">
-          <div class="kpi-split-label">จองสุทธิ</div>
+          <div class="kpi-split-label">Crossmatch</div>
           <div class="kpi-split-value">${fmt(crossmatchVal)}</div>
         </div>
-        <div class="kpi-split-col" style="border-left: 1px solid var(--border); padding-left: 10px;">
-          <div class="kpi-split-label">ใช้จริง RBC</div>
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">Transfusion</div>
           <div class="kpi-split-value">${fmt(transfusionRbcVal)}</div>
         </div>
       </div>
@@ -1769,8 +1927,8 @@ function renderKPI() {
 
     <!-- Card 4: Safety Indicators -->
     <div class="kpi-card" style="--kpi-color: var(--red); --kpi-bg: var(--red-lt);">
-      <div class="kpi-icon-wrap">🛡️</div>
-      <div class="kpi-label">ความปลอดภัยและสิ่งส่งตรวจไม่เหมาะสม</div>
+      <div class="kpi-icon-wrap">⚠️</div>
+      <div class="kpi-label">Occurrence</div>
       <div class="kpi-value" style="color: var(--red);">${fmt(safetyVal)}</div>
       <div class="kpi-sub">เคสที่มีรายงานปฏิกิริยา / บกพร่อง</div>
       ${safetyBadge}
@@ -1779,13 +1937,139 @@ function renderKPI() {
           <div class="kpi-split-label">Reaction</div>
           <div class="kpi-split-value" style="color:var(--red); font-weight:700;">${fmt(reactionCases)}</div>
         </div>
-        <div class="kpi-split-col" style="border-left: 1px solid var(--border); padding-left: 10px;">
-          <div class="kpi-split-label">ป้ายปนเปื้อน/WBIT</div>
+        <div class="kpi-split-col">
+          <div class="kpi-split-label" style="font-size:10px;">Wrong Blood in Tube</div>
           <div class="kpi-split-value" style="color:var(--red); font-weight:700;">${fmt(wbitCases)}</div>
         </div>
-        <div class="kpi-split-col" style="border-left: 1px solid var(--border); padding-left: 10px;">
-          <div class="kpi-split-label">ส่งตรวจไม่เข้าเกณฑ์</div>
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">ปฏิเสธสิ่งส่งตรวจ</div>
           <div class="kpi-split-value" style="color:var(--text-1); font-weight:700;">${fmt(badSpecimens)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Emergency Request -->
+    <div class="kpi-card" style="--kpi-color: var(--amber); --kpi-bg: var(--amber-lt);">
+      <div class="kpi-icon-wrap">🚑</div>
+      <div class="kpi-label">Request (Emergency)</div>
+      <div class="kpi-value" style="color: var(--amber);">${fmt(emergencyVal)}</div>
+      <div class="kpi-sub">จำนวน Request ด่วนฉุกเฉิน (ครั้ง)</div>
+      ${d2badge(emergencyDelta, selectedYear - 1)}
+      <div class="kpi-split-row">
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">สัดส่วนจาก Request ทั้งหมด</div>
+          <div class="kpi-split-value" style="color:var(--amber);">${specimensVal > 0 ? ((emergencyVal/specimensVal)*100).toFixed(1) : '–'}<small>%</small></div>
+        </div>
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">เฉลี่ย/เดือน</div>
+          <div class="kpi-split-value">${idxs.length > 0 ? Math.round(emergencyVal / idxs.length).toLocaleString('th-TH') : '–'}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6: Platelet Expired -->
+    <div class="kpi-card" style="--kpi-color: var(--purple); --kpi-bg: var(--purple-lt);">
+      <div class="kpi-icon-wrap">⏰</div>
+      <div class="kpi-label">Platelet Expired (หมดอายุ)</div>
+      <div class="kpi-value" style="color: var(--purple);">${fmt(pltExpiredVal)}</div>
+      <div class="kpi-sub">ยูนิทเกล็ดเลือดที่หมดอายุ (ยูนิท)</div>
+      ${d2badge(pltExpiredDelta, selectedYear - 1)}
+      <div class="kpi-split-row" style="flex-wrap:wrap; gap:6px;">
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">LDPPC</div>
+          <div class="kpi-split-value">${fmt(pltExpLdppc)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">LDPPC(A)</div>
+          <div class="kpi-split-value">${fmt(pltExpLdppcA)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">SDP</div>
+          <div class="kpi-split-value">${fmt(pltExpSdp)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">SDP(A)</div>
+          <div class="kpi-split-value">${fmt(pltExpSdpA)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 7: จ่าย RBC -->
+    <div class="kpi-card" style="--kpi-color: #dc2626; --kpi-bg: #fff5f5;">
+      <div class="kpi-icon-wrap"><svg viewBox="0 0 32 36" width="26" height="26" xmlns="http://www.w3.org/2000/svg"><rect x="13" y="0" width="6" height="6" rx="2" fill="#dc2626" opacity="0.55"/><rect x="9" y="5" width="14" height="3" rx="1.5" fill="#dc2626" opacity="0.4"/><path d="M6 8 L26 8 Q29 8 29 11 L29 25 Q29 34 16 34 Q3 34 3 25 L3 11 Q3 8 6 8 Z" fill="#dc2626"/><ellipse cx="11" cy="19" rx="2.5" ry="4" fill="white" opacity="0.18"/></svg></div>
+      <div class="kpi-label">จ่าย RBC</div>
+      <div class="kpi-value" style="color:#dc2626;">${fmt(rbcVal)}</div>
+      <div class="kpi-sub">เม็ดเลือดแดงรวมทุกประเภท (ยูนิท)</div>
+      ${d2badge(rbcDelta, selectedYear - 1)}
+      <div class="kpi-split-row" style="flex-wrap:wrap; gap:6px;">
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">WB</div>
+          <div class="kpi-split-value">${fmt(rbcWb)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">PRC</div>
+          <div class="kpi-split-value">${fmt(rbcPrc)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">LPB</div>
+          <div class="kpi-split-value">${fmt(rbcLpb)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">PFB</div>
+          <div class="kpi-split-value">${fmt(rbcPfb)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 8: จ่าย Platelet -->
+    <div class="kpi-card" style="--kpi-color: #7c3aed; --kpi-bg: #f5f3ff;">
+      <div class="kpi-icon-wrap"><svg viewBox="0 0 32 36" width="26" height="26" xmlns="http://www.w3.org/2000/svg"><rect x="13" y="0" width="6" height="6" rx="2" fill="#7c3aed" opacity="0.55"/><rect x="9" y="5" width="14" height="3" rx="1.5" fill="#7c3aed" opacity="0.4"/><path d="M6 8 L26 8 Q29 8 29 11 L29 25 Q29 34 16 34 Q3 34 3 25 L3 11 Q3 8 6 8 Z" fill="#7c3aed"/><ellipse cx="11" cy="19" rx="2.5" ry="4" fill="white" opacity="0.18"/></svg></div>
+      <div class="kpi-label">จ่าย Platelet</div>
+      <div class="kpi-value" style="color:#7c3aed;">${fmt(plateletVal)}</div>
+      <div class="kpi-sub">Plt.ทุกระบบรวม (ยูนิท)</div>
+      ${d2badge(plateletDelta, selectedYear - 1)}
+      <div class="kpi-split-row" style="flex-wrap:wrap; gap:6px;">
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">PC</div>
+          <div class="kpi-split-value">${fmt(plateletPc)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">LPPC/LDPPC</div>
+          <div class="kpi-split-value">${fmt(plateletLppc)}</div>
+        </div>
+        <div class="kpi-split-col" style="min-width:calc(50% - 6px); flex:unset;">
+          <div class="kpi-split-label">SDP</div>
+          <div class="kpi-split-value">${fmt(plateletSdp)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 9: จ่าย Cryoprecipitate -->
+    <div class="kpi-card" style="--kpi-color: #0369a1; --kpi-bg: #f0f9ff;">
+      <div class="kpi-icon-wrap">❄️</div>
+      <div class="kpi-label">จ่าย Cryoprecipitate</div>
+      <div class="kpi-value" style="color:#0369a1;">${fmt(cryoVal)}</div>
+      <div class="kpi-sub">Cryo รวม (ยูนิท)</div>
+      ${d2badge(cryoDelta, selectedYear - 1)}
+      <div class="kpi-split-row">
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">เฉลี่ย/เดือน</div>
+          <div class="kpi-split-value">${idxs.length > 0 ? fmt(cryoVal / idxs.length) : '–'}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 10: จ่าย FFP -->
+    <div class="kpi-card" style="--kpi-color: #0f766e; --kpi-bg: #f0fdfa;">
+      <div class="kpi-icon-wrap"><svg viewBox="0 0 32 36" width="26" height="26" xmlns="http://www.w3.org/2000/svg"><rect x="13" y="0" width="6" height="6" rx="2" fill="#d97706" opacity="0.55"/><rect x="9" y="5" width="14" height="3" rx="1.5" fill="#d97706" opacity="0.4"/><path d="M6 8 L26 8 Q29 8 29 11 L29 25 Q29 34 16 34 Q3 34 3 25 L3 11 Q3 8 6 8 Z" fill="#d97706"/><ellipse cx="11" cy="19" rx="2.5" ry="4" fill="white" opacity="0.18"/></svg></div>
+      <div class="kpi-label">จ่าย FFP</div>
+      <div class="kpi-value" style="color:#0f766e;">${fmt(ffpVal)}</div>
+      <div class="kpi-sub">Fresh Frozen Plasma รวม (ยูนิท)</div>
+      ${d2badge(ffpDelta, selectedYear - 1)}
+      <div class="kpi-split-row">
+        <div class="kpi-split-col">
+          <div class="kpi-split-label">เฉลี่ย/เดือน</div>
+          <div class="kpi-split-value">${idxs.length > 0 ? fmt(ffpVal / idxs.length) : '–'}</div>
         </div>
       </div>
     </div>
@@ -1797,11 +2081,13 @@ function renderKPI() {
 // =====================================================
 let chartSpecimens = null;
 let chartPaid = null;
-let chartUsage = null;
+let chartUsageRbc = null;
+let chartUsagePlt = null;
 let chartAntibody = null;
+let chartPltExpired = null;
 
 function buildCharts() {
-  const idxs = getAvailableIdxs();
+  const idxs = getCurrentIdxs();
   const monthsLabels = idxs.map(i => MONTHS_FY[i]);
   const c = currentData();
   if (!c) return;
@@ -1810,27 +2096,25 @@ function buildCharts() {
   const ctxSpec = document.getElementById('chartSpecimensCm').getContext('2d');
   if (chartSpecimens) chartSpecimens.destroy();
   chartSpecimens = new Chart(ctxSpec, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: monthsLabels,
       datasets: [
         {
-          label: 'Total Specimens (สิ่งส่งตรวจคัดเตรียม)',
+          label: 'Total Request',
           data: idxs.map(i => c.request.totalSpecimens[i]),
-          borderColor: '#db2777', // Pink/Rose
-          backgroundColor: 'rgba(219,39,119,0.05)',
-          borderWidth: 3,
-          tension: 0.3,
-          fill: true
+          backgroundColor: 'rgba(219,39,119,0.75)',
+          borderColor: '#db2777',
+          borderWidth: 1,
+          borderRadius: 4
         },
         {
           label: 'Total Crossmatch (CM รวม)',
           data: idxs.map(i => c.request.totalCrossmatch[i]),
-          borderColor: '#7c3aed', // Purple
-          backgroundColor: 'transparent',
-          borderWidth: 3,
-          tension: 0.3,
-          borderDash: [5, 5]
+          backgroundColor: 'rgba(124,58,237,0.75)',
+          borderColor: '#7c3aed',
+          borderWidth: 1,
+          borderRadius: 4
         }
       ]
     },
@@ -1838,10 +2122,11 @@ function buildCharts() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { family: 'Sarabun' } } }
+        legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { family: 'Sarabun' } } },
+        barDatalabels: { enabled: true, font: '600 11px Sarabun, sans-serif', color: '#374151' }
       },
       scales: {
-        y: { beginAtZero: false, ticks: { font: { family: 'Sarabun' } } },
+        y: { beginAtZero: true, ticks: { font: { family: 'Sarabun' } } },
         x: { ticks: { font: { family: 'Sarabun' } } }
       }
     }
@@ -1861,16 +2146,16 @@ function buildCharts() {
   chartPaid = new Chart(ctxPaid, {
     type: 'bar',
     data: {
-      labels: ['FFP (ยูนิท)', 'Cryoprecipitate (ยูนิท)', 'Concentrated Platelets (ยูนิท)'],
+      labels: ['FFP (ยูนิท)', 'Cryoprecipitate (ยูนิท)', 'Plt.ทุกระบบ (ยูนิท)'],
       datasets: [
         {
-          label: 'ภายในศิริราช (Inside)',
+          label: 'ในเวลา (ครั้ง)',
           data: [insideFfp, insideCryo, insidePlt],
           backgroundColor: '#db2777',
           borderRadius: 6
         },
         {
-          label: 'ภายนอก/ส่งต่อ (Outside)',
+          label: 'นอกเวลา (ครั้ง)',
           data: [outsideFfp, outsideCryo, outsidePlt],
           backgroundColor: '#bfdbfe',
           borderRadius: 6
@@ -1891,36 +2176,61 @@ function buildCharts() {
   });
 
   // Chart 3: Blood Products Usage (RBC vs Platelet Units)
-  const ctxUsage = document.getElementById('chartUsageRbcPlt').getContext('2d');
-  if (chartUsage) chartUsage.destroy();
-
-  chartUsage = new Chart(ctxUsage, {
+  // Chart 3a: RBC
+  const ctxRbc = document.getElementById('chartUsageRbc').getContext('2d');
+  if (chartUsageRbc) chartUsageRbc.destroy();
+  chartUsageRbc = new Chart(ctxRbc, {
     type: 'bar',
     data: {
       labels: monthsLabels,
-      datasets: [
-        {
-          label: 'RBC (WB + PRC + LPB + PFB) (ยูนิท)',
-          data: idxs.map(i => c.bloodProductsUsage.rbc[i]),
-          backgroundColor: '#ef4444',
-          borderRadius: 4
-        },
-        {
-          label: 'Platelets (PC + LPPC + SDP) (ยูนิท)',
-          data: idxs.map(i => c.bloodProductsUsage.totalPlatelet.unit[i]),
-          backgroundColor: '#0d9488',
-          borderRadius: 4
-        }
-      ]
+      datasets: [{
+        label: 'RBC (ยูนิท)',
+        data: idxs.map(i => c.bloodProductsUsage.rbc[i]),
+        backgroundColor: 'rgba(239,68,68,0.75)',
+        borderColor: '#dc2626',
+        borderWidth: 1,
+        borderRadius: 5
+      }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, position: 'top', labels: { font: { family: 'Sarabun' } } }
+        legend: { display: false },
+        barDatalabels: { enabled: true, font: '600 11px Sarabun, sans-serif', color: '#374151' }
       },
       scales: {
-        y: { beginAtZero: true, stacked: false, ticks: { font: { family: 'Sarabun' } } },
+        y: { beginAtZero: true, ticks: { font: { family: 'Sarabun' } } },
+        x: { ticks: { font: { family: 'Sarabun' } } }
+      }
+    }
+  });
+
+  // Chart 3b: Platelet
+  const ctxPlt = document.getElementById('chartUsagePlt').getContext('2d');
+  if (chartUsagePlt) chartUsagePlt.destroy();
+  chartUsagePlt = new Chart(ctxPlt, {
+    type: 'bar',
+    data: {
+      labels: monthsLabels,
+      datasets: [{
+        label: 'Platelet (ยูนิท)',
+        data: idxs.map(i => c.bloodProductsUsage.totalPlatelet.unit[i]),
+        backgroundColor: 'rgba(13,148,136,0.75)',
+        borderColor: '#0f766e',
+        borderWidth: 1,
+        borderRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        barDatalabels: { enabled: true, font: '600 11px Sarabun, sans-serif', color: '#374151' }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { font: { family: 'Sarabun' } } },
         x: { ticks: { font: { family: 'Sarabun' } } }
       }
     }
@@ -1972,34 +2282,38 @@ function buildCharts() {
   } else {
     // 2569 does not have antibodyId data. Render Stat vs Emergency Request & Transfusion Reaction cases
     header.innerHTML = `
-      <h3>อุบัติการณ์ความปลอดภัยและดัชนีจองเลือดด่วน (Transfusion Safety & Urgent Request Trends)</h3>
-      <p>เปรียบเทียบยอดการสั่งตรวจเตรียมแบบ Stat vs Emergency และรายงานเคสอุบัติการณ์รวม</p>
+      <h3>อุบัติการณ์ความปลอดภัย และการขอเลือดเร่งด่วน</h3>
+      <p>เปรียบเทียบยอดการสั่งตรวจเตรียมแบบ Emergency และรายงานเคสอุบัติการณ์รวม</p>
     `;
-    
+
     chartAntibody = new Chart(ctxAb, {
       type: 'bar',
       data: {
         labels: monthsLabels,
         datasets: [
           {
-            label: 'Stat Requests (ครั้ง)',
-            data: idxs.map(i => c.requestStat.total[i]),
-            backgroundColor: '#f97316',
-            borderRadius: 4
-          },
-          {
             label: 'Emergency Requests (ครั้ง)',
             data: idxs.map(i => c.requestEmergency.total[i]),
-            backgroundColor: '#ec4899',
-            borderRadius: 4
+            backgroundColor: 'rgba(59,130,246,0.75)',
+            borderColor: '#2563eb',
+            borderWidth: 1,
+            borderRadius: 6,
+            order: 2
           },
           {
             type: 'line',
             label: 'Transfusion Reactions (ราย)',
             data: idxs.map(i => c.bloodProductsUsage.transfusionReactionCases[i]),
             borderColor: '#ef4444',
-            backgroundColor: 'transparent',
-            borderWidth: 2
+            backgroundColor: 'rgba(239,68,68,0.12)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#fff',
+            pointBorderColor: '#ef4444',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            tension: 0.4,
+            fill: false,
+            order: 1
           }
         ]
       },
@@ -2016,6 +2330,48 @@ function buildCharts() {
       }
     });
   }
+
+  // Chart 5: Platelet Expired by type
+  const ctxPltExp = document.getElementById('chartPltExpired');
+  if (chartPltExpired) { chartPltExpired.destroy(); chartPltExpired = null; }
+  const MONTHS_CAL = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const fyToCalIdx = i => i >= 3 ? i - 3 : i + 9; // FY idx → calendar idx (0=ม.ค.)
+  const pe = c.plateletExpired;
+  const pltExpSection = document.getElementById('pltExpChartSection');
+  const hasValidPe = pe && !Array.isArray(pe) && pe.total && pe.total.some(v => v);
+  if (!hasValidPe) {
+    if (pltExpSection) pltExpSection.style.display = 'none';
+  } else {
+  if (pltExpSection) pltExpSection.style.display = '';
+  // Sort months by calendar year order (Jan→Dec)
+  const peIdxsRaw = pe.total.map((v,i)=>v!=null?i:null).filter(i=>i!==null);
+  const peIdxs = [...peIdxsRaw].sort((a,b) => fyToCalIdx(a) - fyToCalIdx(b));
+  const peLabels = peIdxs.map(i => MONTHS_CAL[fyToCalIdx(i)]);
+  chartPltExpired = new Chart(ctxPltExp.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: peLabels,
+      datasets: [
+        { label: 'LDPPC',    data: peIdxs.map(i=>pe.ldppc[i]||0),  backgroundColor: 'rgba(99,102,241,0.8)',  borderColor:'#4f46e5', borderWidth:1, borderRadius:4 },
+        { label: 'LDPPC(A)', data: peIdxs.map(i=>pe.ldppcA[i]||0), backgroundColor: 'rgba(168,85,247,0.8)', borderColor:'#9333ea', borderWidth:1, borderRadius:4 },
+        { label: 'SDP',      data: peIdxs.map(i=>pe.sdp[i]||0),    backgroundColor: 'rgba(20,184,166,0.8)', borderColor:'#0f766e', borderWidth:1, borderRadius:4 },
+        { label: 'SDP(A)',   data: peIdxs.map(i=>pe.sdpA[i]||0),   backgroundColor: 'rgba(245,158,11,0.8)', borderColor:'#d97706', borderWidth:1, borderRadius:4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'top', labels: { font: { family: 'Sarabun' }, boxWidth: 14 } },
+        barDatalabels: { enabled: true, font: '600 11px Sarabun, sans-serif', color: '#374151' }
+      },
+      scales: {
+        x: { stacked: false, ticks: { font: { family: 'Sarabun' } } },
+        y: { beginAtZero: true, ticks: { font: { family: 'Sarabun' }, stepSize: 1 } }
+      }
+    }
+  });
+  } // end else hasValidPe
 }
 
 // =====================================================
@@ -2023,6 +2379,8 @@ function buildCharts() {
 // =====================================================
 function buildTable() {
   const table = document.getElementById('dataTable');
+  const titleEl = document.getElementById('tableTitle');
+  if (titleEl) titleEl.textContent = `รายงานสถิติ Immunohematology ประจำปี ${selectedYear}`;
   const c = currentData();
   if (!c) {
     table.innerHTML = '<tr><td style="text-align:center;">ไม่มีข้อมูลสำหรับปีนี้</td></tr>';
@@ -2049,7 +2407,7 @@ function buildTable() {
   };
 
   // Build columns header
-  let headerHtml = '<tr><th style="text-align:left;">รายการตรวจ (Immunohematology Statistics)</th>';
+  let headerHtml = '<tr><th style="text-align:left;">รายการตรวจ (Immunohematology)</th>';
   MONTHS_FY.forEach((m, idx) => {
     const isAvail = hasData(idx);
     const isActive = selectedMonth === idx;
@@ -2058,34 +2416,33 @@ function buildTable() {
       headerHtml += `<th${activeClass}>${m}</th>`;
     }
   });
-  headerHtml += '<th class="col-total">รวม</th>';
   headerHtml += '<th class="col-year-total">รวมทั้งปี</th>';
-  headerHtml += '<th class="col-year-pct">% ทั้งปี</th>';
+  headerHtml += '<th class="col-year-pct">สัดส่วน %</th>';
   headerHtml += '</tr>';
 
   // Rows configuration
   const rows = [
     { type: 'section', label: '1. สถิติการตรวจคัดเตรียมเลือด (Immunohematology Requests)' },
-    { type: 'data', label: 'ตรวจรับ (สิ่งส่งตรวจ)', sec: 'request', key: 'receiveSpecimens' },
-    { type: 'data', label: 'CM (Crossmatch สำหรับตรวจรับ)', sec: 'request', key: 'receiveCrossmatch' },
-    { type: 'data', label: 'ตรวจจ่าย (สิ่งส่งตรวจ)', sec: 'request', key: 'dispenseSpecimens' },
-    { type: 'data', label: 'CM (Crossmatch สำหรับตรวจจ่าย)', sec: 'request', key: 'dispenseCrossmatch' },
-    { type: 'total', label: 'ตรวจรับ+ตรวจจ่าย รวมสิ่งส่งตรวจ', sec: 'request', key: 'totalSpecimens' },
+    { type: 'data', label: 'ในเวลา (สิ่งส่งตรวจ)', sec: 'request', key: 'receiveSpecimens' },
+    { type: 'data', label: 'CM (Crossmatch สำหรับในเวลา)', sec: 'request', key: 'receiveCrossmatch' },
+    { type: 'data', label: 'นอกเวลา (สิ่งส่งตรวจ)', sec: 'request', key: 'dispenseSpecimens' },
+    { type: 'data', label: 'CM (Crossmatch สำหรับนอกเวลา)', sec: 'request', key: 'dispenseCrossmatch' },
+    { type: 'total', label: 'ในเวลา+นอกเวลา รวมสิ่งส่งตรวจ', sec: 'request', key: 'totalSpecimens' },
     { type: 'total', label: 'CM รวม (ยอด Crossmatch ทั้งสิ้น)', sec: 'request', key: 'totalCrossmatch' },
     { type: 'data', label: 'transfusion Rbc. (ยอดเบิกใช้จริง)', sec: 'request', key: 'transfusionRbc' },
     { type: 'ratio', label: 'C:T Ratio (สัดส่วนจองเทียบใช้จริง)' },
 
     { type: 'section', label: '2. การจ่ายผลิตภัณฑ์โลหิตแยกตามพื้นที่รับผิดชอบ (จ่าย Blood Product)' },
-    { type: 'sub-section', label: 'ภายในโรงพยาบาลศิริราช (ภายใน)' },
-    { type: 'data2', label: '   Plt.concentrate(ผู้ป่วย)', key1: 'receive', key2: 'pltConcPat' },
-    { type: 'data2', label: '   Plt.concentrate(ผู้บริจาค)', key1: 'receive', key2: 'pltConcDon' },
+    { type: 'sub-section', label: 'ในเวลา' },
+    { type: 'data2', label: '   Plt.concentrate(ครั้ง)', key1: 'receive', key2: 'pltConcPat' },
+    { type: 'data2', label: '   Plt.concentrate(ยูนิท)', key1: 'receive', key2: 'pltConcDon' },
     { type: 'total2', label: '   รวม plt. เข้มข้นสะสม', key1: 'receive', key2: 'totalPltConc' },
     { type: 'data2', label: '   FFP (unit)', key1: 'receive', key2: 'ffp' },
     { type: 'data2', label: '   Cryo (pool)', key1: 'receive', key2: 'cryoPool' },
     { type: 'data2', label: '   Cryo (unit)', key1: 'receive', key2: 'cryoUnit' },
-    { type: 'sub-section', label: 'ภายนอกโรงพยาบาล/ส่งต่อ (ภายนอก)' },
-    { type: 'data2', label: '   Plt.concentrate(ผู้ป่วย)', key1: 'dispense', key2: 'pltConcPat' },
-    { type: 'data2', label: '   Plt.concentrate(ผู้บริจาค)', key1: 'dispense', key2: 'pltConcDon' },
+    { type: 'sub-section', label: 'นอกเวลา' },
+    { type: 'data2', label: '   Plt.concentrate(ครั้ง)', key1: 'dispense', key2: 'pltConcPat' },
+    { type: 'data2', label: '   Plt.concentrate(ยูนิท)', key1: 'dispense', key2: 'pltConcDon' },
     { type: 'total2', label: '   รวม plt. เข้มข้นสะสม', key1: 'dispense', key2: 'totalPltConc' },
     { type: 'data2', label: '   FFP (unit)', key1: 'dispense', key2: 'ffp' },
     { type: 'data2', label: '   Cryo (pool)', key1: 'dispense', key2: 'cryoPool' },
@@ -2097,19 +2454,12 @@ function buildTable() {
     { type: 'occur', label: 'สิ่งส่งตรวจไม่เหมาะสม (1)', key: 'inappropriateSpecimen' },
     { type: 'total-occur', label: 'TOTAL Occurrence', key: 'total' },
 
-    { type: 'section', label: '4. การระบุชนิดของสารภูมิคุ้มกัน (Antibody Identification)' },
-    { type: 'ab', label: 'Patient (ราย)', key: 'patient' },
-    { type: 'ab', label: 'Unidentified Ab.', key: 'unidentified' },
-    { type: 'ab', label: 'Non specific Ab.', key: 'nonSpecific' },
-    { type: 'ab', label: 'Auto Ab.', key: 'autoAb' },
-    { type: 'ab', label: 'Unexpected Ab.', key: 'unexpectedAb' },
-    { type: 'total-ab', label: 'TOTAL Antibody Identification', key: 'total' },
 
-    { type: 'section', label: '5. การขอตรวจเตรียมโลหิตด่วนและฉุกเฉิน (Stat & Emergency Request)' },
+    { type: 'section', label: '4. การขอตรวจเตรียมโลหิตด่วนและฉุกเฉิน (Stat & Emergency Request)' },
     { type: 'stat', label: 'ต้องการ Request (Stat)', key: 'total' },
     { type: 'emerg', label: 'ต้องการ Request (Emergency)', key: 'total' },
 
-    { type: 'section', label: '6. สถิติการเบิกจ่ายส่วนประกอบของโลหิตแยกรายเดือน (Blood Components Usage)' },
+    { type: 'section', label: '5. สถิติการเบิกจ่ายส่วนประกอบของโลหิตแยกรายเดือน (Blood Components Usage)' },
     { type: 'usage', label: 'WB (unit)', key: 'wb' },
     { type: 'usage', label: 'PRC (unit)', key: 'prc' },
     { type: 'usage', label: 'LPB (unit)', key: 'lpb' },
@@ -2122,22 +2472,20 @@ function buildTable() {
     { type: 'usage-split', label: 'LPPC/LDPPC (ผู้ป่วย)', key: 'lppc', sub: 'patient' },
     { type: 'usage-split', label: 'SDP (ยูนิท)', key: 'sdp', sub: 'unit' },
     { type: 'usage-split', label: 'SDP (ผู้ป่วย)', key: 'sdp', sub: 'patient' },
-    { type: 'total-usage-split', label: 'รวมเกล็ดเลือด (ยูนิท)', key: 'totalPlatelet', sub: 'unit' },
-    { type: 'total-usage-split', label: 'รวมเกล็ดเลือด (ผู้ป่วย)', key: 'totalPlatelet', sub: 'patient' },
+    { type: 'total-usage-split', label: 'Total Platelet (unit)', key: 'totalPlatelet', sub: 'unit' },
+    { type: 'total-usage-split', label: 'Total Platelet (ครั้ง)', key: 'totalPlatelet', sub: 'patient' },
     
     { type: 'usage-split', label: 'FFP (ยูนิท)', key: 'ffp', sub: 'unit' },
-    { type: 'usage-split', label: 'FFP (ผู้ป่วย)', key: 'ffp', sub: 'patient' },
-    { type: 'usage-split', label: 'CRP/FFP Cryo-removed (ยูนิท)', key: 'crp', sub: 'unit' },
-    { type: 'usage-split', label: 'CRP/FFP Cryo-removed (ผู้ป่วย)', key: 'crp', sub: 'patient' },
+    { type: 'usage-split', label: 'FFP (ครั้ง)', key: 'ffp', sub: 'patient' },
     { type: 'usage-split', label: 'Cryo (ยูนิท)', key: 'cryo', sub: 'unit' },
-    { type: 'usage-split', label: 'Cryo (ผู้ป่วย)', key: 'cryo', sub: 'patient' },
-    
+    { type: 'usage-split', label: 'Cryo (ครั้ง)', key: 'cryo', sub: 'patient' },
+
     { type: 'usage-split', label: 'Bovine Thrombin (ยูนิท)', key: 'bovineThrombin', sub: 'unit' },
-    { type: 'usage-split', label: 'Bovine Thrombin (ผู้ป่วย)', key: 'bovineThrombin', sub: 'patient' },
+    { type: 'usage-split', label: 'Bovine Thrombin (ครั้ง)', key: 'bovineThrombin', sub: 'patient' },
     { type: 'usage-split', label: 'Granulocyte (ยูนิท)', key: 'granulocyte', sub: 'unit' },
-    { type: 'usage-split', label: 'Granulocyte (ผู้ป่วย)', key: 'granulocyte', sub: 'patient' },
+    { type: 'usage-split', label: 'Granulocyte (ครั้ง)', key: 'granulocyte', sub: 'patient' },
     { type: 'usage-split', label: 'DLI (ยูนิท)', key: 'dli', sub: 'unit' },
-    { type: 'usage-split', label: 'DLI (ผู้ป่วย)', key: 'dli', sub: 'patient' },
+    { type: 'usage-split', label: 'DLI (ครั้ง)', key: 'dli', sub: 'patient' },
     
     { type: 'usage', label: 'อุบัติการณ์แพ้เลือด (T.R. Cases)', key: 'transfusionReactionCases' }
   ];
@@ -2226,28 +2574,7 @@ function buildTable() {
       });
     }
 
-    // 1. Column รวม (Sum of selected months)
-    if (row.type === 'ratio') {
-      const cmRow = getRowArray('request', 'totalCrossmatch');
-      const txRow = getRowArray('request', 'transfusionRbc');
-      const selCm = sum(cmRow, idxs);
-      const selTx = sum(txRow, idxs);
-      if (selTx > 0) {
-        const r = selCm / selTx;
-        const ratioClass = r > 2.0 ? 'ratio-warning' : 'ratio-good';
-        rowHtml += `<td class="col-total ${ratioClass}">${r.toFixed(3)}</td>`;
-      } else {
-        rowHtml += `<td class="col-total">–</td>`;
-      }
-    } else {
-      if ((row.type === 'occur' || row.type === 'total-occur') && sumVal > 0) {
-        rowHtml += `<td class="col-total occur-cell-alert">${fmt(sumVal)}</td>`;
-      } else {
-        rowHtml += `<td class="col-total">${fmt(sumVal)}</td>`;
-      }
-    }
-
-    // 2. รวมทั้งปี (Total of all 12 months)
+    // รวมทั้งปี (Total of all 12 months)
     let fullYearAvail = getAvailableIdx(selectedYear);
     let fullYearSum = sum(arr, fullYearAvail);
     

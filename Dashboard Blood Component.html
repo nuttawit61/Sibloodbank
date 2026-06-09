@@ -449,8 +449,8 @@
     /* ===== KPI GRID ===== */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
       margin-bottom: 32px;
     }
 
@@ -458,7 +458,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 28px 24px;
       box-shadow: var(--shadow-sm);
       position: relative;
       overflow: hidden;
@@ -480,43 +480,49 @@
     }
 
     .kpi-icon-wrap {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       background: var(--kpi-bg, var(--primary-lt));
       color: var(--kpi-color, var(--primary));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      margin-bottom: 12px;
+      font-size: 24px;
+      margin-bottom: 14px;
       box-shadow: 0 4px 10px var(--kpi-bg);
       transition: all 0.2s ease;
     }
 
     .kpi-label {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-3);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
+      word-break: break-word;
+      white-space: normal;
+      line-height: 1.4;
     }
 
     .kpi-value {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 800;
       color: var(--text-1);
-      margin: 4px 0;
+      margin: 6px 0;
       line-height: 1.1;
+      word-break: break-all;
     }
 
-    .kpi-value.big { font-size: 22px; }
+    .kpi-value.big { font-size: 24px; }
 
     .kpi-sub {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-3);
       font-weight: 500;
       width: 100%;
+      word-break: break-word;
+      white-space: normal;
     }
 
     .kpi-sub-grid {
@@ -749,12 +755,12 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12.5px;
+      font-size: 13px;
       text-align: center;
     }
 
     th, td {
-      padding: 12px 14px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
       transition: background 0.15s ease;
@@ -763,81 +769,92 @@
     th {
       font-weight: 700;
       color: #ffffff;
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      background: linear-gradient(135deg, #0f4c81 0%, #0284c7 100%);
       position: sticky;
       top: 0;
       z-index: 10;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      font-size: 12.5px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
     }
 
     th:first-child {
       text-align: left;
       position: sticky;
       left: 0;
-      background: #0284c7;
+      background: #0f4c81;
       z-index: 12;
       font-weight: 700;
-      border-right: 2px solid var(--border-strong);
-      min-width: 180px;
+      border-right: 2px solid rgba(255,255,255,0.2);
+      min-width: 220px;
     }
 
     td:first-child {
       text-align: left;
       position: sticky;
       left: 0;
-      background: var(--surface);
+      background: #fff;
       color: var(--text-1);
       z-index: 5;
-      font-weight: 600;
-      border-right: 2px solid var(--border-strong);
-      min-width: 180px;
+      font-weight: 500;
+      border-right: 1px solid var(--border);
+      min-width: 220px;
+      padding-left: 20px;
     }
 
-    tr:nth-child(even) td {
-      background: #fafcff;
-    }
+    tr:nth-child(even) td { background: #f8fafd; }
+    tr:nth-child(even) td:first-child { background: #f8fafd; }
 
-    tr:nth-child(even) td:first-child {
-      background: #fafcff;
-    }
-
-    tr:hover td { 
-      background: var(--surface-hover) !important; 
-    }
-    
-    tr:hover td:first-child { 
-      background: var(--surface-hover) !important; 
-    }
+    tr:hover td { background: #e8f4fd !important; }
+    tr:hover td:first-child { background: #e8f4fd !important; }
 
     .col-total {
       font-weight: 700;
-      color: var(--primary-dk);
-      background: var(--primary-lt) !important;
-      border-left: 2px solid var(--primary-md);
+      color: #0f4c81;
+      background: #dbeafe !important;
+      border-left: 2px solid #93c5fd;
+      font-size: 13px;
     }
 
     th.col-total {
-      background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
-      color: #ffffff;
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f4c81 100%) !important;
+      color: #fff;
+      border-left: 2px solid rgba(255,255,255,0.3);
     }
 
     .active-month-col {
       background: #fffbeb !important;
       color: #92400e !important;
-      border-left: 1.5px dashed var(--amber-md);
-      border-right: 1.5px dashed var(--amber-md);
+      border-left: 1.5px dashed #fbbf24;
+      border-right: 1.5px dashed #fbbf24;
+      font-weight: 600;
     }
 
     tr.section-header td {
-      background: linear-gradient(90deg, var(--surface-2) 0%, var(--bg) 100%) !important;
       font-weight: 700;
       text-align: left;
-      color: var(--primary-dk);
-      border-left: 4px solid var(--primary);
-      border-bottom: 2px solid var(--border-strong);
-      padding: 10px 14px;
+      padding: 9px 16px;
       font-size: 12px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    tr.section-header.sec-blood td    { background: #eff6ff !important; color: #1d4ed8; border-left: 4px solid #3b82f6; border-top: 2px solid #bfdbfe; border-bottom: 1px solid #bfdbfe; }
+    tr.section-header.sec-component td { background: #fdf4ff !important; color: #7e22ce; border-left: 4px solid #a855f7; border-top: 2px solid #e9d5ff; border-bottom: 1px solid #e9d5ff; }
+    tr.section-header.sec-ffp td     { background: #f0fdfa !important; color: #0f766e; border-left: 4px solid #14b8a6; border-top: 2px solid #99f6e4; border-bottom: 1px solid #99f6e4; }
+    tr.section-header.sec-issues td  { background: #fff7ed !important; color: #c2410c; border-left: 4px solid #f97316; border-top: 2px solid #fed7aa; border-bottom: 1px solid #fed7aa; }
+    tr.section-header.sec-bag td     { background: #f0fdf4 !important; color: #15803d; border-left: 4px solid #22c55e; border-top: 2px solid #bbf7d0; border-bottom: 1px solid #bbf7d0; }
+
+    tr.row-subtotal td {
+      font-weight: 700;
+      background: #f1f5f9 !important;
+      color: #334155;
+      border-top: 1.5px solid #cbd5e1;
+      font-size: 13px;
+    }
+    tr.row-subtotal td:first-child {
+      background: #f1f5f9 !important;
+      padding-left: 20px;
     }
 
     /* ===== FOOTER ===== */
@@ -1190,6 +1207,10 @@
 </style>
 </head>
 <body>
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
 <!-- ===== HEADER ===== -->
 <header class="header">
@@ -1284,12 +1305,18 @@
   </div>
   <div class="kpi-grid" id="kpiGrid"></div>
 
+  <!-- ===== OTHER SERVICES KPI ===== -->
+  <div class="section-title fade-up" style="margin-top:8px;">
+    <span>🔬 งานบริการอื่นๆ</span>
+  </div>
+  <div class="kpi-grid" id="kpiGridOther"></div>
+
   <!-- ===== CHARTS ROW 1 ===== -->
   <div class="charts-grid fade-up" style="animation-delay:0.22s">
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>🔴 การเตรียม RBC รายเดือน</h3>
+          <h3>🔴 เตรียม RBC รายเดือน</h3>
           <p>สถิติการเตรียม Whole Blood (WB) และ Packed Fresh Blood (PFB)</p>
         </div>
       </div>
@@ -1301,12 +1328,12 @@
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>🟡 การเตรียม FFP รายเดือน</h3>
-          <p>สถิติการเตรียม Fresh Frozen Plasma (FFP)</p>
+          <h3>🟣 เตรียม Platelet รายเดือน</h3>
+          <p>สถิติการเตรียม LDPPC และ Single Donor Platelets (SDP)</p>
         </div>
       </div>
       <div class="chart-wrap">
-        <canvas id="chartComponents"></canvas>
+        <canvas id="chartPlatelet"></canvas>
       </div>
     </div>
   </div>
@@ -1316,19 +1343,19 @@
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>🟣 การเตรียม Platelet รายเดือน</h3>
-          <p>สถิติการเตรียม PC, LDPPC และ Single Donor Platelets (SDP)</p>
+          <h3>🟡 เตรียม FFP รายเดือน</h3>
+          <p>สถิติการเตรียม Fresh Frozen Plasma (FFP)</p>
         </div>
       </div>
       <div class="chart-wrap">
-        <canvas id="chartPlatelet"></canvas>
+        <canvas id="chartComponents"></canvas>
       </div>
     </div>
 
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>🔵 การเตรียม Cryo ppt. (Single) รายเดือน</h3>
+          <h3>🔵 เตรียม Cryoprecipitate รายเดือน</h3>
           <p>สถิติการเตรียม Cryoprecipitate (Single)</p>
         </div>
       </div>
@@ -1343,11 +1370,23 @@
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>🟢 การเตรียมผลิตภัณฑ์พิเศษรายเดือน</h3>
-          <p>Stem Cell / BM, Washed Cell, Pooled Granulocyte</p>
+          <h3>🩸 เตรียม Pooled Granulocyte รายเดือน</h3>
+          <p>สถิติการเตรียม Pooled Granulocyte (ยูนิท)</p>
         </div>
       </div>
-      <div class="chart-wrap">
+      <div class="chart-wrap" style="min-height:280px">
+        <canvas id="chartGranulocyte"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>🟢 Stem Cell / BM รายเดือน</h3>
+          <p>สถิติการเตรียม Stem Cell / Bone Marrow (ราย)</p>
+        </div>
+      </div>
+      <div class="chart-wrap" style="min-height:280px">
         <canvas id="chartSpecials"></canvas>
       </div>
     </div>
@@ -1355,7 +1394,19 @@
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>⚠️ ถุงโลหิตที่มีปัญหา (Bag Issues)</h3>
+          <h3>🔷 Washed Cell รายเดือน</h3>
+          <p>สถิติการเตรียม Washed Red Blood Cell (ยูนิท)</p>
+        </div>
+      </div>
+      <div class="chart-wrap" style="min-height:280px">
+        <canvas id="chartWashedCell"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>⚠️ ถุงเลือดที่มีปัญหา (Bag Issues)</h3>
           <p>Low/Over volume, Overtime, Short bag, Clotted, Contaminated</p>
         </div>
       </div>
@@ -1370,7 +1421,7 @@
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-title">
-          <h3>📦 ประเภทถุงโลหิต (Bag Type)</h3>
+          <h3>📦 ประเภทถุงเก็บเลือดที่ใช้ (Bag Type)</h3>
           <p>Quadruple, Triple, Single, Double bag</p>
         </div>
       </div>
@@ -1405,6 +1456,10 @@
         <thead id="tableHead"></thead>
         <tbody id="tableBody"></tbody>
       </table>
+    </div>
+    <div id="contaminatedNotes" style="display:none; margin-top:1rem; padding:0.75rem 1rem; background:var(--bg-alt); border-left:3px solid #ec4899; border-radius:6px; font-size:13px; color:var(--text-2); line-height:1.7;">
+      <strong style="color:#ec4899;">🔴 สาเหตุ Contaminated</strong>
+      <div id="contaminatedNotesList" style="margin-top:0.5rem;"></div>
     </div>
   </div>
 
@@ -1503,7 +1558,7 @@ const globalDatalabelsPlugin = {
         });
         
         if (total > 0 && lastVisibleMeta) {
-          ctx.font = '600 10px Sarabun, sans-serif';
+          ctx.font = '600 13px Sarabun, sans-serif';
           ctx.fillStyle = '#1e3a5f';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
@@ -1520,7 +1575,7 @@ const globalDatalabelsPlugin = {
         meta.data.forEach((element, index) => {
           const val = dataset.data[index];
           if (val === null || val === undefined || val === 0) return;
-          ctx.font = '600 10px Sarabun, sans-serif';
+          ctx.font = '600 13px Sarabun, sans-serif';
           ctx.fillStyle = '#1e3a5f';
           if (config.options && config.options.indexAxis === 'y') {
             ctx.textAlign = 'left';
@@ -1567,7 +1622,9 @@ const RAW_DATA = {
     overtime:  [192,170,143,120,134,152,171,110,167,156,162,209],
     shortBag:  [59,96,56,36,41,41,34,26,55,41,50,71],
     clotted:   [5,8,4,10,8,12,5,6,8,6,7,12],
+    clottedUnused:[0,0,0,0,0,0,0,0,0,0,0,0],
     contaminated:[0,0,0,0,0,0,0,0,0,0,0,0],
+    contaminatedCause:["","","","","","","","","","","",""],
     donorNew:  [3962,3815,3355,2679,3019,3199,2965,2697,3572,3296,3305,3823],
     donorOld:  [336,1188,1045,312,693,507,488,315,424,863,996,1238],
     quadBag:   [2731,3441,2833,1835,3019,2294,2249,2006,2747,2551,2824,3488],
@@ -1597,7 +1654,9 @@ const RAW_DATA = {
     overtime:  [113,192,170,133,275,181,163,214,155,188,154,170],
     shortBag:  [29,57,35,36,63,46,43,49,35,55,48,44],
     clotted:   [10,18,7,14,32,6,12,12,11,7,16,11],
+    clottedUnused:[0,0,0,0,0,0,0,0,0,0,0,0],
     contaminated:[3,3,1,1,1,2,0,3,2,2,1,1],
+    contaminatedCause:["","","","","","","","","","","",""],
     donorNew:  [3039,3062,3277,3071,4025,3245,3545,3253,3078,3166,3195,3265],
     donorOld:  [480,1158,768,510,1116,1223,865,1438,1085,1183,1092,1082],
     quadBag:   [2391,2800,2656,2497,4397,3225,3322,3133,2616,2994,3192,1695],
@@ -1627,7 +1686,9 @@ const RAW_DATA = {
     overtime:  [142,152,136,94,106,147,159,108,157,136,144,132],
     shortBag:  [32,45,40,26,29,48,39,33,56,40,60,45],
     clotted:   [11,5,5,3,1,6,7,11,20,16,17,13],
+    clottedUnused:[0,0,0,0,0,0,0,0,0,0,0,0],
     contaminated:[1,0,4,2,1,0,1,2,0,0,1,2],
+    contaminatedCause:["","","","","","","","","","","",""],
     donorNew:  [2905,2603,2959,2816,2897,3020,2991,3030,3071,2852,2587,3567],
     donorOld:  [1188,1384,1247,803,1018,1182,1596,1337,1612,1422,1759,950],
     quadBag:   [2720,2721,2947,2476,2681,3015,3136,2907,3143,2850,2935,3208],
@@ -1657,7 +1718,9 @@ const RAW_DATA = {
     overtime:  [105,100,93,79,123,134,116,113,112,141,75,113],
     shortBag:  [36,44,41,35,30,39,45,48,65,43,27,30],
     clotted:   [11,11,10,13,16,15,12,18,12,23,15,15],
+    clottedUnused:[0,0,0,0,0,0,0,0,0,0,0,0],
     contaminated:[1,7,4,1,5,6,4,2,2,1,10,3],
+    contaminatedCause:["","","","","","","","","","","",""],
     donorNew:  [2808,2665,2773,2816,3195,2994,2696,2707,2699,2547,2381,3001],
     donorOld:  [1044,1572,1189,1068,1187,1324,1571,1298,1583,1244,1413,931],
     quadBag:   [2869,2836,2591,2744,3310,2991,3399,3413,3534,3219,3484,3299],
@@ -1687,7 +1750,9 @@ const RAW_DATA = {
     overtime:  [125,104,106,56,63,87,89,68,59,54,95,82],
     shortBag:  [37,34,46,24,23,50,47,39,25,42,38,51],
     clotted:   [24,17,21,19,8,21,9,12,16,15,30,14],
+    clottedUnused:[0,0,0,0,0,0,0,0,0,0,0,0],
     contaminated:[3,14,8,0,0,3,3,6,7,0,3,4],
+    contaminatedCause:["","","","","","","","","","","",""],
     donorNew:  [2908,3089,2424,2915,2560,2904,3217,2663,2440,2356,2574,4531],
     donorOld:  [894,987,1868,743,1013,1317,1225,1166,1187,1126,1221,3117],
     quadBag:   [3230,3143,2886,3175,3259,1068,4339,3496,3478,3039,3050,3334],
@@ -1697,34 +1762,36 @@ const RAW_DATA = {
     available: 12
   },
   2569: {
-    wb:        [1,3,6,0,0,0,0,0,0,0,0,0],
+    wb:        [1,3,6,2,2,0,0,0,0,0,0,0],
     pc:        [0,0,0,0,0,0,0,0,0,0,0,0],
-    sdp:       [524,389,450,0,0,0,0,0,0,0,0,0],
-    donor:     [3592,3962,4201,0,0,0,0,0,0,0,0,0],
-    pfb:       [3513,3897,4109,0,0,0,0,0,0,0,0,0],
-    ffp:       [1273,1581,1226,0,0,0,0,0,0,0,0,0],
-    cryoSingle:[2127,2226,2820,0,0,0,0,0,0,0,0,0],
-    ldppc:     [552,627,684,0,0,0,0,0,0,0,0,0],
-    stemcell:  [16,17,20,0,0,0,0,0,0,0,0,0],
-    washedCell:[5,10,13,0,0,0,0,0,0,0,0,0],
-    granulocyte:[134,111,65,0,0,0,0,0,0,0,0,0],
-    ffpStock_O:[534,800,700,0,0,0,0,0,0,0,0,0],
-    ffpStock_A:[294,321,320,0,0,0,0,0,0,0,0,0],
-    ffpStock_B:[171,352,239,0,0,0,0,0,0,0,0,0],
-    ffpStock_AB:[88,116,112,0,0,0,0,0,0,0,0,0],
-    lowVol:    [39,45,31,0,0,0,0,0,0,0,0,0],
+    sdp:       [2331.51,2141.27,2405.97,0,0,0,0,0,0,0,0,0],
+    donor:     [3592,3962,4201,3994,3714,0,0,0,0,0,0,0],
+    pfb:       [3513,3897,4109,3926,3620,0,0,0,0,0,0,0],
+    ffp:       [1273,1581,1226,872,1317,0,0,0,0,0,0,0],
+    cryoSingle:[2127,2226,2820,2979,2241,0,0,0,0,0,0,0],
+    ldppc:     [552,627,684,638,578,0,0,0,0,0,0,0],
+    stemcell:  [16,17,20,14,20,0,0,0,0,0,0,0],
+    washedCell:[5,10,13,11,14,0,0,0,0,0,0,0],
+    granulocyte:[134,111,65,97,7,0,0,0,0,0,0,0],
+    ffpStock_O:[534,800,700,787,764,0,0,0,0,0,0,0],
+    ffpStock_A:[294,321,320,325,357,0,0,0,0,0,0,0],
+    ffpStock_B:[171,352,239,235,207,0,0,0,0,0,0,0],
+    ffpStock_AB:[88,116,112,85,87,0,0,0,0,0,0,0],
+    lowVol:    [39,45,31,28,36,0,0,0,0,0,0,0],
     overVol:   [1,2,0,0,0,0,0,0,0,0,0,0],
-    overtime:  [82,68,57,0,0,0,0,0,0,0,0,0],
-    shortBag:  [46,58,49,0,0,0,0,0,0,0,0,0],
-    clotted:   [13,15,25,0,0,0,0,0,0,0,0,0],
-    contaminated:[3,1,1,0,0,0,0,0,0,0,0,0],
-    donorNew:  [2468,2633,2802,0,0,0,0,0,0,0,0,0],
-    donorOld:  [1124,1359,1399,0,0,0,0,0,0,0,0,0],
-    quadBag:   [2963,2742,2128,0,0,0,0,0,0,0,0,0],
-    tripleBag: [625,658,787,0,0,0,0,0,0,0,0,0],
-    singleBag: [0,587,1279,0,0,0,0,0,0,0,0,0],
-    doubleBag: [4,5,7,0,0,0,0,0,0,0,0,0],
-    available: 3
+    overtime:  [82,68,57,51,44,0,0,0,0,0,0,0],
+    shortBag:  [46,58,49,37,48,0,0,0,0,0,0,0],
+    clotted:   [13,15,25,19,10,0,0,0,0,0,0,0],
+    clottedUnused:[0,0,0,0,0,0,0,0,0,0,0,0],
+    contaminated:[3,1,1,3,2,0,0,0,0,0,0,0],
+    contaminatedCause:["","","","","1. Leak จากการเชื่อมสายถุงเลือดกับ filter เนื่องจากวางสายผิดตำแหน่ง\n2. leak จากการ seal สายถุงเลือด","","","","","","",""],
+    donorNew:  [2468,2633,2802,2932,2494,0,0,0,0,0,0,0],
+    donorOld:  [1124,1359,1399,1062,1220,0,0,0,0,0,0,0],
+    quadBag:   [2963,2742,2128,2540,1968,0,0,0,0,0,0,0],
+    tripleBag: [625,658,787,806,751,0,0,0,0,0,0,0],
+    singleBag: [0,587,1279,624,994,0,0,0,0,0,0,0],
+    doubleBag: [4,5,7,24,1,0,0,0,0,0,0,0],
+    available: 5
   }
 };
 
@@ -1980,63 +2047,37 @@ function renderKPI() {
     {
       icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V5z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="12" cy="6" r="1"/><rect x="9" y="9" width="6" height="5" rx="0.5" stroke-width="1.5"/><path d="M12 21v2" stroke-width="1.5"/></svg>',
       label: 'เตรียม RBC (ยูนิท)', value: fmt(wb + pfb),
-      sub: `WB: ${fmt(wb)} | PFB: ${fmt(pfb)}`,
+      sub: `WB (autologous): ${fmt(wb)} | PFB: ${fmt(pfb)}`,
       color: '#dc2626', bg: '#fee2e2',
       badge: getChangeBadgeSum(wb + pfb, ['wb', 'pfb'])
     },
     {
       icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V5z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="12" cy="6" r="1"/><rect x="9" y="9" width="6" height="5" rx="0.5" stroke-width="1.5"/><path d="M12 21v2" stroke-width="1.5"/></svg>',
-      label: 'เตรียม Platelet (ยูนิท)', value: fmt(pc + ldppc + sdp),
-      sub: `PC: ${fmt(pc)} | LDPPC: ${fmt(ldppc)} | SDP: ${fmt(sdp)}`,
+      label: 'เตรียม Platelet (ยูนิท)', value: fmt(ldppc + sdp),
+      sub: `LDPPC: ${fmt(ldppc)} | SDP: ${fmt(sdp)}`,
       color: '#7c3aed', bg: '#f3e8ff',
-      badge: getChangeBadgeSum(pc + ldppc + sdp, ['pc', 'ldppc', 'sdp'])
+      badge: getChangeBadgeSum(ldppc + sdp, ['ldppc', 'sdp'])
     },
     {
       icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V5z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="12" cy="6" r="1"/><rect x="9" y="9" width="6" height="5" rx="0.5" stroke-width="1.5"/><path d="M12 21v2" stroke-width="1.5"/></svg>',
-      label: 'FFP เตรียมได้ (ยูนิท)', value: fmt(ffp),
+      label: 'เตรียม FFP (ยูนิท)', value: fmt(ffp),
       sub: `Fresh Frozen Plasma`,
       color: '#d97706', bg: '#fef3c7',
       badge: getChangeBadge(ffp, 'ffp')
     },
     {
       icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V5z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="12" cy="6" r="1"/><rect x="9" y="9" width="6" height="5" rx="0.5" stroke-width="1.5"/><path d="M12 21v2" stroke-width="1.5"/></svg>',
-      label: 'Cryo ppt. Single (ยูนิท)', value: fmt(cryo),
+      label: 'เตรียม Cryoprecipitate (ยูนิท)', value: fmt(cryo),
       sub: `Cryoprecipitate (single)`,
       color: '#4f46e5', bg: '#eef2ff',
       badge: getChangeBadge(cryo, 'cryoSingle')
     },
     {
-      icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5C4.5 5 12 3 12 3s7.5 2 7.5 7.5c0 4-4.5 6-7.5 10.5-3-4.5-7.5-6.5-7.5-10.5z" fill="var(--kpi-color)" fill-opacity="0.15"/><path d="M12 3v18M12 9H7.5M12 14h4.5"/></svg>',
-      label: 'Stem cell / BM (ยูนิท)', value: fmt(stemcell),
-      sub: `Stemcell / Bone Marrow`,
-      color: '#059669', bg: '#d1fae5',
-      badge: getChangeBadge(stemcell, 'stemcell')
-    },
-    {
-      icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V5z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="12" cy="6" r="1"/><rect x="9" y="9" width="6" height="5" rx="0.5" stroke-width="1.5"/><path d="M12 21v2" stroke-width="1.5"/></svg>',
-      label: 'Washed Cell (ยูนิท)', value: fmt(washedCell),
-      sub: `Washed Red Blood Cell`,
-      color: '#0284c7', bg: '#e0f2fe',
-      badge: getChangeBadge(washedCell, 'washedCell')
-    },
-    {
       icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.5 6h-7L12 2z"/><path d="M8.5 8h7l4 11H4.5L8.5 8z" fill="var(--kpi-color)" fill-opacity="0.15"/><circle cx="12" cy="14" r="2"/></svg>',
-      label: 'Pooled Granulocyte (ยูนิท)', value: fmt(granulocyte),
+      label: 'เตรียม Pooled Granulocyte (ยูนิท)', value: fmt(granulocyte),
       sub: `Granulocyte Concentrate`,
       color: '#be185d', bg: '#fce7f3',
       badge: getChangeBadge(granulocyte, 'granulocyte')
-    },
-    {
-      icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 17 7v9a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3V7z" stroke-dasharray="2 2"/><path d="M5 9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V9z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="11" cy="9" r="0.8"/><rect x="8" y="12" width="6" height="4" rx="0.5" stroke-width="1.2"/><path d="M11 23v1" stroke-width="1.5"/></svg>',
-      label: 'FFP Stock (ยูนิท)', value: fmt(ffpStockTotal),
-      sub: `<div class="kpi-sub-grid">
-        <div class="kpi-sub-item"><span class="blood-tag" style="background:#dc2626">O</span><strong>${fmt(sum('ffpStock_O'))}</strong></div>
-        <div class="kpi-sub-item"><span class="blood-tag" style="background:#2563eb">A</span><strong>${fmt(sum('ffpStock_A'))}</strong></div>
-        <div class="kpi-sub-item"><span class="blood-tag" style="background:#059669">B</span><strong>${fmt(sum('ffpStock_B'))}</strong></div>
-        <div class="kpi-sub-item"><span class="blood-tag" style="background:#d97706">AB</span><strong>${fmt(sum('ffpStock_AB'))}</strong></div>
-      </div>`,
-      color: '#0891b2', bg: '#cffafe',
-      badge: ''
     },
     {
       icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="var(--kpi-color)" fill-opacity="0.15"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
@@ -2056,23 +2097,77 @@ function renderKPI() {
       color: '#ea580c', bg: '#ffedd5',
       badge: ''
     },
+    {
+      icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="var(--kpi-color)" fill-opacity="0.12"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+      label: 'สาเหตุ Contaminated',
+      value: fmt(sum('contaminated')) + ' ยูนิท',
+      sub: (() => {
+        const causes = d.contaminatedCause || [];
+        const notes = mths.filter(m => causes[m] && causes[m].trim())
+          .map(m => `<div style="margin-bottom:0.4rem"><span style="font-weight:600;color:#ec4899">${MONTHS[m]}:</span><br>${causes[m].replace(/\n/g,'<br>')}</div>`);
+        return notes.length > 0
+          ? `<div style="font-size:12px;color:var(--text-2);line-height:1.7;">${notes.join('')}</div>`
+          : `<div style="font-size:12px;color:var(--text-3);font-style:italic;">ไม่มีข้อมูลสาเหตุในช่วงนี้</div>`;
+      })(),
+      color: '#ec4899', bg: '#fce7f3',
+      badge: '',
+      span: true
+    },
   ];
 
-  const grid = document.getElementById('kpiGrid');
-  grid.innerHTML = '';
-  for (const k of kpiData) {
-    const card = document.createElement('div');
-    card.className = 'kpi-card fade-up';
-    card.style.cssText = `--kpi-color:${k.color};--kpi-bg:${k.bg}`;
-    card.innerHTML = `
-      <div class="kpi-icon-wrap">${k.icon}</div>
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-value ${k.value.length > 6 ? 'big' : ''}">${k.value}</div>
-      <div class="kpi-sub">${k.sub}</div>
-      ${k.badge}
-    `;
-    grid.appendChild(card);
+  const kpiDataOther = [
+    {
+      icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5C4.5 5 12 3 12 3s7.5 2 7.5 7.5c0 4-4.5 6-7.5 10.5-3-4.5-7.5-6.5-7.5-10.5z" fill="var(--kpi-color)" fill-opacity="0.15"/><path d="M12 3v18M12 9H7.5M12 14h4.5"/></svg>',
+      label: 'Stem cell / BM (ยูนิท)', value: fmt(stemcell),
+      sub: `Stem Cell / Bone Marrow (ราย)`,
+      color: '#059669', bg: '#d1fae5',
+      badge: getChangeBadge(stemcell, 'stemcell')
+    },
+    {
+      icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V5z" fill="var(--kpi-color)" fill-opacity="0.25"/><circle cx="12" cy="6" r="1"/><rect x="9" y="9" width="6" height="5" rx="0.5" stroke-width="1.5"/><path d="M12 21v2" stroke-width="1.5"/></svg>',
+      label: 'Washed Cell (ยูนิท)', value: fmt(washedCell),
+      sub: `Washed Red Blood Cell (ยูนิท)`,
+      color: '#0284c7', bg: '#e0f2fe',
+      badge: getChangeBadge(washedCell, 'washedCell')
+    },
+  ];
+
+  function renderKpiCards(items, gridId) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = '';
+    for (const k of items) {
+      const card = document.createElement('div');
+      card.className = 'kpi-card fade-up';
+      card.style.cssText = `--kpi-color:${k.color};--kpi-bg:${k.bg}${k.wide ? ';grid-column:1/-1' : k.span ? ';grid-column:span 2' : ''}`;
+      if (k.wide) {
+        card.innerHTML = `
+          <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:0.75rem;min-width:180px;">
+              <div class="kpi-icon-wrap" style="margin:0">${k.icon}</div>
+              <div>
+                <div class="kpi-label" style="margin:0">${k.label}</div>
+                <div class="kpi-value ${k.value.length > 5 ? 'big' : ''}" style="margin:0">${k.value}</div>
+              </div>
+            </div>
+            <div class="kpi-sub" style="flex:1;min-width:200px;">${k.sub}</div>
+          </div>
+          ${k.badge}
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="kpi-icon-wrap">${k.icon}</div>
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-value ${k.value.length > 5 ? 'big' : ''}">${k.value}</div>
+          <div class="kpi-sub">${k.sub}</div>
+          ${k.badge}
+        `;
+      }
+      grid.appendChild(card);
+    }
   }
+
+  renderKpiCards(kpiData, 'kpiGrid');
+  renderKpiCards(kpiDataOther, 'kpiGridOther');
 
   const note = mths.length === 12 ? '\u0e23\u0e27\u0e21\u0e17\u0e38\u0e01\u0e40\u0e14\u0e37\u0e2d\u0e19' :
     mths.length === 1 ? MONTHS[mths[0]] + ' ' + selectedYear :
@@ -2167,7 +2262,7 @@ function renderChartCryo() {
       datasets: [{
         label: 'Cryo ppt. Single',
         data,
-        backgroundColor: PALETTE.indigo,
+        backgroundColor: '#a5b4fc',
         borderRadius: 4
       }]
     },
@@ -2178,6 +2273,36 @@ function renderChartCryo() {
 // =====================================================
 // CHART: SPECIAL PRODUCTS (STEM CELL, WASHED CELL, GRANULOCYTE)
 // =====================================================
+function renderChartGranulocyte() {
+  destroyChart('granulocyte');
+  const d = RAW_DATA[selectedYear];
+  const avail = d.available;
+  const labels = MONTHS.slice(0, avail);
+
+  const ctx = document.getElementById('chartGranulocyte').getContext('2d');
+  charts['granulocyte'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Pooled Granulocyte (ยูนิท)',
+          data: d.granulocyte.slice(0, avail),
+          backgroundColor: PALETTE.pink,
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      ...BASE_CHART_OPTIONS,
+      scales: {
+        ...BASE_CHART_OPTIONS.scales,
+        y: { ...BASE_CHART_OPTIONS.scales.y, grace: '15%' }
+      }
+    }
+  });
+}
+
 function renderChartSpecials() {
   destroyChart('specials');
   const d = RAW_DATA[selectedYear];
@@ -2191,26 +2316,44 @@ function renderChartSpecials() {
       labels,
       datasets: [
         {
-          label: 'Stem cell/BM',
+          label: 'Stem Cell / BM (ราย)',
           data: d.stemcell.slice(0, avail),
           backgroundColor: PALETTE.emerald,
-          borderRadius: 4
-        },
-        {
-          label: 'Washed Cell',
-          data: d.washedCell.slice(0, avail),
-          backgroundColor: PALETTE.blue,
-          borderRadius: 4
-        },
-        {
-          label: 'Pooled Granulocyte',
-          data: d.granulocyte.slice(0, avail),
-          backgroundColor: PALETTE.pink,
           borderRadius: 4
         }
       ]
     },
-    options: BASE_CHART_OPTIONS
+    options: {
+      ...BASE_CHART_OPTIONS,
+      scales: { ...BASE_CHART_OPTIONS.scales, y: { ...BASE_CHART_OPTIONS.scales.y, grace: '15%' } }
+    }
+  });
+}
+
+function renderChartWashedCell() {
+  destroyChart('washedCell');
+  const d = RAW_DATA[selectedYear];
+  const avail = d.available;
+  const labels = MONTHS.slice(0, avail);
+
+  const ctx = document.getElementById('chartWashedCell').getContext('2d');
+  charts['washedCell'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Washed Cell (ยูนิท)',
+          data: d.washedCell.slice(0, avail),
+          backgroundColor: PALETTE.blue,
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      ...BASE_CHART_OPTIONS,
+      scales: { ...BASE_CHART_OPTIONS.scales, y: { ...BASE_CHART_OPTIONS.scales.y, grace: '15%' } }
+    }
   });
 }
 
@@ -2230,19 +2373,13 @@ function renderChartPlatelet() {
       labels,
       datasets: [
         {
-          label: 'Platelet Concentrate (PC)',
-          data: d.pc.slice(0, avail),
-          backgroundColor: PALETTE.violetA,
-          borderRadius: 4
-        },
-        {
           label: 'Leukocyte Depleted Platelets (LDPPC)',
           data: d.ldppc.slice(0, avail),
           backgroundColor: PALETTE.violet,
           borderRadius: 4
         },
         {
-          label: 'Single Donor Platelets (SDP)',
+          label: 'Single Donor Platelets (SDP) - Unit random',
           data: d.sdp.slice(0, avail),
           backgroundColor: PALETTE.indigo,
           borderRadius: 4
@@ -2384,7 +2521,7 @@ function renderChartBagType() {
         ctx.lineWidth = 1.2;
         ctx.stroke();
         
-        ctx.font = '600 10px Sarabun, sans-serif';
+        ctx.font = '600 13px Sarabun, sans-serif';
         ctx.fillStyle = '#1e3a5f';
         ctx.textAlign = item.isRight ? 'left' : 'right';
         ctx.textBaseline = 'middle';
@@ -2535,77 +2672,105 @@ function renderTable() {
   // Rows
   const sections = [
     {
-      header: 'ปริมาณโลหิต',
+      header: '🩸 ปริมาณโลหิต', cls: 'sec-blood',
       rows: [
-        { label: 'Donor', key: 'donor' },
-        { label: 'Whole Blood', key: 'wb' },
-        { label: 'PFB (Packed Fresh Blood)', key: 'pfb' },
+        { label: 'Donor (ราย)', key: 'donor' },
+        { label: 'Whole Blood (autologous)', key: 'wb' },
+        { label: 'PFB — Packed Fresh Blood', key: 'pfb' },
       ]
     },
     {
-      header: 'ส่วนประกอบโลหิต',
+      header: '🧪 ส่วนประกอบโลหิต', cls: 'sec-component',
       rows: [
-        { label: 'PC (Platelet Concentrate)', key: 'pc' },
-        { label: 'LDPPC (Leukocyte Depleted Platelets)', key: 'ldppc' },
-        { label: 'SDP (Single Donor Platelets)', key: 'sdp' },
-        { label: 'Stem cell / BM', key: 'stemcell' },
-        { label: 'Washed Cell', key: 'washedCell' },
-        { label: 'Pooled Granulocyte', key: 'granulocyte' },
-        { label: 'FFP (Fresh Frozen Plasma)', key: 'ffp' },
-        { label: 'Cryo ppt. (single)', key: 'cryoSingle' },
+        { label: 'LDPPC — Leukocyte Depleted Platelets', key: 'ldppc' },
+        { label: 'SDP — Unit random (ยูนิท)', key: 'sdp' },
+        { label: 'Stem Cell / BM (ราย)', key: 'stemcell' },
+        { label: 'Washed Cell (ยูนิท)', key: 'washedCell' },
+        { label: 'Pooled Granulocyte (ยูนิท)', key: 'granulocyte' },
+        { label: 'FFP — Fresh Frozen Plasma', key: 'ffp' },
+        { label: 'Cryoprecipitate (single)', key: 'cryoSingle' },
       ]
     },
     {
-      header: 'FFP Stock แยกหมู่เลือด',
+      header: '🏦 FFP Stock แยกหมู่เลือด', cls: 'sec-ffp',
       rows: [
         { label: 'FFP Stock หมู่ O', key: 'ffpStock_O' },
         { label: 'FFP Stock หมู่ A', key: 'ffpStock_A' },
         { label: 'FFP Stock หมู่ B', key: 'ffpStock_B' },
         { label: 'FFP Stock หมู่ AB', key: 'ffpStock_AB' },
-      ]
+      ], subtotal: true
     },
     {
-      header: 'Bag Issues',
+      header: '⚠️ ถุงเลือดที่มีปัญหา (Bag Issues)', cls: 'sec-issues',
       rows: [
         { label: 'Low Volume', key: 'lowVol' },
         { label: 'Over Volume', key: 'overVol' },
         { label: 'Overtime', key: 'overtime' },
         { label: 'Short Bag', key: 'shortBag' },
-        { label: 'Clotted', key: 'clotted' },
+        { label: 'Clotted (ใช้)', key: 'clotted' },
+        { label: 'Clotted (ไม่ใช้)', key: 'clottedUnused' },
         { label: 'Contaminated', key: 'contaminated' },
-      ]
+      ], subtotal: true
     },
-
     {
-      header: 'ประเภทถุงโลหิต',
+      header: '📦 ประเภทถุงเก็บเลือดที่ใช้ (Bag Type)', cls: 'sec-bag',
       rows: [
         { label: 'Quadruple Bag', key: 'quadBag' },
         { label: 'Triple Bag', key: 'tripleBag' },
         { label: 'Single Bag', key: 'singleBag' },
         { label: 'Double Bag', key: 'doubleBag' },
-      ]
+      ], subtotal: true
     }
   ];
 
   let bodyHtml = '';
   for (const section of sections) {
-    bodyHtml += `<tr class="section-header"><td colspan="${avail + 2}">${section.header}</td></tr>`;
+    bodyHtml += `<tr class="section-header ${section.cls}"><td colspan="${avail + 2}">${section.header}</td></tr>`;
+    const sectionTotals = new Array(avail).fill(0);
     for (const row of section.rows) {
       const vals = row.key ? d[row.key].slice(0, avail) : (row.custom || []).slice(0, avail);
       const total = vals.reduce((s, v) => s + (v || 0), 0);
       bodyHtml += '<tr>';
-      bodyHtml += `<td>${row.label}</td>`;
+      bodyHtml += `<td style="padding-left:28px;">${row.label}</td>`;
       for (let m = 0; m < avail; m++) {
         const isActive = selectedMonth === m;
-        bodyHtml += `<td class="${isActive ? 'active-month-col' : ''}">${fmt(vals[m] || 0)}</td>`;
+        const v = vals[m] || 0;
+        sectionTotals[m] += v;
+        const display = v === 0 ? '<span style="color:#cbd5e1">—</span>' : fmt(v);
+        bodyHtml += `<td class="${isActive ? 'active-month-col' : ''}">${display}</td>`;
       }
-      bodyHtml += `<td class="col-total">${fmt(total)}</td>`;
+      bodyHtml += `<td class="col-total">${total > 0 ? fmt(total) : '<span style="color:#cbd5e1">—</span>'}</td>`;
       bodyHtml += '</tr>';
+    }
+    if (section.subtotal) {
+      const grandTotal = sectionTotals.reduce((s, v) => s + v, 0);
+      bodyHtml += `<tr class="row-subtotal"><td>รวม</td>`;
+      for (let m = 0; m < avail; m++) {
+        const isActive = selectedMonth === m;
+        bodyHtml += `<td class="${isActive ? 'active-month-col' : ''}">${fmt(sectionTotals[m])}</td>`;
+      }
+      bodyHtml += `<td class="col-total">${fmt(grandTotal)}</td></tr>`;
     }
   }
 
   tbody.innerHTML = bodyHtml;
   document.getElementById('tableSubtitle').textContent = `ข้อมูลรายเดือน ปี ${selectedYear} (${avail} เดือน)`;
+
+  // Render contaminated cause notes below table
+  const MONTH_NAMES = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const causes = d.contaminatedCause || [];
+  const notesEl = document.getElementById('contaminatedNotes');
+  const listEl = document.getElementById('contaminatedNotesList');
+  const monthsToShow = selectedMonth !== null ? [selectedMonth] : Array.from({length: avail}, (_, i) => i);
+  const noteItems = monthsToShow
+    .filter(m => causes[m] && causes[m].trim())
+    .map(m => `<div><strong>${MONTH_NAMES[m]}:</strong> ${causes[m].replace(/\n/g, '<br>')}</div>`);
+  if (noteItems.length > 0) {
+    listEl.innerHTML = noteItems.join('');
+    notesEl.style.display = 'block';
+  } else {
+    notesEl.style.display = 'none';
+  }
 }
 
 // =====================================================
@@ -2653,43 +2818,73 @@ function renderInsights() {
     ? `เดือน${MONTHS[selectedMonth]}` 
     : `ช่วง ${mths.length} เดือน (${MONTHS[0]}–${MONTHS[mths.length-1]})`;
 
+  // Compute trend data for analysis
+  const cryoArr = d.cryoSingle.slice(0, avail);
+  const overtimeArr = d.overtime.slice(0, avail);
+  const singleBagArr = d.singleBag.slice(0, avail);
+  const quadBagArr = d.quadBag.slice(0, avail);
+  const donorArr = d.donor.slice(0, avail);
+  const maxDonorVal = Math.max(...donorArr);
+  const minDonorVal = Math.min(...donorArr);
+  const maxDonorMth = MONTHS[donorArr.indexOf(maxDonorVal)];
+  const minDonorMth = MONTHS[donorArr.indexOf(minDonorVal)];
+  const cryoPeak = Math.max(...cryoArr);
+  const cryoPeakMth = MONTHS[cryoArr.indexOf(cryoPeak)];
+  const otDecline = overtimeArr.length >= 2 && overtimeArr[0] > overtimeArr[overtimeArr.length-1];
+  const singleBagGrowth = singleBagArr[singleBagArr.length-1] > singleBagArr[0];
+  const quadBagDecline = quadBagArr[quadBagArr.length-1] < quadBagArr[0];
+  const contamTotal = sum('contaminated');
+  const causes = d.contaminatedCause || [];
+  const contamCauseMonths = Array.from({length:avail},(_,i)=>i).filter(m => causes[m] && causes[m].trim()).map(m => MONTHS[m]);
+
   container.innerHTML = `
     <div class="analysis-header">
       <div class="analysis-title">
         <h3>🧠 บทวิเคราะห์แนวโน้มการเตรียมส่วนประกอบโลหิตเชิงกลยุทธ์ (ปี ${selectedYear})</h3>
-        <p>วิเคราะห์ประสิทธิภาพการปั่นแยกส่วนประกอบโลหิตประเภทต่าง ๆ อัตราการจัดเก็บคลังสำรอง และประเด็นควบคุมคุณภาพเบี่ยงเบน (Bag Issues) ${totalMonthsStr}</p>
+        <p>วิเคราะห์ประสิทธิภาพการปั่นแยกส่วนประกอบโลหิต อัตราการจัดเก็บคลังสำรอง และประเด็นควบคุมคุณภาพ (Bag Issues) ${totalMonthsStr}</p>
       </div>
     </div>
-    
+
     <div class="analysis-grid">
-      <!-- Card 1: Statistical Insights -->
+      <!-- Card 1: Donor & Production -->
       <div class="analysis-card">
-        <h4>📊 บทวิเคราะห์จากฐานข้อมูลสถิติการเตรียมส่วนประกอบโลหิต</h4>
+        <h4>📊 แนวโน้มปริมาณผู้บริจาคและการผลิต</h4>
         <ul>
-          <li><strong>สถิติการเตรียมส่วนประกอบโลหิตสะสม:</strong> มียอดผู้บริจาคโลหิตสะสมทั้งหมด <strong>${fmt(donor)}</strong> ยูนิท ${yearCompare ? ' โดย ' + yearCompare : ''}</li>
-          <li><strong>สัดส่วนการแยกผลิตส่วนประกอบโลหิตหลัก:</strong> แยกผลิตเป็น PFB ทั้งหมด <strong>${fmt(pfb)}</strong> ยูนิท | FFP <strong>${fmt(ffp)}</strong> ยูนิท | Cryoprecipitate <strong>${fmt(cryo)}</strong> ยูนิท | LDPPC (เกล็ดเลือด) <strong>${fmt(ldppc)}</strong> ยูนิท</li>
-          <li><strong>กลุ่มผู้บริจาครายใหม่และรายประจำ:</strong> สัดส่วนผู้บริจาคใหม่คิดเป็น <strong>${(donor > 0 ? (donorNew/donor*100).toFixed(1) : 0)}%</strong> (${fmt(donorNew)} ยูนิท) และผู้บริจาคประจำ/รายเก่าคิดเป็น <strong>${(donor > 0 ? (donorOld/donor*100).toFixed(1) : 0)}%</strong> (${fmt(donorOld)} ยูนิท) สะท้อนถึงความจำเป็นในการรักษาสัมพันธภาพกับกลุ่มผู้บริจาคเดิม</li>
+          <li><strong>ยอดผู้บริจาคสะสม ${totalMonthsStr}:</strong> รวม <strong>${fmt(donor)}</strong> ยูนิท ${yearCompare ? '— ' + yearCompare : ''} โดยสูงสุดในเดือน${maxDonorMth} (<strong>${fmt(maxDonorVal)}</strong> ยูนิท) และต่ำสุดในเดือน${minDonorMth} (<strong>${fmt(minDonorVal)}</strong> ยูนิท) — พบแนวโน้มลดลงหลังช่วงพีคในเดือนมี.ค.</li>
+          <li><strong>ผลผลิตส่วนประกอบโลหิตหลัก:</strong> PFB <strong>${fmt(pfb)}</strong> ยูนิท | FFP <strong>${fmt(ffp)}</strong> ยูนิท | Cryo ppt. <strong>${fmt(cryo)}</strong> ยูนิท (พีคในเดือน${cryoPeakMth} ที่ ${fmt(cryoPeak)} ยูนิท) | LDPPC <strong>${fmt(ldppc)}</strong> ยูนิท</li>
+          <li><strong>สัดส่วนผู้บริจาคใหม่ vs รายเก่า:</strong> ผู้บริจาคใหม่ <strong>${(donor>0?(donorNew/donor*100).toFixed(1):0)}%</strong> (${fmt(donorNew)} ยูนิท) : รายเก่า <strong>${(donor>0?(donorOld/donor*100).toFixed(1):0)}%</strong> (${fmt(donorOld)} ยูนิท) — ฐานผู้บริจาคใหม่ยังแข็งแกร่ง แต่ควรรักษากลุ่มรายเก่าเพื่อเสถียรภาพระยะยาว</li>
         </ul>
       </div>
 
-      <!-- Card 2: Risk and Deviation Analysis -->
+      <!-- Card 2: Quality & Risk -->
       <div class="analysis-card">
-        <h4>⚠️ การจัดการควบคุมความเสี่ยงและภาวะเบี่ยงเบนคุณภาพ (Bag Quality Control)</h4>
+        <h4>⚠️ คุณภาพถุงโลหิตและความเสี่ยง</h4>
         <ul>
-          <li><strong>ยอดรวมสิ่งเบี่ยงเบนคุณภาพ (Bag Issues):</strong> ตรวจพบความเบี่ยงเบนทางกายภาพของถุงโลหิตสะสมรวม <strong>${fmt(totalIssues)}</strong> ยูนิท (คิดเป็น <strong>${(donor > 0 ? (totalIssues/donor*100).toFixed(2) : 0)}%</strong> ของปริมาณผู้บริจาคทั้งหมด)</li>
-          <li><strong>แจกแจงประเด็นปัญหาสำคัญ:</strong> พบปัญหาถุงโลหิตปั่นเกินเวลา (Overtime) มากที่สุดจำนวน <strong>${fmt(overtime)}</strong> ยูนิท | เลือดในถุงมีปริมาตรน้อย (Short Bag) <strong>${fmt(shortBag)}</strong> ยูนิท | พบลิ่มเลือดอุดตันในถุง (Clotted) <strong>${fmt(clotted)}</strong> ยูนิท</li>
-          <li><strong>มาตรฐานความปลอดภัยระดับสากล:</strong> ${totalIssues/Math.max(donor,1)*100 < 5 ? '✅ อัตราการปฏิเสธและข้อบกพร่องสะสมอยู่ในเกณฑ์ดีเยี่ยมตามเกณฑ์มาตรฐานความปลอดภัย (&lt;5%)' : '⚠️ อัตราความบกพร่องสะสมเฉลี่ยสูงกว่าเกณฑ์ที่ยอมรับได้ 5% ควรดำเนินการติดตามควบคุมทางเทคนิคอย่างใกล้ชิด'}</li>
+          <li><strong>ภาพรวม Bag Issues:</strong> พบความเบี่ยงเบนรวม <strong>${fmt(totalIssues)}</strong> ยูนิท คิดเป็น <strong>${(donor>0?(totalIssues/donor*100).toFixed(2):0)}%</strong> ของยอดผู้บริจาค — ${totalIssues/Math.max(donor,1)*100 < 5 ? '✅ อยู่ในเกณฑ์ยอมรับได้ (&lt;5%)' : '⚠️ เกินเกณฑ์ยอมรับ 5% ควรเร่งติดตาม'}</li>
+          <li><strong>ปัญหาหลัก:</strong> Overtime <strong>${fmt(overtime)}</strong> ยูนิท${otDecline ? ' — <span style="color:#10b981">✅ แนวโน้มลดลงต่อเนื่องทุกเดือน ('+overtimeArr[0]+'→'+overtimeArr[overtimeArr.length-1]+') สะท้อนการพัฒนากระบวนการที่ดีขึ้น</span>' : ''} | Short Bag <strong>${fmt(sum('shortBag'))}</strong> ยูนิท | Clotted <strong>${fmt(sum('clotted'))}</strong> ยูนิท</li>
+          <li><strong>Contaminated:</strong> รวม <strong>${fmt(contamTotal)}</strong> ยูนิท${contamCauseMonths.length > 0 ? ' — พบสาเหตุที่บันทึกไว้ในเดือน' + contamCauseMonths.join(', ') + ' (Leak จากการเชื่อมสายและการ seal ถุงเลือด) ควรทบทวนขั้นตอน Welding/Sealing' : ''}</li>
+        </ul>
+      </div>
+
+      <!-- Card 3: Bag Type Shift -->
+      <div class="analysis-card">
+        <h4>🧪 การเปลี่ยนแปลงประเภทถุงโลหิต</h4>
+        <ul>
+          <li><strong>Quadruple bag ${quadBagDecline ? 'ลดลง' : 'เพิ่มขึ้น'}:</strong> จาก <strong>${fmt(quadBagArr[0])}</strong> เดือนม.ค. เหลือ <strong>${fmt(quadBagArr[quadBagArr.length-1])}</strong> เดือน${MONTHS[avail-1]} — การลดลงของ Quadruple bag สัมพันธ์กับการเปลี่ยนมาใช้ถุงประเภทอื่น</li>
+          <li><strong>Single bag ${singleBagGrowth ? 'เพิ่มขึ้นอย่างมีนัยสำคัญ' : 'ทรงตัว'}:</strong> จาก <strong>${fmt(singleBagArr[0])}</strong> เพิ่มเป็น <strong>${fmt(singleBagArr[singleBagArr.length-1])}</strong> ยูนิทในเดือน${MONTHS[avail-1]} — บ่งชี้การปรับนโยบายหรือความต้องการโลหิตชนิด Single unit ที่เพิ่มขึ้น</li>
+          <li><strong>Triple bag เพิ่มขึ้นสม่ำเสมอ:</strong> จาก <strong>${fmt(d.tripleBag[0])}</strong> → <strong>${fmt(d.tripleBag[avail-1])}</strong> ยูนิท สอดคล้องกับแนวโน้มลด Quadruple bag และเพิ่ม Single bag ในภาพรวม</li>
         </ul>
       </div>
     </div>
-    
+
     <!-- Actionable Recommendations Box -->
     <div class="recommendations-box">
-      <h5>💡 ข้อเสนอแนะเชิงยุทธศาสตร์เพื่อการพัฒนาประสิทธิภาพเชิงรุก (Strategic Recommendations)</h5>
+      <h5>💡 ข้อเสนอแนะเชิงกลยุทธ์ (Strategic Recommendations)</h5>
       <ol>
-        <li><strong>การเพิ่มประสิทธิภาพการจัดเก็บเกล็ดเลือดและพลาสมา:</strong> ขยายและพัฒนาศักยภาพระบบทำนายและประมาณการยอดใช้ LDPPC และ Cryo PPT ล่วงหน้า เพื่อจัดทำแผนแยกการปั่นเก็บอย่างสมดุล ป้องกันภาวะคลังเลือดหมดอายุสะสมค้าง</li>
-        <li><strong>การลดอัตราข้อเบี่ยงเบนทางกายภาพ (Bag Issues) ในห้องปั่นแยก:</strong> ปรับปรุงระบบแจ้งเตือนและสอบเทียบเครื่องปั่นแยกความเร็วสูงเพื่อจำกัดปัญหาถุงโลหิตปั่นเกินเวลา (Overtime Bags) และควบคุมอัตราการเกิดลิ่มเลือด (Clotting) ให้อยู่ในเกณฑ์ต่ำสุด</li>
-        <li><strong>มาตรการรณรงค์ผู้บริจาคประจำเพื่อความเสถียรของคลังเลือดสำรอง:</strong> ยกระดับการทำแคมเปญกระตุ้นและอำนวยความสะดวกในการนัดหมายผู้บริจาคประจำ (Return Donor) โดยเฉพาะกลุ่มเกล็ดเลือดสูง เพื่อสร้างความยั่งยืนและความต่อเนื่องของคลังส่วนประกอบโลหิตทดแทน</li>
+        <li><strong>รับมือแนวโน้มผู้บริจาคลดลงหลัง มี.ค.:</strong> ยอดผู้บริจาคลดจาก ${fmt(maxDonorVal)} (มี.ค.) เหลือ ${fmt(donorArr[avail-1])} ยูนิท (${MONTHS[avail-1]}) — ควรวางแผนรณรงค์เชิงรุกในช่วง เม.ย.–มิ.ย. เพื่อรักษาระดับคลังเลือด</li>
+        <li><strong>ต่อยอดผล Overtime ที่ลดลงต่อเนื่อง:</strong> Overtime ลดจาก ${overtimeArr[0]} → ${overtimeArr[avail-1]} ยูนิท (${(((overtimeArr[0]-overtimeArr[avail-1])/overtimeArr[0])*100).toFixed(0)}%) — ควรจัดทำ SOP ปัจจุบันเป็นมาตรฐานและขยายผลไปยังทุก Shift</li>
+        <li><strong>ทบทวนกระบวนการ Welding/Sealing เพื่อป้องกัน Contaminated:</strong> พบสาเหตุ Leak จากการเชื่อมสายและ seal ถุงเลือดในเดือน${contamCauseMonths.length>0?contamCauseMonths.join('/'):'พ.ค.'} — ควร Re-training และ Audit อุปกรณ์ Welding สม่ำเสมอ</li>
+        <li><strong>ติดตามการเปลี่ยนสัดส่วนประเภทถุง:</strong> Single bag เพิ่มขึ้นชัดเจนควบคู่กับ Quadruple bag ที่ลดลง — ควรประเมินผลต่อปริมาณ PFB และ FFP ที่ผลิตได้เพื่อวางแผนคลังสำรองให้เพียงพอ</li>
       </ol>
     </div>
   `;
@@ -2716,10 +2911,12 @@ function renderAll() {
   renderPeriodBanner();
   renderKPI();
   renderChartDonor();
+  renderChartPlatelet();
   renderChartComponents();
   renderChartCryo();
+  renderChartGranulocyte();
   renderChartSpecials();
-  renderChartPlatelet();
+  renderChartWashedCell();
   renderChartBagIssues();
   renderChartBagType();
   // renderChartYearlyTrend();
