@@ -1361,6 +1361,10 @@
     </style>
 </head>
 <body>
+<script>
+if (sessionStorage.getItem('auth') !== 'ok') { location.replace('login.html'); }
+</script>
+
 
   <!-- ===== HEADER ===== -->
   <header class="header">
@@ -1639,9 +1643,13 @@
     // =====================================================
     //  EXPORT PDF  –  populates print header then prints
     // =====================================================
-    function exportPDF() { window.print(); }, 1500);
-      }, 200);
-    }, 350);
+    function exportPDF() {
+      preparePrintHeader();
+      setTimeout(() => {
+        setTimeout(() => {
+          setTimeout(() => window.print(), 1500);
+        }, 200);
+      }, 350);
     }
 
     // Populate the print header with dynamic context
@@ -1792,13 +1800,14 @@
           tab: "BlProcessing"
         },
         {
-          title: "เลือดหมดอายุ (RBC)",
-          value: stats.expiredBloodTotal,
-          color: "var(--crimson)",
-          bg: "var(--crimson-lt)",
-          icon: "💔",
-          growth: stats.expiredBloodGrowth,
-          tab: "ExpiredBlood"
+          id: "AntibodyId",
+          title: "Antibody Identification",
+          value: stats.antibodyIdTotal,
+          color: "var(--rose)",
+          bg: "var(--rose-lt)",
+          icon: "🔎",
+          growth: stats.antibodyIdGrowth,
+          tab: "BlProcessing"
         },
         {
           title: "ขอเลือดรวม (RBC)",
@@ -1808,6 +1817,15 @@
           icon: "📦",
           growth: stats.requestedBloodGrowth,
           tab: "RequestedBlood"
+        },
+        {
+          title: "เลือดหมดอายุ (RBC)",
+          value: stats.expiredBloodTotal,
+          color: "var(--crimson)",
+          bg: "var(--crimson-lt)",
+          icon: "💔",
+          growth: stats.expiredBloodGrowth,
+          tab: "ExpiredBlood"
         },
         {
           title: "FFP หมดอายุ",
@@ -1876,34 +1894,22 @@
     // Helper: calculate breakdown details for a card
     function getKPIBreakdown(cardTab, year, month) {
       const yearsToSum = year === 'compare' ? ["2564", "2565", "2566", "2567", "2568", "2569"] : [year];
-      
-      if (cardTab === 'RhNeg') {
-        let o = 0, a = 0, b = 0, ab = 0;
+
+      if (cardTab === 'AntibodyId') {
+        // Return top-3 antibodies by total
+        const abCount = {};
         yearsToSum.forEach(y => {
           const data = BLOOD_LAB_DATA[y];
-          if (!data || !data.BlProcessing || !data.BlProcessing.aboRh) return;
-          data.BlProcessing.aboRh.forEach(item => {
-            if (item.rh !== 'D-') return;
-            const grp = item.group;
-            let val = 0;
-            if (month === 'all') {
-              val = item.total || 0;
-            } else {
-              val = item.months[parseInt(month) - 1] || 0;
-            }
-            if (grp === 'O') o += val;
-            else if (grp === 'A') a += val;
-            else if (grp === 'B') b += val;
-            else if (grp === 'AB') ab += val;
+          if (!data || !data.BlProcessing || !data.BlProcessing.antibodyId) return;
+          data.BlProcessing.antibodyId.slice(1).forEach(item => {
+            const val = month === 'all' ? (typeof item.total === 'number' ? item.total : parseInt(item.total)||0)
+                                        : ((item.months && item.months[parseInt(month)-1])||0);
+            abCount[item.name] = (abCount[item.name] || 0) + val;
           });
         });
-        const total = o + a + b + ab;
-        return [
-          { label: 'Group O', value: o, total: total },
-          { label: 'Group A', value: a, total: total },
-          { label: 'Group B', value: b, total: total },
-          { label: 'Group AB', value: ab, total: total }
-        ];
+        const total = Object.values(abCount).reduce((s,v) => s+v, 0);
+        const sorted = Object.entries(abCount).sort((a,b) => b[1]-a[1]).slice(0, 4);
+        return sorted.map(([name, val]) => ({ label: name, value: val, total }));
       }
       
       if (cardTab === 'BlProcessing') {
@@ -1912,25 +1918,46 @@
           const data = BLOOD_LAB_DATA[y];
           if (!data || !data.BlProcessing || !data.BlProcessing.aboRh) return;
           data.BlProcessing.aboRh.forEach(item => {
-            const grp = item.group;
             let val = 0;
-            if (month === 'all') {
-              val = item.total || 0;
-            } else {
-              val = item.months[parseInt(month) - 1] || 0;
-            }
-            if (grp === 'O') o += val;
-            else if (grp === 'A') a += val;
-            else if (grp === 'B') b += val;
-            else if (grp === 'AB') ab += val;
+            if (month === 'all') { val = item.total || 0; }
+            else { val = (item.months && item.months[parseInt(month) - 1]) || 0; }
+            if (item.group === 'O') o += val;
+            else if (item.group === 'A') a += val;
+            else if (item.group === 'B') b += val;
+            else if (item.group === 'AB') ab += val;
           });
         });
         const total = o + a + b + ab;
         return [
-          { label: 'Group O', value: o, total: total },
-          { label: 'Group A', value: a, total: total },
-          { label: 'Group B', value: b, total: total },
-          { label: 'Group AB', value: ab, total: total }
+          { label: 'Group O', value: o, total },
+          { label: 'Group A', value: a, total },
+          { label: 'Group B', value: b, total },
+          { label: 'Group AB', value: ab, total }
+        ];
+      }
+
+      if (cardTab === 'RhNeg') {
+        let o = 0, a = 0, b = 0, ab = 0;
+        yearsToSum.forEach(y => {
+          const data = BLOOD_LAB_DATA[y];
+          if (!data || !data.BlProcessing || !data.BlProcessing.aboRh) return;
+          data.BlProcessing.aboRh.forEach(item => {
+            if (item.rh !== 'D-') return;
+            let val = 0;
+            if (month === 'all') { val = item.total || 0; }
+            else { val = (item.months && item.months[parseInt(month) - 1]) || 0; }
+            if (item.group === 'O') o += val;
+            else if (item.group === 'A') a += val;
+            else if (item.group === 'B') b += val;
+            else if (item.group === 'AB') ab += val;
+          });
+        });
+        const total = o + a + b + ab;
+        return [
+          { label: 'Group O D-', value: o, total },
+          { label: 'Group A D-', value: a, total },
+          { label: 'Group B D-', value: b, total },
+          { label: 'Group AB D-', value: ab, total }
         ];
       }
       
@@ -2070,6 +2097,7 @@
         const ffpTotal = yearsList.reduce((acc, y) => acc + sumFFP(BLOOD_LAB_DATA[y], currentMonth), 0);
         const agTotal = yearsList.reduce((acc, y) => acc + (sumAntigen(BLOOD_LAB_DATA[y], currentMonth) || 0), 0);
         const rhNegTotal = yearsList.reduce((acc, y) => acc + sumRhNeg(BLOOD_LAB_DATA[y], currentMonth), 0);
+        const abIdTotal = yearsList.reduce((acc, y) => acc + sumAntibodyId(BLOOD_LAB_DATA[y], currentMonth), 0);
 
         return {
           blProcessingTotal: blTotal,
@@ -2078,12 +2106,14 @@
           ffpExpiredTotal: ffpTotal,
           antigenTotal: agTotal,
           rhNegTotal: rhNegTotal,
+          antibodyIdTotal: abIdTotal,
           blProcessingGrowth: null,
           expiredBloodGrowth: null,
           requestedBloodGrowth: null,
           ffpExpiredGrowth: null,
           antigenGrowth: null,
-          rhNegGrowth: null
+          rhNegGrowth: null,
+          antibodyIdGrowth: null
         };
       }
 
@@ -2097,6 +2127,7 @@
       const ffpTotal = sumFFP(current, currentMonth);
       const agTotal = sumAntigen(current, currentMonth);
       const rhNegTotal = sumRhNeg(current, currentMonth);
+      const abIdTotal = sumAntibodyId(current, currentMonth);
 
       const getGrowth = (curVal, prevVal) => {
         if (!prevVal || prevVal === 0 || curVal === 0) return null;
@@ -2110,12 +2141,14 @@
         ffpExpiredTotal: ffpTotal,
         antigenTotal: agTotal === null ? "ไม่มีข้อมูล" : agTotal,
         rhNegTotal: rhNegTotal,
+        antibodyIdTotal: abIdTotal,
         blProcessingGrowth: previous ? getGrowth(blTotal, sumAboRh(previous, currentMonth)) : null,
         expiredBloodGrowth: previous ? getGrowth(expTotal, sumExpired(previous, currentMonth)) : null,
         requestedBloodGrowth: previous && reqTotal !== null ? getGrowth(reqTotal, sumRequested(previous, currentMonth)) : null,
         ffpExpiredGrowth: previous ? getGrowth(ffpTotal, sumFFP(previous, currentMonth)) : null,
         antigenGrowth: previous && agTotal !== null ? getGrowth(agTotal, sumAntigen(previous, currentMonth)) : null,
-        rhNegGrowth: previous ? getGrowth(rhNegTotal, sumRhNeg(previous, currentMonth)) : null
+        rhNegGrowth: previous ? getGrowth(rhNegTotal, sumRhNeg(previous, currentMonth)) : null,
+        antibodyIdGrowth: previous ? getGrowth(abIdTotal, sumAntibodyId(previous, currentMonth)) : null
       };
     }
 
@@ -2158,11 +2191,11 @@
       if (!BLOOD_LAB_DATA[year]) return [];
       const active = [];
       const data = BLOOD_LAB_DATA[year];
-      if (data.BlProcessing && data.BlProcessing.aboRh) {
+      if (data.BlProcessing && data.BlProcessing.aboRh && data.BlProcessing.aboRh.length > 0) {
         for (let m = 0; m < 12; m++) {
           let sum = 0;
           data.BlProcessing.aboRh.forEach(item => {
-            let val = item.months[m];
+            let val = item.months && item.months[m];
             if (typeof val === 'string') {
               val = val.trim();
               if (val === '-' || val === '') val = 0;
@@ -2170,14 +2203,10 @@
             }
             sum += val || 0;
           });
-          if (sum > 0) {
-            active.push(m);
-          }
+          if (sum > 0) active.push(m);
         }
       } else {
-        for (let m = 0; m < 12; m++) {
-          active.push(m);
-        }
+        for (let m = 0; m < 12; m++) active.push(m);
       }
       return active;
     }
@@ -2187,19 +2216,14 @@
       if (!dataObj || !dataObj.BlProcessing || !dataObj.BlProcessing.aboRh) return 0;
       let total = 0;
       dataObj.BlProcessing.aboRh.forEach(item => {
-        if (item.rh === 'D-') {
-          if (monthIdx === 'all') {
-            total += item.total || 0;
-          } else {
-            const mIdx = parseInt(monthIdx) - 1;
-            let val = item.months[mIdx];
-            if (typeof val === 'string') {
-              val = val.trim();
-              if (val === '-' || val === '') val = 0;
-              else val = parseFloat(val) || 0;
-            }
-            total += val || 0;
-          }
+        if (item.rh !== 'D-') return;
+        if (monthIdx === 'all') {
+          total += item.total || 0;
+        } else {
+          const mIdx = parseInt(monthIdx) - 1;
+          let val = item.months && item.months[mIdx];
+          if (typeof val === 'string') { val = parseFloat(val) || 0; }
+          total += val || 0;
         }
       });
       return total;
@@ -2213,12 +2237,8 @@
           total += item.total || 0;
         } else {
           const mIdx = parseInt(monthIdx) - 1;
-          let val = item.months[mIdx];
-          if (typeof val === 'string') {
-            val = val.trim();
-            if (val === '-' || val === '') val = 0;
-            else val = parseFloat(val) || 0;
-          }
+          let val = item.months && item.months[mIdx];
+          if (typeof val === 'string') { val = parseFloat(val) || 0; }
           total += val || 0;
         }
       });
@@ -2266,6 +2286,22 @@
           total += (item.rhPhenotyping || 0) + (item.antigenMia || 0) + (item.g6pd || 0) + (item.dat || 0);
         }
       });
+      return total;
+    }
+
+    function sumAntibodyId(dataObj, monthIdx = 'all') {
+      if (!dataObj || !dataObj.BlProcessing || !dataObj.BlProcessing.antibodyId) return 0;
+      let total = 0;
+      const arr = dataObj.BlProcessing.antibodyId;
+      for (let i = 1; i < arr.length; i++) {
+        const item = arr[i];
+        if (monthIdx === 'all') {
+          total += typeof item.total === 'number' ? item.total : (parseInt(item.total) || 0);
+        } else {
+          const mIdx = parseInt(monthIdx) - 1;
+          total += (item.months && item.months[mIdx]) || 0;
+        }
+      }
       return total;
     }
 
@@ -2363,33 +2399,28 @@
         document.getElementById('chart-2-sub').innerText = `จำแนกรายละเอียด Rh (D+, D-, Del, Weak-D) ในรอบปี ${currentYear}`;
       }
 
-      // Aggregate ABO monthly data
-      const monthsData = Array(12).fill(0).map(() => ({ O:0, A:0, B:0, AB:0 }));
-      let totalDplus = 0, totalDel = 0, totalDminus = 0, totalWeakD = 0;
+      // Aggregate antibody monthly data (skip header at index 0)
+      const monthsData = Array(12).fill(0);
+      let totalAntibodies = 0;
 
-      data.aboRh.forEach(item => {
-        const grp = item.group;
-        const rh = item.rh;
-        
-        // Sum D details for selected month or full year
-        let val = 0;
-        if (currentMonth === 'all') {
-          val = item.total;
-        } else {
-          val = item.months[parseInt(currentMonth) - 1] || 0;
-        }
-
-        if (rh === 'D+') totalDplus += val;
-        else if (rh === 'Del') totalDel += val;
-        else if (rh === 'D-') totalDminus += val;
-        else if (rh === 'Weak-D') totalWeakD += val;
-
+      // Build per-group monthly totals for Chart 1 (stacked bar: O, A, B, AB)
+      const GROUPS = ['O', 'A', 'B', 'AB'];
+      const GROUP_COLORS = { O: '#dc2626', A: '#2563eb', B: '#0d9488', AB: '#7c3aed' };
+      const aboRhArr = data.aboRh || [];
+      const groupMonths = {};
+      const groupTotals = {};
+      GROUPS.forEach(g => { groupMonths[g] = Array(12).fill(0); groupTotals[g] = 0; });
+      aboRhArr.forEach(item => {
+        if (!GROUPS.includes(item.group)) return;
+        groupTotals[item.group] += item.total || 0;
         for (let m = 0; m < 12; m++) {
-          monthsData[m][grp] += item.months[m] || 0;
+          groupMonths[item.group][m] += (item.months && item.months[m]) || 0;
         }
       });
+      const monthsTotalArr = Array(12).fill(0);
+      GROUPS.forEach(g => { for (let m = 0; m < 12; m++) monthsTotalArr[m] += groupMonths[g][m]; });
 
-      // Chart 1: ABO bar chart OR YoY month line chart
+      // Chart 1: Stacked bar (ABO groups per month) OR YoY line
       const ctx1 = document.getElementById('chart-1').getContext('2d');
       if (currentMonth !== 'all') {
         const activeYears = yearsList.filter(y => {
@@ -2401,28 +2432,9 @@
           type: 'line',
           data: {
             labels: activeYears,
-            datasets: [{
-              label: `ยอดตรวจ ABO/Rh เดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ราย)`,
-              data: values,
-              borderColor: '#dc2626',
-              backgroundColor: 'rgba(220,38,38,0.1)',
-              borderWidth: 3,
-              fill: true,
-              tension: 0.3,
-              pointBackgroundColor: '#dc2626',
-              pointRadius: 4
-            }]
+            datasets: [{ label: `ยอดประมวลผล ABO/Rh เดือน${THAI_MONTHS_SHORT[parseInt(currentMonth)-1]} (ราย)`, data: values, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointBackgroundColor: '#dc2626', pointRadius: 4 }]
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              globalDatalabels: false
-            },
-            scales: {
-              y: { beginAtZero: true }
-            }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { globalDatalabels: false }, scales: { y: { beginAtZero: true } } }
         });
       } else {
         const activeMonths = getActiveMonthsForYear(currentYear);
@@ -2430,169 +2442,119 @@
           type: 'bar',
           data: {
             labels: activeMonths.map(m => THAI_MONTHS_SHORT[m]),
-            datasets: [
-              { label: 'Group O', data: activeMonths.map(m => monthsData[m].O), backgroundColor: '#fca5a5' },
-              { label: 'Group A', data: activeMonths.map(m => monthsData[m].A), backgroundColor: '#93c5fd' },
-              { label: 'Group B', data: activeMonths.map(m => monthsData[m].B), backgroundColor: '#c084fc' },
-              { label: 'Group AB', data: activeMonths.map(m => monthsData[m].AB), backgroundColor: '#fed7aa' }
-            ]
+            datasets: GROUPS.map(g => ({ label: `Group ${g}`, data: activeMonths.map(m => groupMonths[g][m]), backgroundColor: GROUP_COLORS[g], stack: 'stack' }))
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              globalDatalabels: false
-            },
-            scales: {
-              y: {
-                stacked: true,
-                grace: '8%'
-              },
-              x: { stacked: true }
-            }
+            responsive: true, maintainAspectRatio: false,
+            plugins: { globalDatalabels: false, legend: { display: true, position: 'top' } },
+            scales: { x: { stacked: true }, y: { stacked: true, grace: '8%' } }
           },
           plugins: [{
             id: 'stackedTotals',
             afterDatasetsDraw(chart) {
-              const { ctx, data } = chart;
+              const { ctx } = chart;
               ctx.save();
-              const activeMonths = getActiveMonthsForYear(currentYear);
-              const numBars = activeMonths.length;
-              
-              for (let i = 0; i < numBars; i++) {
-                let sum = 0;
-                let topY = null;
-                let topX = null;
-                
-                for (let datasetIndex = data.datasets.length - 1; datasetIndex >= 0; datasetIndex--) {
-                  const val = data.datasets[datasetIndex].data[i] || 0;
-                  sum += val;
-                  
-                  if (val > 0 && topY === null) {
-                    const meta = chart.getDatasetMeta(datasetIndex);
-                    if (meta.data[i]) {
-                      topY = meta.data[i].y;
-                      topX = meta.data[i].x;
-                    }
-                  }
+              activeMonths.forEach((mIdx, i) => {
+                const val = monthsTotalArr[mIdx];
+                if (!val) return;
+                const lastMeta = chart.getDatasetMeta(chart.data.datasets.length - 1);
+                if (lastMeta.data[i]) {
+                  const bar = lastMeta.data[i];
+                  ctx.font = 'bold 10px Sarabun'; ctx.fillStyle = 'var(--text-2)';
+                  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+                  ctx.fillText(val.toLocaleString(), bar.x, bar.y - 4);
                 }
-                
-                if (sum > 0 && topY !== null && topX !== null) {
-                  ctx.font = 'bold 11px Sarabun';
-                  ctx.fillStyle = 'var(--text-2)';
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'bottom';
-                  ctx.fillText(sum.toLocaleString(), topX, topY - 5);
-                }
-              }
+              });
               ctx.restore();
             }
           }]
         });
       }
 
-            // Chart 2: Rh phenotype proportion (Horizontal Bar)
+      // Chart 2: Rh phenotype doughnut
       const ctx2 = document.getElementById('chart-2').getContext('2d');
+      const RH_TYPES = ['D+', 'D-', 'Del', 'Weak-D'];
+      const RH_COLORS = ['#dc2626', '#2563eb', '#0d9488', '#d97706'];
+      const rhTotals = {};
+      RH_TYPES.forEach(r => { rhTotals[r] = 0; });
+      aboRhArr.forEach(item => {
+        const mIdx = currentMonth !== 'all' ? parseInt(currentMonth) - 1 : null;
+        let val = mIdx !== null ? ((item.months && item.months[mIdx]) || 0) : (item.total || 0);
+        if (rhTotals[item.rh] !== undefined) rhTotals[item.rh] += val;
+      });
+      const rhLabels = RH_TYPES.filter(r => rhTotals[r] > 0);
+      const rhValues = rhLabels.map(r => rhTotals[r]);
+      const rhColors = rhLabels.map(r => RH_COLORS[RH_TYPES.indexOf(r)]);
+      const rhTotal = rhValues.reduce((a, b) => a + b, 0);
       chart2 = new Chart(ctx2, {
         type: 'bar',
         data: {
-          labels: ['Rh D+', 'Rh Del', 'Rh D-', 'Rh Weak-D'],
+          labels: rhLabels,
           datasets: [{
-            data: [totalDplus, totalDel, totalDminus, totalWeakD],
-            backgroundColor: ['#dc2626', '#3b82f6', '#475569', '#eab308'],
-            borderRadius: 4,
-            barThickness: 16
+            data: rhValues,
+            backgroundColor: rhColors,
+            borderColor: rhColors.map(c => c),
+            borderWidth: 1.5,
+            borderRadius: 6,
+            barPercentage: 0.6
           }]
         },
         options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
-            globalDatalabels: false
+            globalDatalabels: false,
+            tooltip: { callbacks: { label: ctx => { const p = rhTotal ? ((ctx.parsed.y / rhTotal) * 100).toFixed(1) : 0; return ` ${ctx.parsed.y.toLocaleString()} ราย (${p}%)`; } } }
           },
           scales: {
-            x: {
-              beginAtZero: true,
-              grace: '22%'
-            },
-            y: {
-              grid: { display: false }
-            }
+            y: { beginAtZero: true, grace: '15%' },
+            x: { grid: { display: false } }
           }
         },
         plugins: [{
-          id: 'valueLabels',
+          id: 'rhBarLabels',
           afterDatasetsDraw(chart) {
             const { ctx, data } = chart;
             ctx.save();
-            const total = data.datasets[0].data.reduce((acc, val) => acc + val, 0);
             const meta = chart.getDatasetMeta(0);
-            meta.data.forEach((bar, index) => {
-              const val = data.datasets[0].data[index];
-              const pct = total ? ((val / total) * 100).toFixed(3) : 0;
-              let pctStr = parseFloat(pct) >= 1 ? `${parseFloat(pct).toFixed(1)}%` : `${pct}%`;
-              if (val === 0) pctStr = '0%';
-              const text = `${val.toLocaleString()} ราย (${pctStr})`;
-              
-              ctx.font = 'bold 11px Sarabun';
-              ctx.fillStyle = 'var(--text-2)';
-              ctx.textAlign = 'left';
-              ctx.textBaseline = 'middle';
-              ctx.fillText(text, bar.x + 8, bar.y);
+            meta.data.forEach((bar, i) => {
+              const val = data.datasets[0].data[i];
+              if (!val) return;
+              const pct = rhTotal ? ((val / rhTotal) * 100).toFixed(1) : 0;
+              ctx.font = 'bold 11px Sarabun, sans-serif';
+              ctx.fillStyle = rhColors[i];
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              ctx.fillText(`${val.toLocaleString()} (${pct}%)`, bar.x, bar.y - 4);
             });
             ctx.restore();
           }
         }]
       });
 
-      // === Build grouped ABO/Rh table (O / A / B / AB sections) ===
+      // === Build ABO/Rh table ===
       const tableWrapper = document.getElementById('table-wrapper');
-      const GROUPS = ['O', 'A', 'B', 'AB'];
-      const GROUP_COLORS = {
-        O:  { bg: '#fef2f2', accent: '#dc2626', label: 'หมู่เลือด O' },
-        A:  { bg: '#eff6ff', accent: '#2563eb', label: 'หมู่เลือด A' },
-        B:  { bg: '#faf5ff', accent: '#7c3aed', label: 'หมู่เลือด B' },
-        AB: { bg: '#fff7ed', accent: '#d97706', label: 'หมู่เลือด AB' },
-      };
-      const RH_ORDER = ['D+', 'Del', 'D-', 'Weak-D'];
-      const RH_BADGE = {
-        'D+':     { color: '#dc2626', bg: '#fee2e2' },
-        'Del':    { color: '#2563eb', bg: '#dbeafe' },
-        'D-':     { color: '#475569', bg: '#f1f5f9' },
-        'Weak-D': { color: '#d97706', bg: '#fef3c7' },
-      };
-
-      // Organise data: grouped[group][rh] = item
-      const grouped = {};
-      GROUPS.forEach(g => { grouped[g] = {}; });
-      data.aboRh.forEach(item => {
-        if (grouped[item.group]) grouped[item.group][item.rh] = item;
-      });
-
-      // Grand column totals across all groups
-      const colTotals = Array(12).fill(0);
-      let grandTotal = 0;
-      data.aboRh.forEach(item => {
-        grandTotal += item.total;
-        for (let m = 0; m < 12; m++) colTotals[m] += item.months[m] || 0;
-      });
-
-      // Helper: highlight class for selected month column
       const hl = idx => (idx + 1).toString() === currentMonth;
-
-      // Month header cells
       const thMonths = THAI_MONTHS_SHORT.map((m, idx) => {
         const sel = hl(idx);
         return `<th style="${sel ? 'background:var(--teal-lt);color:var(--teal);border:2px solid var(--teal);' : ''}">${m}</th>`;
       }).join('');
 
+      const grandMonths = Array(12).fill(0).map((_,m) => monthsTotalArr[m]);
+      const grandTotal = GROUPS.reduce((s,g) => s + groupTotals[g], 0);
+      const RH_ORDER = ['D+', 'Del', 'D-', 'Weak-D'];
+      const RH_LABEL_STYLE = { 'D+': '', 'Del': 'color:var(--teal);', 'D-': 'color:var(--blue);font-weight:700;', 'Weak-D': 'color:var(--amber);' };
+
+      // Build lookup: aboRhArr by group+rh
+      const aboRhMap = {};
+      aboRhArr.forEach(r => { aboRhMap[`${r.group}_${r.rh}`] = r; });
+
       let tableHtml = `
         <table style="border-collapse:collapse; width:100%;">
           <thead>
             <tr>
-              <th style="min-width:170px; text-align:left;">ประเภท / ฟีโนไทป์ Rh</th>
+              <th style="min-width:60px; text-align:left;">หมู่โลหิต</th>
+              <th style="min-width:60px; text-align:left; color:var(--text-3);">Rh</th>
               ${thMonths}
               <th class="col-total">รวมปี</th>
             </tr>
@@ -2600,133 +2562,77 @@
           <tbody>
       `;
 
-      GROUPS.forEach(grp => {
-        const gc = GROUP_COLORS[grp];
-        const rhItems = RH_ORDER.map(rh => grouped[grp][rh]).filter(Boolean);
-
-        // Group subtotal across Rh
-        const grpMonths = Array(12).fill(0);
-        let grpTotal = 0;
-        rhItems.forEach(item => {
-          grpTotal += item.total;
-          for (let m = 0; m < 12; m++) grpMonths[m] += item.months[m] || 0;
-        });
-
-        // Section header row
+      let rowIdx = 0;
+      GROUPS.forEach(g => {
+        // Group subtotal row
+        const gMonths = Array(12).fill(0).map((_,m) => groupMonths[g][m]);
+        const gTotal = groupTotals[g];
         tableHtml += `
-          <tr>
-            <td colspan="14"
-                style="background:${gc.accent};color:#fff;font-weight:800;font-size:12px;
-                       padding:6px 14px;letter-spacing:0.5px;border:none;">
-              ${gc.label}  ·  รวม ${grpTotal.toLocaleString()} ราย
-            </td>
+          <tr style="background:${GROUP_COLORS[g]}18; border-top:2px solid ${GROUP_COLORS[g]}40;">
+            <td style="font-weight:800; color:${GROUP_COLORS[g]}; padding-left:10px;" colspan="2">Group ${g}</td>
+            ${gMonths.map((val, mIdx) => { const sel = hl(mIdx); return `<td class="${sel ? 'highlight-cell' : ''}" style="font-weight:700;">${val.toLocaleString()}</td>`; }).join('')}
+            <td class="col-total" style="font-weight:800; color:${GROUP_COLORS[g]};">${gTotal.toLocaleString()}</td>
           </tr>
         `;
-
-        // Rh sub-rows
-        rhItems.forEach(item => {
-          const badge = RH_BADGE[item.rh] || {};
+        // Detail rows per Rh type
+        RH_ORDER.forEach(rh => {
+          const row = aboRhMap[`${g}_${rh}`];
+          if (!row) return;
+          // Skip rows that are all zero (only if not D-)
+          const rowTotal = rh !== 'D-' ? (row.total || 0) : (row.total || 0);
+          if (rh !== 'D-' && rowTotal === 0) return; // hide zero rows except D-
+          const mVals = Array(12).fill(0).map((_,m) => (row.months && row.months[m]) || 0);
+          const isAlt = rowIdx % 2 === 1;
+          rowIdx++;
           tableHtml += `
-            <tr>
-              <td style="padding-left:22px;">
-                <span style="display:inline-block;background:${badge.bg};color:${badge.color};
-                             font-weight:700;font-size:10.5px;padding:1px 7px;border-radius:10px;
-                             margin-right:6px;">${item.rh}</span>${item.group} (Rh ${item.rh})
-              </td>
-              ${item.months.map((val, idx) => {
-                const sel = hl(idx);
-                return `<td class="${sel ? 'highlight-cell' : ''}">${val.toLocaleString()}</td>`;
-              }).join('')}
-              <td class="col-total">${item.total.toLocaleString()}</td>
+            <tr style="background:${isAlt ? 'var(--bg-alt)' : 'white'};">
+              <td style="padding-left:6px; color:var(--text-4); font-size:11px;"></td>
+              <td style="padding-left:18px; font-size:12px; ${RH_LABEL_STYLE[rh]}">${rh}</td>
+              ${mVals.map((val, mIdx) => { const sel = hl(mIdx); return `<td class="${sel ? 'highlight-cell' : ''}" style="font-size:12px; ${val === 0 ? 'color:var(--text-4);' : ''}">${val > 0 ? val.toLocaleString() : '—'}</td>`; }).join('')}
+              <td class="col-total" style="font-size:12px; ${RH_LABEL_STYLE[rh]}">${rowTotal > 0 ? rowTotal.toLocaleString() : '—'}</td>
             </tr>
           `;
         });
-
-        // Group subtotal row
-        tableHtml += `
-          <tr style="background:${gc.bg}; font-weight:700;">
-            <td style="padding-left:14px; color:${gc.accent}; font-weight:800;">
-              ✦ รวมหมู่เลือด ${grp}
-            </td>
-            ${grpMonths.map((val, idx) => {
-              const sel = hl(idx);
-              return `<td class="${sel ? 'highlight-cell col-total' : 'col-total'}" style="color:${gc.accent};">${val.toLocaleString()}</td>`;
-            }).join('')}
-            <td class="col-total" style="color:${gc.accent}; font-size:13px;">${grpTotal.toLocaleString()}</td>
-          </tr>
-        `;
       });
 
-      // Grand total row
       tableHtml += `
-            <tr class="row-total">
-              <td>⬛ ยอดตรวจรวม ABO/Rh ทั้งหมด</td>
-              ${colTotals.map((val, idx) => {
-                const sel = hl(idx);
-                return `<td class="${sel ? 'highlight-cell col-total' : ''}">${val.toLocaleString()}</td>`;
-              }).join('')}
-              <td class="col-total">${grandTotal.toLocaleString()}</td>
-            </tr>
-          </tbody>
-        </table>
+          <tr class="row-total">
+            <td colspan="2">⬛ ยอดรวมทั้งหมด</td>
+            ${grandMonths.map((val, mIdx) => { const sel = hl(mIdx); return `<td class="${sel ? 'highlight-cell col-total' : 'col-total'}">${val.toLocaleString()}</td>`; }).join('')}
+            <td class="col-total">${grandTotal.toLocaleString()}</td>
+          </tr>
+        </tbody>
+      </table>
       `;
-      
-      // If there are Antibody rows, display them in a separate sub-table and render the bar chart sorted from high to low
-      if (data.antibodyId && data.antibodyId.length > 1) {
-        // Map, convert totals to number, and sort descending
-        const sortedAntibodies = data.antibodyId.slice(1).map(item => {
-          let val = 0;
-          if (currentMonth === 'all') {
-            val = typeof item.total === 'number' ? item.total : parseInt(item.total) || 0;
-          } else {
-            val = item.months[parseInt(currentMonth) - 1] || 0;
-          }
-          return {
-            name: item.name,
-            months: item.months,
-            total: val,
-            annualTotal: typeof item.total === 'number' ? item.total : parseInt(item.total) || 0
-          };
-        }).sort((a, b) => b.total - a.total);
 
-        // Display the chart card
+      // Antibody sub-section (supplemental)
+      const antibodyArray = data.antibodyId || [];
+      if (antibodyArray.length > 1) {
+        const sortedAntibodies = antibodyArray.slice(1).map(item => {
+          let val = currentMonth === 'all' ? (typeof item.total === 'number' ? item.total : parseInt(item.total)||0) : ((item.months && item.months[parseInt(currentMonth)-1])||0);
+          return { name: item.name, months: item.months, total: val, annualTotal: typeof item.total === 'number' ? item.total : parseInt(item.total)||0 };
+        }).sort((a,b) => b.total - a.total);
+
         const antibodyCard = document.getElementById('antibody-chart-card');
-        antibodyCard.style.display = 'block';
+        if (antibodyCard) antibodyCard.style.display = 'block';
 
-        // Filter out items with 0 total for clean visualization
         const chartDataList = sortedAntibodies.filter(item => item.total > 0);
-        const labels = chartDataList.map(item => formatAntibodyName(item.name, false));
-        const totals = chartDataList.map(item => item.total);
+        const abLabels = chartDataList.map(item => formatAntibodyName(item.name, false));
+        const abTotals = chartDataList.map(item => item.total);
 
-        // Curated multi-color palette (one distinct color per antibody bar)
         const ANTIBODY_PALETTE_BG = [
-          'rgba(220,  38,  38, 0.80)',  // crimson-red
-          'rgba( 37, 99, 235, 0.80)',  // royal-blue
-          'rgba(  5,150,105, 0.80)',  // emerald
-          'rgba(124, 58,237, 0.80)',  // violet
-          'rgba(217,119,  6, 0.80)',  // amber
-          'rgba(  2,132,199, 0.80)',  // sky-blue
-          'rgba(190, 24, 93, 0.80)',  // pink
-          'rgba( 20,184,166, 0.80)',  // teal
-          'rgba(234, 88, 12, 0.80)',  // orange
-          'rgba(101,163, 13, 0.80)',  // lime
-          'rgba( 79, 70,229, 0.80)',  // indigo
-          'rgba(168, 85,247, 0.80)',  // purple
-          'rgba(  6,182,212, 0.80)',  // cyan
-          'rgba(239, 68, 68, 0.80)',  // red-500
-          'rgba( 16,185,129, 0.80)',  // green
-          'rgba(245,158, 11, 0.80)',  // yellow-amber
-          'rgba( 59,130,246, 0.80)',  // blue-500
-          'rgba(236, 72,153, 0.80)',  // hot-pink
-          'rgba(132,204, 22, 0.80)',  // yellow-green
-          'rgba(251,146, 60, 0.80)',  // light-orange
+          'rgba(220,38,38,0.80)','rgba(37,99,235,0.80)','rgba(5,150,105,0.80)',
+          'rgba(124,58,237,0.80)','rgba(217,119,6,0.80)','rgba(2,132,199,0.80)',
+          'rgba(190,24,93,0.80)','rgba(20,184,166,0.80)','rgba(234,88,12,0.80)',
+          'rgba(101,163,13,0.80)','rgba(79,70,229,0.80)','rgba(168,85,247,0.80)',
+          'rgba(6,182,212,0.80)','rgba(239,68,68,0.80)','rgba(16,185,129,0.80)',
+          'rgba(245,158,11,0.80)','rgba(59,130,246,0.80)','rgba(236,72,153,0.80)',
+          'rgba(132,204,22,0.80)','rgba(251,146,60,0.80)'
         ];
-        const ANTIBODY_PALETTE_BORDER = ANTIBODY_PALETTE_BG.map(c => c.replace('0.80', '1'));
+        const ANTIBODY_PALETTE_BORDER = ANTIBODY_PALETTE_BG.map(c => c.replace('0.80','1'));
+        const barBgColors = chartDataList.map((_,i) => ANTIBODY_PALETTE_BG[i%ANTIBODY_PALETTE_BG.length]);
+        const barBorderColors = chartDataList.map((_,i) => ANTIBODY_PALETTE_BORDER[i%ANTIBODY_PALETTE_BORDER.length]);
 
-        const barBgColors    = chartDataList.map((_, i) => ANTIBODY_PALETTE_BG[i % ANTIBODY_PALETTE_BG.length]);
-        const barBorderColors = chartDataList.map((_, i) => ANTIBODY_PALETTE_BORDER[i % ANTIBODY_PALETTE_BORDER.length]);
-
-        // Inline plugin: draw value on top of each bar with matching color
         const antibodyLabelPlugin = {
           id: 'antibodyLabels',
           afterDatasetsDraw(chart) {
@@ -2736,11 +2642,9 @@
               if (!value) return;
               const bar = chart.getDatasetMeta(0).data[i];
               ctx.font = 'bold 11px Sarabun, sans-serif';
-              ctx.fillStyle = ANTIBODY_PALETTE_BORDER[i % ANTIBODY_PALETTE_BORDER.length];
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'bottom';
-              ctx.shadowColor = 'rgba(255,255,255,0.95)';
-              ctx.shadowBlur = 4;
+              ctx.fillStyle = ANTIBODY_PALETTE_BORDER[i%ANTIBODY_PALETTE_BORDER.length];
+              ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+              ctx.shadowColor = 'rgba(255,255,255,0.95)'; ctx.shadowBlur = 4;
               ctx.fillText(value.toLocaleString(), bar.x, bar.y - 3);
               ctx.shadowBlur = 0;
             });
@@ -2751,134 +2655,56 @@
         const ctxAb = document.getElementById('chart-antibody').getContext('2d');
         chartAntibody = new Chart(ctxAb, {
           type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'จำนวนที่ตรวจพบ (ราย)',
-              data: totals,
-              backgroundColor: barBgColors,
-              borderColor: barBorderColors,
-              borderWidth: 1.5,
-              borderRadius: 6,
-              barPercentage: 0.65
-            }]
-          },
+          data: { labels: abLabels, datasets: [{ label: 'จำนวนที่ตรวจพบ (ราย)', data: abTotals, backgroundColor: barBgColors, borderColor: barBorderColors, borderWidth: 1.5, borderRadius: 6, barPercentage: 0.65 }] },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              globalDatalabels: false,
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  labelColor: (ctx) => ({
-                    borderColor: barBorderColors[ctx.dataIndex],
-                    backgroundColor: barBgColors[ctx.dataIndex],
-                    borderWidth: 2,
-                    borderRadius: 4
-                  })
-                }
-              }
-            },
+            responsive: true, maintainAspectRatio: false,
+            plugins: { globalDatalabels: false, legend: { display: false } },
             scales: {
-              y: {
-                beginAtZero: true,
-                grace: '12%',
-                title: {
-                  display: true,
-                  text: 'จำนวนที่ตรวจพบ (ราย)',
-                  font: { family: 'Sarabun', weight: 'bold' }
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'ชนิดของสารภูมิคุ้มกัน (Antibody)',
-                  font: { family: 'Sarabun', weight: 'bold' }
-                },
-                ticks: {
-                  maxRotation: 35,
-                  minRotation: 0
-                }
-              }
+              y: { beginAtZero: true, grace: '12%', title: { display: true, text: 'จำนวนที่ตรวจพบ (ราย)', font: { family: 'Sarabun', weight: 'bold' } } },
+              x: { title: { display: true, text: 'ชนิดของสารภูมิคุ้มกัน (Antibody)', font: { family: 'Sarabun', weight: 'bold' } }, ticks: { maxRotation: 35, minRotation: 0 } }
             }
           },
           plugins: [antibodyLabelPlugin]
         });
 
-
-        // Compute grand total for % calculation
-        const abTotalAll = sortedAntibodies.reduce((s, x) => s + x.annualTotal, 0);
-
+        const abTotalAll = sortedAntibodies.reduce((s,x) => s + x.annualTotal, 0);
         tableHtml += `
           <div style="margin-top:28px; padding-top:18px; border-top:2px solid var(--border);">
-
-            <!-- Section Header -->
             <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-              <div style="width:38px;height:38px;border-radius:10px;
-                          background:linear-gradient(135deg,#dc2626,#7c3aed);
-                          display:flex;align-items:center;justify-content:center;
-                          font-size:18px;flex-shrink:0;">🧬</div>
+              <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#dc2626,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🧬</div>
               <div>
-                <div style="font-size:13.5px;font-weight:800;color:var(--text-1);">
-                  สถิติผลการตรวจวิเคราะห์แยกชนิดสารภูมิคุ้มกัน
-                </div>
-                <div style="font-size:11px;color:var(--text-3);margin-top:1px;">
-                  Antibody Identification in Donors — เรียงลำดับตามความถี่สูงสุด · รวมทั้งสิ้น
-                  <strong style="color:var(--crimson);">${abTotalAll.toLocaleString()} ราย</strong>
-                </div>
+                <div style="font-size:13.5px;font-weight:800;color:var(--text-1);">สถิติผลการตรวจวิเคราะห์แยกชนิดสารภูมิคุ้มกัน</div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:1px;">Antibody Identification in Donors — เรียงลำดับตามความถี่สูงสุด · รวมทั้งสิ้น <strong style="color:var(--crimson);">${abTotalAll.toLocaleString()} ราย</strong></div>
               </div>
             </div>
-
             <div class="table-wrap">
               <table style="border-collapse:collapse;width:100%;">
                 <thead>
                   <tr>
                     <th style="width:36px;text-align:center;">#</th>
                     <th style="min-width:160px;text-align:left;">ชนิดสารภูมิคุ้มกัน (Antibody)</th>
-                    ${THAI_MONTHS_SHORT.map((m, idx) => {
-                      const sel = (idx + 1).toString() === currentMonth;
-                      return `<th style="${sel ? 'background:var(--teal-lt);color:var(--teal);border:2px solid var(--teal);' : ''}">${m}</th>`;
-                    }).join('')}
+                    ${THAI_MONTHS_SHORT.map((m, idx) => { const sel = (idx+1).toString()===currentMonth; return `<th style="${sel?'background:var(--teal-lt);color:var(--teal);border:2px solid var(--teal);':''}">${m}</th>`; }).join('')}
                     <th class="col-total" style="min-width:70px;">รวมปี</th>
                     <th style="min-width:110px;text-align:left;padding-left:10px;">สัดส่วน</th>
                   </tr>
                 </thead>
                 <tbody>
         `;
-
-        let rank = 0;
-        // Use a closure-captured copy of the palette arrays for table rows
-        const _bgPal  = ANTIBODY_PALETTE_BG;
-        const _brdPal = ANTIBODY_PALETTE_BORDER;
-        let tableRank = 0; // track palette index separately (rank can skip zero rows)
+        let rank = 0, tableRank = 0;
         sortedAntibodies.forEach(item => {
-          if (item.annualTotal === 0) return;   // hide zero rows
-          rank++;
-          tableRank = rank - 1; // 0-based palette index
-          const pct = abTotalAll > 0 ? ((item.annualTotal / abTotalAll) * 100) : 0;
+          if (item.annualTotal === 0) return;
+          rank++; tableRank = rank - 1;
+          const pct = abTotalAll > 0 ? ((item.annualTotal/abTotalAll)*100) : 0;
           const pctStr = pct >= 1 ? pct.toFixed(1) : pct.toFixed(2);
-          const barWidth = Math.max(pct, 2).toFixed(1);
-
-          // Use palette color for this row (matching chart bar)
-          const rowColor  = _brdPal[tableRank % _brdPal.length];
-          const rowBg     = _bgPal[tableRank % _bgPal.length].replace('0.80', '0.12');
-
-          // Rank badge: keep gold/silver/bronze for top-3, else use palette color
-          const rankColor = rank === 1 ? '#d97706' : rank === 2 ? '#64748b' : rank === 3 ? '#b45309' : rowColor;
-          const rankBg    = rank === 1 ? '#fef3c7' : rank === 2 ? '#f1f5f9' : rank === 3 ? '#fef3c7' : rowBg;
-
+          const barWidth = Math.max(pct,2).toFixed(1);
+          const rowColor = ANTIBODY_PALETTE_BORDER[tableRank%ANTIBODY_PALETTE_BORDER.length];
+          const rowBg = ANTIBODY_PALETTE_BG[tableRank%ANTIBODY_PALETTE_BG.length].replace('0.80','0.12');
+          const rankColor = rank===1?'#d97706':rank===2?'#64748b':rank===3?'#b45309':rowColor;
+          const rankBg = rank===1?'#fef3c7':rank===2?'#f1f5f9':rank===3?'#fef3c7':rowBg;
           tableHtml += `
             <tr style="border-left:3px solid ${rowColor};">
-              <td style="text-align:center;padding:6px 4px;">
-                <span style="display:inline-flex;align-items:center;justify-content:center;
-                             width:22px;height:22px;border-radius:50%;
-                             background:${rankBg};color:${rankColor};
-                             font-size:10px;font-weight:800;">${rank}</span>
-              </td>
-              <td style="font-weight:700;">
-                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;
-                             background:${rowColor};margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>${formatAntibodyName(item.name, true)}
+              <td style="text-align:center;padding:6px 4px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:${rankBg};color:${rankColor};font-size:10px;font-weight:800;">${rank}</span></td>
+              <td style="font-weight:700;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${rowColor};margin-right:6px;vertical-align:middle;flex-shrink:0;"></span>${formatAntibodyName(item.name, true)}
               </td>
               ${item.months.map((val, idx) => {
                 const sel = (idx + 1).toString() === currentMonth;
